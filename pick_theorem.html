@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>钉子板多边形：Pick 定理 s = n/2 + b - 1 讲解</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111936; --text:#e8ecff; --muted:#aab3d6;
+      --grid:#2a355f; --peg:#97a0c8; --poly:#7CFFB2; --stroke:#ffd166;
+      --bnd:#ff4d6d; --in:#4dabf7; --accent:#c7f9cc;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    body{ margin:0; background: radial-gradient(1000px 600px at 20% 0%, #1a2a6c33, transparent), var(--bg);
+      color:var(--text); font-family:var(--sans); }
+    header{
+      padding: 22px 18px 6px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    h1{ margin:0 0 6px; font-size: 22px; letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:14px; line-height:1.6; }
+    main{ max-width:1100px; margin: 14px auto 40px; padding: 0 18px; display:grid; gap:14px; grid-template-columns: 1.3fr .9fr; }
+    .card{
+      background: linear-gradient(180deg, #121b3e, #0f1633);
+      border: 1px solid #26336a;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card h2{ margin:0; font-size:16px; padding:14px 14px 8px; }
+    .card .content{ padding: 0 14px 14px; color: var(--muted); font-size:14px; line-height:1.65; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .pill{
+      border:1px solid #2c3a72; background:#0d1430;
+      padding:8px 10px; border-radius: 999px; color: var(--text);
+      font-family: var(--mono); font-size: 13px;
+    }
+    .btn{
+      cursor:pointer; border:1px solid #2c3a72; background:#0d1430;
+      padding:9px 12px; border-radius: 10px; color: var(--text);
+      font-size: 13px;
+    }
+    .btn:hover{ filter: brightness(1.12); }
+    .btn:active{ transform: translateY(1px); }
+    .kbd{ font-family: var(--mono); background:#0b122a; border:1px solid #2c3a72; padding:1px 6px; border-radius:6px; color:var(--accent); }
+    .hint{ color: var(--muted); font-size: 12px; margin-top: 6px; }
+    #svgWrap{ padding: 10px 10px 14px; }
+    svg{ width:100%; height:auto; display:block; background: #0b122a; border-top: 1px solid #26336a; }
+    .legend{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding: 0 14px 12px; color:var(--muted); font-size:13px; }
+    .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; }
+    .dot.bnd{ background: var(--bnd); }
+    .dot.in{ background: var(--in); }
+    .dot.peg{ background: var(--peg); }
+    .math{ font-family: var(--mono); font-size: 14px; color: var(--text); }
+    .math strong{ color: var(--accent); }
+    .hr{ height:1px; background:#26336a; margin: 10px 0; }
+    textarea{
+      width:100%; min-height: 96px; resize: vertical;
+      border-radius: 12px; border:1px solid #2c3a72;
+      background:#0b122a; color: var(--text);
+      padding: 10px; font-family: var(--mono); font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .small{ font-size:12px; color:var(--muted); }
+    @media (max-width: 920px){
+      main{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>钉子板上的多边形：为什么 <span class="math"><strong>s = n/2 + b - 1</strong></span>？（Pick 定理可视化）</h1>
+  <div class="sub">
+    s 表示面积 A（单位：小方格），n 表示边界钉子数 B，b 表示内部钉子数 I。<br/>
+    你可以拖动顶点、添加/删除顶点，让页面自动算 n、b、s，并验证公式。
+  </div>
+</header>
+
+<main>
+  <!-- Left: visual -->
+  <section class="card">
+    <h2>① 钉子板 + 多边形（可拖动顶点）</h2>
+    <div class="legend">
+      <span><i class="dot peg"></i>钉子（格点）</span>
+      <span><i class="dot bnd"></i>边界点（n）</span>
+      <span><i class="dot in"></i>内部点（b）</span>
+      <span class="small">提示：拖动绿色顶点；按住 <span class="kbd">Shift</span> 点击边上可插入新顶点；<span class="kbd">Alt</span> 点击顶点删除（至少 3 个点）。</span>
+    </div>
+    <div id="svgWrap">
+      <svg id="board" viewBox="0 0 720 460" aria-label="pegboard">
+        <!-- dynamic -->
+      </svg>
+    </div>
+  </section>
+
+  <!-- Right: explanation + controls -->
+  <aside class="card">
+    <h2>② 自动计算与“推导思路”讲解</h2>
+    <div class="content">
+      <div class="row">
+        <button class="btn" id="presetTri">示例：单位直角三角形</button>
+        <button class="btn" id="presetSq">示例：单位正方形</button>
+        <button class="btn" id="presetPoly">示例：任意多边形</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <span class="pill" id="statN">n = ?</span>
+        <span class="pill" id="statB">b = ?</span>
+        <span class="pill" id="statS">s = ?</span>
+      </div>
+
+      <div style="margin-top:10px" class="math" id="checkLine">
+        s ?= n/2 + b - 1
+      </div>
+      <div class="hint" id="checkHint"></div>
+
+      <div class="hr"></div>
+
+      <div class="math">
+        <strong>核心：</strong>Pick 定理<br/>
+        A = I + B/2 − 1<br/><br/>
+        把符号换成题目常用写法：<br/>
+        s = b + n/2 − 1
+      </div>
+
+      <div class="hr"></div>
+
+      <div>
+        <div class="math"><strong>为什么成立（结合图形理解）</strong></div>
+        <ol style="margin:8px 0 0 18px; color: var(--muted);">
+          <li>
+            先看“基本单元”：单位直角三角形、单位正方形。<br/>
+            它们的 n、b 很容易数，代入公式刚好等于面积。
+          </li>
+          <li>
+            再看“拼起来也成立”：把一个图形切成两块再拼回去，面积会相加。<br/>
+            同时 <span class="math">I + B/2 − 1</span> 这个量也会“相加”（公共切割边上的点，在 B/2 里会自动抵消重复计算）。
+          </li>
+          <li>
+            任意格点多边形都能切成许多个格点三角形，所以整体也成立。
+          </li>
+        </ol>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="math"><strong>当前多边形顶点（格点坐标）</strong></div>
+      <textarea id="ptsBox" readonly></textarea>
+      <div class="small">坐标单位是“钉子间距”。例如 (0,0) 到 (1,0) 是相邻两颗钉子。</div>
+    </div>
+  </aside>
+</main>
+
+<script>
+/**
+ * Pick's theorem visualizer (lattice polygon on pegboard).
+ * Coordinates are integer grid. We render in SVG with a margin and a scale.
+ *
+ * Definitions (matching user's formula):
+ *   n = B = number of boundary lattice points on polygon boundary
+ *   b = I = number of interior lattice points
+ *   s = A = polygon area (in unit squares)
+ *
+ * We compute:
+ *   Area via shoelace (exact rational as /2)
+ *   Boundary points B via sum(gcd(|dx|,|dy|)) over edges
+ *   Interior points I via Pick: I = A - B/2 + 1 (for checking) OR brute-force scan for visualization
+ * For visualization, we brute-force scan lattice points in bbox to classify inside/boundary.
+ */
+
+const svg = document.getElementById('board');
+
+const statN = document.getElementById('statN');
+const statB = document.getElementById('statB');
+const statS = document.getElementById('statS');
+const checkLine = document.getElementById('checkLine');
+const checkHint = document.getElementById('checkHint');
+const ptsBox = document.getElementById('ptsBox');
+
+const W = 720, H = 460;
+const margin = 40;
+const gridSize = 18; // pixels per unit
+const cols = Math.floor((W - margin*2)/gridSize);
+const rows = Math.floor((H - margin*2)/gridSize);
+
+function toPx(p){
+  return { x: margin + p.x*gridSize, y: margin + p.y*gridSize };
+}
+function gcd(a,b){
+  a = Math.abs(a); b = Math.abs(b);
+  while(b){ const t=a%b; a=b; b=t; }
+  return a;
+}
+function shoelace2(pts){
+  // returns 2*Area (integer)
+  let s = 0;
+  for(let i=0;i<pts.length;i++){
+    const a = pts[i], b = pts[(i+1)%pts.length];
+    s += a.x*b.y - a.y*b.x;
+  }
+  return Math.abs(s);
+}
+function boundaryCount(pts){
+  // B = sum gcd(|dx|,|dy|) over edges
+  let B = 0;
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i], b=pts[(i+1)%pts.length];
+    B += gcd(b.x-a.x, b.y-a.y);
+  }
+  return B;
+}
+function pointOnSegment(p,a,b){
+  // collinear and within bbox
+  const cross = (b.x-a.x)*(p.y-a.y) - (b.y-a.y)*(p.x-a.x);
+  if(cross !== 0) return false;
+  const dot = (p.x-a.x)*(p.x-b.x) + (p.y-a.y)*(p.y-b.y);
+  return dot <= 0;
+}
+function pointInPoly(p, pts){
+  // ray casting for strict inside; boundary handled separately
+  let inside = false;
+  for(let i=0, j=pts.length-1; i<pts.length; j=i++){
+    const a = pts[i], b = pts[j];
+    const intersect = ((a.y>p.y) !== (b.y>p.y)) &&
+      (p.x < (b.x-a.x)*(p.y-a.y)/(b.y-a.y) + a.x);
+    if(intersect) inside = !inside;
+  }
+  return inside;
+}
+function isBoundaryPoint(p, pts){
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i], b=pts[(i+1)%pts.length];
+    if(pointOnSegment(p,a,b)) return true;
+  }
+  return false;
+}
+
+let pts = [
+  {x:4, y:5},
+  {x:10,y:4},
+  {x:14,y:8},
+  {x:12,y:13},
+  {x:6, y:12},
+];
+
+let dragIdx = -1;
+
+function setPreset(kind){
+  if(kind==='tri'){
+    // unit right triangle: (0,0)(4,0)(0,4) scaled up for visibility
+    pts = [{x:4,y:16},{x:4,y:12},{x:12,y:12}]; // right triangle in screen-friendly coords
+  }else if(kind==='sq'){
+    pts = [{x:14,y:12},{x:18,y:12},{x:18,y:16},{x:14,y:16}];
+  }else{
+    pts = [
+      {x:6, y:6},{x:13,y:5},{x:18,y:9},{x:16,y:14},{x:10,y:15},{x:5,y:11}
+    ];
+  }
+  render();
+}
+
+document.getElementById('presetTri').onclick = ()=>setPreset('tri');
+document.getElementById('presetSq').onclick  = ()=>setPreset('sq');
+document.getElementById('presetPoly').onclick= ()=>setPreset('poly');
+
+function render(){
+  svg.innerHTML = '';
+
+  // background grid pegs
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  for(let y=0;y<=rows;y++){
+    for(let x=0;x<=cols;x++){
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      const px = margin + x*gridSize;
+      const py = margin + y*gridSize;
+      c.setAttribute('cx', px); c.setAttribute('cy', py);
+      c.setAttribute('r', 3.2);
+      c.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--peg'));
+      c.setAttribute('opacity', .35);
+      g.appendChild(c);
+    }
+  }
+  svg.appendChild(g);
+
+  // polygon path
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const d = pts.map((p,i)=>{
+    const q = toPx(p);
+    return (i===0?`M ${q.x} ${q.y}`:`L ${q.x} ${q.y}`);
+  }).join(' ') + ' Z';
+  path.setAttribute('d', d);
+  path.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--poly'));
+  path.setAttribute('fill-opacity', .25);
+  path.setAttribute('stroke', getComputedStyle(document.documentElement).getPropertyValue('--stroke'));
+  path.setAttribute('stroke-width', 4);
+  path.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(path);
+
+  // compute bbox of polygon points
+  const xs = pts.map(p=>p.x), ys = pts.map(p=>p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+  // classify lattice points in bbox for visualization
+  let interior = [], boundary = [];
+  for(let y=minY; y<=maxY; y++){
+    for(let x=minX; x<=maxX; x++){
+      const p = {x,y};
+      if(isBoundaryPoint(p, pts)) boundary.push(p);
+      else if(pointInPoly(p, pts)) interior.push(p);
+    }
+  }
+
+  // draw boundary points (red) + interior points (blue)
+  const gp = document.createElementNS('http://www.w3.org/2000/svg','g');
+  function drawPoints(arr, color, r){
+    for(const p of arr){
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      const q = toPx(p);
+      c.setAttribute('cx', q.x); c.setAttribute('cy', q.y);
+      c.setAttribute('r', r);
+      c.setAttribute('fill', color);
+      c.setAttribute('opacity', .95);
+      gp.appendChild(c);
+    }
+  }
+  drawPoints(boundary, getComputedStyle(document.documentElement).getPropertyValue('--bnd'), 5.2);
+  drawPoints(interior, getComputedStyle(document.documentElement).getPropertyValue('--in'), 4.6);
+  svg.appendChild(gp);
+
+  // draw draggable vertices (larger green)
+  const gv = document.createElementNS('http://www.w3.org/2000/svg','g');
+  pts.forEach((p, idx)=>{
+    const q = toPx(p);
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', q.x); c.setAttribute('cy', q.y);
+    c.setAttribute('r', 8.5);
+    c.setAttribute('fill', '#7CFFB2');
+    c.setAttribute('stroke', '#0b122a');
+    c.setAttribute('stroke-width', 3);
+    c.style.cursor = 'grab';
+    c.dataset.idx = idx;
+    gv.appendChild(c);
+  });
+  svg.appendChild(gv);
+
+  // area / counts
+  const A2 = shoelace2(pts); // 2A
+  const B = boundaryCount(pts); // exact boundary lattice points count
+  const I = interior.length; // brute force interior points count for display
+
+  // s = A
+  const sStr = (A2 % 2 === 0) ? String(A2/2) : `${A2}/2`;
+  const rhs2 = B + 2*I - 2; // 2*(B/2 + I - 1) = B + 2I - 2
+  const ok = (A2 === rhs2);
+
+  statN.textContent = `n = ${B}`;
+  statB.textContent = `b = ${I}`;
+  statS.textContent = `s = ${sStr}`;
+
+  const rhsStr = (rhs2 % 2 === 0) ? String(rhs2/2) : `${rhs2}/2`;
+  checkLine.innerHTML = `验证： <strong>s</strong> = ${sStr} ， <strong>n/2 + b - 1</strong> = ${rhsStr}  → ${ok ? '✅ 成立' : '❌ 不成立（通常是自交/点没在格点）'}`;
+  checkHint.textContent = ok
+    ? '你看到的红点=边界点 n，蓝点=内部点 b。数一数，再代入公式，就等于面积 s。'
+    : '如果不成立，常见原因：多边形自交、顶点不是整格点、或你拖出了画布范围。';
+
+  // show coordinates
+  ptsBox.value = pts.map((p,i)=>`P${i+1} = (${p.x}, ${p.y})`).join('\n');
+
+  // interaction: set event listeners once
+  bindInteractions();
+}
+
+let bound = false;
+function bindInteractions(){
+  if(bound) return;
+  bound = true;
+
+  svg.addEventListener('mousedown', (e)=>{
+    const t = e.target;
+    if(t && t.dataset && t.dataset.idx !== undefined){
+      dragIdx = Number(t.dataset.idx);
+      t.style.cursor='grabbing';
+    }
+  });
+
+  window.addEventListener('mouseup', ()=>{
+    dragIdx = -1;
+    // reset cursor
+    svg.querySelectorAll('circle[data-idx]').forEach(c=>c.style.cursor='grab');
+  });
+
+  svg.addEventListener('mousemove', (e)=>{
+    if(dragIdx < 0) return;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    const loc = pt.matrixTransform(ctm);
+
+    // convert to nearest grid coordinate
+    const gx = Math.round((loc.x - margin)/gridSize);
+    const gy = Math.round((loc.y - margin)/gridSize);
+
+    // clamp to board
+    const x = Math.max(0, Math.min(cols, gx));
+    const y = Math.max(0, Math.min(rows, gy));
+
+    pts[dragIdx] = {x, y};
+    render();
+  });
+
+  // Shift-click on an edge: insert a new vertex at nearest point on polygon edges (snap to grid)
+  svg.addEventListener('click', (e)=>{
+    if(dragIdx >= 0) return;
+    const isShift = e.shiftKey;
+    const isAlt = e.altKey;
+
+    // Alt-click vertex to delete
+    const t = e.target;
+    if(isAlt && t && t.dataset && t.dataset.idx !== undefined){
+      if(pts.length <= 3) return;
+      pts.splice(Number(t.dataset.idx), 1);
+      render();
+      return;
+    }
+
+    if(!isShift) return;
+
+    // locate click in grid coords
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    const loc = pt.matrixTransform(ctm);
+    const gx = Math.round((loc.x - margin)/gridSize);
+    const gy = Math.round((loc.y - margin)/gridSize);
+    const p = {x: Math.max(0, Math.min(cols, gx)), y: Math.max(0, Math.min(rows, gy))};
+
+    // insert into the nearest edge
+    let best = {i:0, dist: Infinity};
+    for(let i=0;i<pts.length;i++){
+      const a=pts[i], b=pts[(i+1)%pts.length];
+      // distance from point to segment in grid units (approx)
+      const dx=b.x-a.x, dy=b.y-a.y;
+      const len2 = dx*dx+dy*dy;
+      let t = 0;
+      if(len2>0) t = ((p.x-a.x)*dx+(p.y-a.y)*dy)/len2;
+      t = Math.max(0, Math.min(1, t));
+      const proj = {x:a.x+t*dx, y:a.y+t*dy};
+      const d2 = (p.x-proj.x)**2+(p.y-proj.y)**2;
+      if(d2 < best.dist){ best = {i, dist:d2}; }
+    }
+    pts.splice(best.i+1, 0, p);
+    render();
+  });
+}
+
+render();
+</script>
+</body>
+</html>
