@@ -40,12 +40,15 @@ Build a kid-friendly **English-only** static web game: **Plane Shooter**.
 - Continuous enemy waves
 - Difficulty increases smoothly
 
-### M4. Collision + Core Rules
-- Bullet hits enemy => score up + simple VFX
-- Enemy reaches bottom or collides with player => lose life
+### M4. Typing Hit Rules (Updated)
+- Each enemy plane has one letter (A-Z)
+- Press matching key => enemy explodes, score increases
+- Wrong key => soft penalty (small score loss / streak reset)
+- Enemy reaches bottom => lose life
 - Lives reach 0 => game over
 
 **Acceptance**
+- Letter matching logic is correct
 - Score/life logic is correct
 - Restart works
 

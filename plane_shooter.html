@@ -3,83 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plane Shooter</title>
+  <title>Plane Shooter Typing</title>
   <style>
     :root{
-      --bg:#081424;
-      --panel:#10243a;
-      --ink:#e8f6ff;
-      --muted:#9cc5de;
-      --accent:#29b6f6;
-      --ok:#54d37a;
-      --warn:#ffcf5a;
-      --danger:#ff6b6b;
+      --bg:#081424;--panel:#10243a;--ink:#e8f6ff;--muted:#9cc5de;
+      --accent:#29b6f6;--ok:#54d37a;--danger:#ff6b6b;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      background:radial-gradient(circle at 20% 0%, #113860, #081424 60%);
-      color:var(--ink);
-      font-family:Segoe UI, Roboto, Arial, sans-serif;
-      padding:20px;
-    }
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 20% 0%,#113860,#081424 60%);color:var(--ink);font-family:Segoe UI,Roboto,Arial,sans-serif;padding:20px}
     .app{width:min(980px,100%)}
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
     .title{font-size:28px;font-weight:700}
     .hint{color:var(--muted);font-size:14px}
     .stats{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{
-      background:var(--panel);
-      border:1px solid #22527b;
-      border-radius:999px;
-      padding:6px 12px;
-      font-weight:600;
-    }
-    .wrap{
-      position:relative;
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid #1a4569;
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
-    }
+    .chip{background:var(--panel);border:1px solid #22527b;border-radius:999px;padding:6px 12px;font-weight:600}
+    .wrap{position:relative;border-radius:16px;overflow:hidden;border:1px solid #1a4569;box-shadow:0 10px 30px rgba(0,0,0,.35)}
     canvas{display:block;width:100%;height:auto;background:linear-gradient(#0a1b31,#071422)}
-    .overlay{
-      position:absolute;inset:0;
-      display:grid;place-items:center;
-      background:rgba(4,10,18,.55);
-      text-align:center;
-      padding:20px;
-    }
-    .card{
-      background:rgba(16,36,58,.92);
-      border:1px solid #245987;
-      border-radius:14px;
-      padding:18px 16px;
-      width:min(520px,92%);
-    }
-    .card h2{margin:0 0 8px}
-    .card p{margin:6px 0;color:var(--muted)}
+    .overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(4,10,18,.55);text-align:center;padding:20px}
+    .card{background:rgba(16,36,58,.92);border:1px solid #245987;border-radius:14px;padding:18px 16px;width:min(520px,92%)}
+    .card h2{margin:0 0 8px}.card p{margin:6px 0;color:var(--muted)}
     .btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
-    button,a.btn{
-      border:none;
-      text-decoration:none;
-      background:var(--accent);
-      color:#00111e;
-      border-radius:10px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:700;
-    }
+    button,a.btn{border:none;text-decoration:none;background:var(--accent);color:#00111e;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
     button.alt,a.btn.alt{background:#365f86;color:var(--ink)}
   </style>
 </head>
@@ -87,13 +31,15 @@
   <div class="app">
     <div class="topbar">
       <div>
-        <div class="title">✈️ Plane Shooter</div>
-        <div class="hint">Controls: ← → move · Space shoot · P pause</div>
+        <div class="title">⌨️✈️ Typing Plane Shooter</div>
+        <div class="hint">Type enemy letters to destroy them · P pause</div>
       </div>
       <div class="stats">
         <div class="chip" id="scoreChip">Score: 0</div>
         <div class="chip" id="livesChip">Lives: 3</div>
         <div class="chip" id="levelChip">Level: 1</div>
+        <div class="chip" id="accChip">Accuracy: 100%</div>
+        <div class="chip" id="wpmChip">WPM: 0</div>
       </div>
     </div>
 
@@ -102,9 +48,9 @@
 
       <div class="overlay" id="menuOverlay">
         <div class="card">
-          <h2>Ready to Fly?</h2>
-          <p>Shoot enemy planes and protect your sky.</p>
-          <p>Great for kids: simple controls, quick rounds, pure fun.</p>
+          <h2>Ready to Type?</h2>
+          <p>Each enemy plane has a letter.</p>
+          <p>Press the correct key to explode that plane.</p>
           <div class="btns">
             <button id="startBtn">Start Game</button>
             <a class="btn alt" href="index.html">Back Home</a>
@@ -113,16 +59,14 @@
       </div>
 
       <div class="overlay" id="pauseOverlay" style="display:none">
-        <div class="card">
-          <h2>Paused</h2>
-          <p>Press <b>P</b> to continue.</p>
-        </div>
+        <div class="card"><h2>Paused</h2><p>Press <b>P</b> to continue.</p></div>
       </div>
 
       <div class="overlay" id="overOverlay" style="display:none">
         <div class="card">
           <h2>Game Over</h2>
           <p id="finalLine">Your score: 0</p>
+          <p id="finalTyping">Accuracy: 100% · WPM: 0</p>
           <div class="btns">
             <button id="restartBtn">Play Again</button>
             <a class="btn alt" href="index.html">Back Home</a>
@@ -136,6 +80,7 @@
 (() => {
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
 
   const menuOverlay = document.getElementById('menuOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
@@ -143,13 +88,15 @@
   const startBtn = document.getElementById('startBtn');
   const restartBtn = document.getElementById('restartBtn');
   const finalLine = document.getElementById('finalLine');
+  const finalTyping = document.getElementById('finalTyping');
 
   const scoreChip = document.getElementById('scoreChip');
   const livesChip = document.getElementById('livesChip');
   const levelChip = document.getElementById('levelChip');
+  const accChip = document.getElementById('accChip');
+  const wpmChip = document.getElementById('wpmChip');
 
-  const W = canvas.width;
-  const H = canvas.height;
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   const state = {
     mode: 'menu', // menu | playing | paused | gameover
@@ -158,63 +105,69 @@
     level: 1,
     t: 0,
     spawnTimer: 0,
-    fireCd: 0,
-    player: { x: W/2, y: H-58, w: 44, h: 34, speed: 360 },
-    bullets: [],
     enemies: [],
     explosions: [],
-    keys: { left:false, right:false, shoot:false }
+    typedTotal: 0,
+    typedCorrect: 0,
+    streak: 0
   };
 
-  function resetGame() {
+  function resetGame(){
     state.mode = 'playing';
     state.score = 0;
     state.lives = 3;
     state.level = 1;
     state.t = 0;
     state.spawnTimer = 0;
-    state.fireCd = 0;
-    state.player.x = W/2;
-    state.bullets = [];
     state.enemies = [];
     state.explosions = [];
+    state.typedTotal = 0;
+    state.typedCorrect = 0;
+    state.streak = 0;
     menuOverlay.style.display = 'none';
     pauseOverlay.style.display = 'none';
     overOverlay.style.display = 'none';
     syncUI();
   }
 
+  function calcWPM(){
+    const min = Math.max(state.t / 60, 1/60);
+    return Math.round((state.typedCorrect / 5) / min);
+  }
+
+  function calcAcc(){
+    return state.typedTotal ? Math.round((state.typedCorrect / state.typedTotal) * 100) : 100;
+  }
+
   function syncUI(){
     scoreChip.textContent = `Score: ${state.score}`;
     livesChip.textContent = `Lives: ${state.lives}`;
     levelChip.textContent = `Level: ${state.level}`;
+    accChip.textContent = `Accuracy: ${calcAcc()}%`;
+    wpmChip.textContent = `WPM: ${calcWPM()}`;
+  }
+
+  function pickLetter(){
+    const base = letters[Math.floor(Math.random() * letters.length)];
+    // Slightly increase repeated letters in higher levels
+    if (state.level >= 4 && Math.random() < 0.2 && state.enemies.length) {
+      return state.enemies[Math.floor(Math.random()*state.enemies.length)].letter;
+    }
+    return base;
   }
 
   function spawnEnemy(){
-    const levelSpeed = Math.min(170, 70 + state.level * 8);
-    const w = 36, h = 28;
+    const speed = Math.min(220, 65 + state.level * 10 + Math.random() * 40);
+    const w = 42, h = 30;
     state.enemies.push({
-      x: 20 + Math.random() * (W - 40),
+      x: 30 + Math.random() * (W - 60),
       y: -20,
-      w, h,
-      speed: levelSpeed + Math.random()*40
+      w, h, speed,
+      letter: pickLetter()
     });
   }
 
-  function fireBullet(){
-    state.bullets.push({
-      x: state.player.x,
-      y: state.player.y - 18,
-      r: 3,
-      vy: -520
-    });
-  }
-
-  function collide(a,b){
-    return Math.abs(a.x-b.x)*2 < (a.w+b.w) && Math.abs(a.y-b.y)*2 < (a.h+b.h);
-  }
-
-  function boom(x,y,color='#ffd166'){
+  function boom(x,y,color='#8ce99a'){
     state.explosions.push({x,y,r:4,life:.35,color});
   }
 
@@ -222,98 +175,40 @@
     if (state.mode !== 'playing') return;
 
     state.t += dt;
-    state.level = 1 + Math.floor(state.t / 20);
+    state.level = 1 + Math.floor(state.t / 18);
 
-    // Player movement
-    const p = state.player;
-    if (state.keys.left) p.x -= p.speed * dt;
-    if (state.keys.right) p.x += p.speed * dt;
-    p.x = Math.max(p.w/2 + 4, Math.min(W - p.w/2 - 4, p.x));
-
-    // Shooting cooldown
-    state.fireCd -= dt;
-    if (state.keys.shoot && state.fireCd <= 0) {
-      fireBullet();
-      state.fireCd = 0.16;
-    }
-
-    // Spawn enemies
     state.spawnTimer -= dt;
-    const spawnGap = Math.max(0.25, 1.1 - state.level*0.05);
+    const spawnGap = Math.max(0.28, 1.15 - state.level*0.06);
     if (state.spawnTimer <= 0){
       spawnEnemy();
       state.spawnTimer = spawnGap;
     }
 
-    // Update bullets
-    for (const b of state.bullets) b.y += b.vy * dt;
-    state.bullets = state.bullets.filter(b => b.y > -20);
-
-    // Update enemies
     for (const e of state.enemies) e.y += e.speed * dt;
 
-    // Bullet-enemy collisions
-    const newEnemies = [];
-    for (const e of state.enemies){
-      let dead = false;
-      for (const b of state.bullets){
-        if (Math.abs(b.x - e.x) < e.w/2 && Math.abs(b.y - e.y) < e.h/2){
-          dead = true;
-          b.y = -100;
-          state.score += 10;
-          boom(e.x,e.y,'#8ce99a');
-          break;
-        }
-      }
-      if (!dead) newEnemies.push(e);
-    }
-    state.enemies = newEnemies;
-
-    // Enemy-player / bottom collisions
     const survivors = [];
     for (const e of state.enemies){
       if (e.y - e.h/2 > H){
         state.lives -= 1;
+        state.streak = 0;
         boom(e.x, H-8, '#ff6b6b');
-      } else if (collide(e, p)){
-        state.lives -= 1;
-        boom(e.x, e.y, '#ff6b6b');
       } else {
         survivors.push(e);
       }
     }
     state.enemies = survivors;
 
-    // Explosions
     for (const ex of state.explosions){ ex.life -= dt; ex.r += 80*dt; }
     state.explosions = state.explosions.filter(ex => ex.life > 0);
 
     if (state.lives <= 0){
       state.mode = 'gameover';
       finalLine.textContent = `Your score: ${state.score}`;
+      finalTyping.textContent = `Accuracy: ${calcAcc()}% · WPM: ${calcWPM()}`;
       overOverlay.style.display = 'grid';
     }
 
     syncUI();
-  }
-
-  function drawPlayer(){
-    const p = state.player;
-    ctx.save();
-    ctx.translate(p.x,p.y);
-    // body
-    ctx.fillStyle = '#29b6f6';
-    ctx.beginPath();
-    ctx.moveTo(0,-p.h/2);
-    ctx.lineTo(p.w/2, p.h/2);
-    ctx.lineTo(0, p.h/3);
-    ctx.lineTo(-p.w/2, p.h/2);
-    ctx.closePath();
-    ctx.fill();
-    // cockpit
-    ctx.fillStyle = '#e3f7ff';
-    ctx.fillRect(-6,-8,12,10);
-    ctx.restore();
   }
 
   function drawEnemy(e){
@@ -327,29 +222,30 @@
     ctx.lineTo(-e.w/2,-e.h/2);
     ctx.closePath();
     ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Segoe UI, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(e.letter, 0, 3);
     ctx.restore();
   }
 
   function render(){
-    // background stars
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle = '#071422';
     ctx.fillRect(0,0,W,H);
+
     ctx.fillStyle = 'rgba(180,220,255,.55)';
-    for (let i=0;i<50;i++){
+    for (let i=0;i<52;i++){
       const x = (i*97 + Math.floor(state.t*40)) % W;
       const y = (i*53 + Math.floor(state.t*22)) % H;
       ctx.fillRect(x,y,2,2);
     }
 
-    if (state.mode !== 'menu') drawPlayer();
-
-    ctx.fillStyle = '#ffd166';
-    for (const b of state.bullets){
-      ctx.beginPath();
-      ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
-      ctx.fill();
-    }
+    // bottom defense bar
+    ctx.fillStyle = '#29b6f6';
+    ctx.fillRect(W/2 - 90, H - 18, 180, 6);
 
     for (const e of state.enemies) drawEnemy(e);
 
@@ -364,6 +260,41 @@
     }
   }
 
+  function handleLetter(key){
+    if (state.mode !== 'playing') return;
+    if (!/^[a-z]$/i.test(key)) return;
+
+    const letter = key.toUpperCase();
+    state.typedTotal += 1;
+
+    let targetIndex = -1;
+    let bestY = -Infinity;
+    for (let i=0;i<state.enemies.length;i++){
+      const e = state.enemies[i];
+      if (e.letter === letter && e.y > bestY){
+        bestY = e.y;
+        targetIndex = i;
+      }
+    }
+
+    if (targetIndex >= 0){
+      const e = state.enemies[targetIndex];
+      state.enemies.splice(targetIndex,1);
+      state.typedCorrect += 1;
+      state.streak += 1;
+      const bonus = Math.min(20, Math.floor(state.streak / 5) * 2);
+      state.score += 10 + bonus;
+      boom(e.x, e.y, '#8ce99a');
+    } else {
+      state.streak = 0;
+      // soft penalty
+      state.score = Math.max(0, state.score - 2);
+      boom(40 + Math.random()*(W-80), H-30, '#ffd166');
+    }
+
+    syncUI();
+  }
+
   let last = performance.now();
   function loop(now){
     const dt = Math.min(0.033, (now - last) / 1000);
@@ -374,25 +305,13 @@
   }
   requestAnimationFrame(loop);
 
-  // input
   window.addEventListener('keydown', e => {
-    if (e.code === 'ArrowLeft') state.keys.left = true;
-    if (e.code === 'ArrowRight') state.keys.right = true;
-    if (e.code === 'Space') { state.keys.shoot = true; e.preventDefault(); }
     if (e.code === 'KeyP') {
-      if (state.mode === 'playing') {
-        state.mode = 'paused';
-        pauseOverlay.style.display = 'grid';
-      } else if (state.mode === 'paused') {
-        state.mode = 'playing';
-        pauseOverlay.style.display = 'none';
-      }
+      if (state.mode === 'playing') { state.mode = 'paused'; pauseOverlay.style.display = 'grid'; }
+      else if (state.mode === 'paused') { state.mode = 'playing'; pauseOverlay.style.display = 'none'; }
+      return;
     }
-  });
-  window.addEventListener('keyup', e => {
-    if (e.code === 'ArrowLeft') state.keys.left = false;
-    if (e.code === 'ArrowRight') state.keys.right = false;
-    if (e.code === 'Space') state.keys.shoot = false;
+    if (state.mode === 'playing') handleLetter(e.key);
   });
 
   startBtn.addEventListener('click', resetGame);

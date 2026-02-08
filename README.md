@@ -14,6 +14,12 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 
 ## Plane Shooter Controls
 
-- Move: `←` `→`
-- Shoot: `Space`
+- Type the enemy letter key to destroy that plane
 - Pause/Resume: `P`
+
+## Typing Training Features
+
+- Each enemy carries one English letter (A-Z)
+- Correct key = explode enemy + score bonus
+- Wrong key = light penalty
+- Real-time typing metrics: Accuracy and WPM
