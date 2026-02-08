@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>小朋友打字游戏</title>
+  <style>
+    :root{
+      --bg:#f4fbff;
+      --card:#ffffff;
+      --ink:#203040;
+      --accent:#2bbbad;
+      --ok:#2e7d32;
+      --warn:#ef6c00;
+      --bad:#d32f2f;
+      --shadow:0 8px 22px rgba(24,60,90,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:linear-gradient(180deg,#e8f7ff,#f7fcff);
+      color:var(--ink);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:24px;
+    }
+    .app{
+      width:min(920px,100%);
+      background:var(--card);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    h1{
+      margin:0 0 6px;
+      color:#0f766e;
+      font-size:28px;
+    }
+    .sub{margin:0 0 16px;color:#4f6b80}
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .btn, select{
+      border:2px solid #b6d9ee;
+      background:#fff;
+      color:#234;
+      border-radius:12px;
+      padding:9px 14px;
+      font-size:15px;
+      cursor:pointer;
+    }
+    .btn:hover{border-color:var(--accent)}
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(120px,1fr));
+      gap:10px;
+      margin:14px 0;
+    }
+    .stat{
+      background:#f2fbff;
+      border:1px solid #d9eef7;
+      border-radius:12px;
+      padding:10px;
+      text-align:center;
+    }
+    .stat .k{font-size:12px;color:#5f7c90}
+    .stat .v{font-size:22px;font-weight:700;color:#0f5a66}
+    .quote{
+      background:#f9fcff;
+      border:2px dashed #b6d9ee;
+      border-radius:14px;
+      padding:14px;
+      font-size:24px;
+      line-height:1.7;
+      min-height:116px;
+      letter-spacing:.5px;
+      user-select:none;
+      word-break:break-word;
+    }
+    .ok{color:var(--ok)}
+    .bad{color:var(--bad);text-decoration:underline}
+    input[type="text"]{
+      width:100%;
+      margin-top:12px;
+      font-size:22px;
+      border:2px solid #b6d9ee;
+      border-radius:12px;
+      padding:12px;
+      outline:none;
+    }
+    input[type="text"]:focus{border-color:#60c9d8}
+    .tips{margin-top:10px;color:#557287;font-size:14px}
+    .result{
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      background:#f3fff5;
+      border:1px solid #c8efcf;
+      display:none;
+    }
+    .link-home{display:inline-block;margin-top:12px;color:#116466;text-decoration:none}
+    @media (max-width:700px){
+      .stats{grid-template-columns:repeat(2,minmax(120px,1fr))}
+      .quote{font-size:21px}
+      input[type="text"]{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>⌨️ 小朋友打字游戏</h1>
+    <p class="sub">看上面的句子，在下面输入框里尽量又快又准地打出来！</p>
+
+    <div class="row">
+      <label>时长：
+        <select id="timeSelect">
+          <option value="30">30秒</option>
+          <option value="60" selected>60秒</option>
+          <option value="90">90秒</option>
+        </select>
+      </label>
+      <button class="btn" id="startBtn">开始游戏</button>
+      <button class="btn" id="resetBtn">重置</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">倒计时</div><div class="v" id="time">60</div></div>
+      <div class="stat"><div class="k">速度 WPM</div><div class="v" id="wpm">0</div></div>
+      <div class="stat"><div class="k">准确率</div><div class="v" id="acc">100%</div></div>
+      <div class="stat"><div class="k">完成句子</div><div class="v" id="done">0</div></div>
+    </div>
+
+    <div id="quote" class="quote"></div>
+    <input id="input" type="text" placeholder="点击“开始游戏”后在这里输入…" disabled />
+    <div class="tips">提示：空格也要打对哦。打完一句会自动切换下一句。</div>
+
+    <div id="result" class="result"></div>
+    <a class="link-home" href="index.html">← 返回首页</a>
+  </div>
+
+  <script>
+    const sentences = [
+      "小猫喜欢晒太阳",
+      "今天我们一起学打字",
+      "彩虹像一座桥",
+      "我爱吃苹果和香蕉",
+      "坚持练习会越来越快",
+      "早睡早起身体好",
+      "我会认真完成作业",
+      "多喝水多运动",
+      "春天来了花儿开",
+      "谢谢你今天的努力"
+    ];
+
+    const quoteEl = document.getElementById('quote');
+    const inputEl = document.getElementById('input');
+    const timeEl = document.getElementById('time');
+    const wpmEl = document.getElementById('wpm');
+    const accEl = document.getElementById('acc');
+    const doneEl = document.getElementById('done');
+    const resultEl = document.getElementById('result');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const timeSelect = document.getElementById('timeSelect');
+
+    let timer = null;
+    let totalTime = 60;
+    let left = 60;
+    let started = false;
+    let finished = false;
+    let idx = 0;
+    let done = 0;
+    let totalTyped = 0;
+    let totalCorrect = 0;
+
+    function pickSentence() {
+      idx = Math.floor(Math.random() * sentences.length);
+      renderQuote();
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    }
+
+    function renderQuote() {
+      const target = sentences[idx];
+      const typed = inputEl.value;
+      let html = '';
+      for (let i = 0; i < target.length; i++) {
+        const ch = target[i];
+        if (i < typed.length) {
+          html += typed[i] === ch
+            ? `<span class="ok">${escapeHtml(ch)}</span>`
+            : `<span class="bad">${escapeHtml(ch)}</span>`;
+        } else {
+          html += `<span>${escapeHtml(ch)}</span>`;
+        }
+      }
+      quoteEl.innerHTML = html;
+    }
+
+    function calcStats() {
+      const elapsedMin = Math.max((totalTime - left) / 60, 1/60);
+      const wpm = Math.round((totalCorrect / 5) / elapsedMin);
+      const acc = totalTyped ? Math.round((totalCorrect / totalTyped) * 100) : 100;
+      wpmEl.textContent = isFinite(wpm) ? wpm : 0;
+      accEl.textContent = `${acc}%`;
+      doneEl.textContent = done;
+    }
+
+    function startGame() {
+      totalTime = Number(timeSelect.value);
+      left = totalTime;
+      timeEl.textContent = left;
+      started = true;
+      finished = false;
+      done = 0;
+      totalTyped = 0;
+      totalCorrect = 0;
+      resultEl.style.display = 'none';
+      inputEl.value = '';
+      inputEl.disabled = false;
+      inputEl.focus();
+      pickSentence();
+      calcStats();
+
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => {
+        left--;
+        timeEl.textContent = left;
+        calcStats();
+        if (left <= 0) endGame();
+      }, 1000);
+    }
+
+    function endGame() {
+      if (timer) clearInterval(timer);
+      finished = true;
+      started = false;
+      inputEl.disabled = true;
+      calcStats();
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `🎉 游戏结束！<br>你完成了 <b>${done}</b> 句，速度 <b>${wpmEl.textContent}</b> WPM，准确率 <b>${accEl.textContent}</b>。`;
+    }
+
+    function resetGame() {
+      if (timer) clearInterval(timer);
+      totalTime = Number(timeSelect.value);
+      left = totalTime;
+      started = false;
+      finished = false;
+      done = 0;
+      totalTyped = 0;
+      totalCorrect = 0;
+      timeEl.textContent = left;
+      wpmEl.textContent = '0';
+      accEl.textContent = '100%';
+      doneEl.textContent = '0';
+      inputEl.value = '';
+      inputEl.disabled = true;
+      resultEl.style.display = 'none';
+      idx = 0;
+      quoteEl.textContent = '点击“开始游戏”开始吧！';
+    }
+
+    inputEl.addEventListener('input', () => {
+      if (!started || finished) return;
+
+      const target = sentences[idx];
+      const typed = inputEl.value;
+
+      let nowCorrect = 0;
+      const n = Math.min(typed.length, target.length);
+      for (let i = 0; i < n; i++) {
+        if (typed[i] === target[i]) nowCorrect++;
+      }
+
+      totalTyped++;
+      const prevTyped = typed.slice(0, -1);
+      let prevCorrect = 0;
+      const m = Math.min(prevTyped.length, target.length);
+      for (let i = 0; i < m; i++) {
+        if (prevTyped[i] === target[i]) prevCorrect++;
+      }
+      totalCorrect += Math.max(0, nowCorrect - prevCorrect);
+
+      renderQuote();
+      calcStats();
+
+      if (typed === target) {
+        done++;
+        inputEl.value = '';
+        pickSentence();
+        calcStats();
+      }
+    });
+
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', resetGame);
+    timeSelect.addEventListener('change', () => {
+      if (!started) {
+        totalTime = Number(timeSelect.value);
+        left = totalTime;
+        timeEl.textContent = left;
+      }
+    });
+
+    resetGame();
+  </script>
+</body>
+</html>
