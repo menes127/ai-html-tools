@@ -32,7 +32,7 @@
     <div class="topbar">
       <div>
         <div class="title">⌨️✈️ Typing Plane Shooter</div>
-        <div class="hint">Type enemy letters to destroy them · P pause</div>
+        <div class="hint">Type enemy letters to destroy them · Esc pause</div>
       </div>
       <div class="stats">
         <div class="chip" id="scoreChip">Score: 0</div>
@@ -59,7 +59,7 @@
       </div>
 
       <div class="overlay" id="pauseOverlay" style="display:none">
-        <div class="card"><h2>Paused</h2><p>Press <b>P</b> to continue.</p></div>
+        <div class="card"><h2>Paused</h2><p>Press <b>Esc</b> to continue.</p></div>
       </div>
 
       <div class="overlay" id="overOverlay" style="display:none">
@@ -78,6 +78,14 @@
 
 <script>
 (() => {
+  const APP_VERSION = '20260209a';
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('v') !== APP_VERSION) {
+    url.searchParams.set('v', APP_VERSION);
+    window.location.replace(url.toString());
+    return;
+  }
+
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
@@ -306,7 +314,7 @@
   requestAnimationFrame(loop);
 
   window.addEventListener('keydown', e => {
-    if (e.code === 'KeyP') {
+    if (e.code === 'Escape') {
       if (state.mode === 'playing') { state.mode = 'paused'; pauseOverlay.style.display = 'grid'; }
       else if (state.mode === 'paused') { state.mode = 'playing'; pauseOverlay.style.display = 'none'; }
       return;
