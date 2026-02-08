@@ -10,4 +10,10 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 
 - Home: `index.html`
 - Pick's Theorem Visualizer: `pick_theorem.html`
-- Typing Game for Kids: `typing_game.html`
+- Plane Shooter (English): `plane_shooter.html`
+
+## Plane Shooter Controls
+
+- Move: `←` `→`
+- Shoot: `Space`
+- Pause/Resume: `P`
