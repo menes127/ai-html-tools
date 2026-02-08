@@ -23,3 +23,4 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 - Correct key = explode enemy + score bonus
 - Wrong key = light penalty
 - Real-time typing metrics: Accuracy and WPM
+- 5 levels with increasing speed and spawn rate

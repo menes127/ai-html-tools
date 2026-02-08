@@ -51,6 +51,7 @@
           <h2>Ready to Type?</h2>
           <p>Each enemy plane has a letter.</p>
           <p>Press the correct key to explode that plane.</p>
+          <p>5 levels: Warm-up → Ace Mode.</p>
           <div class="btns">
             <button id="startBtn">Start Game</button>
             <a class="btn alt" href="index.html">Back Home</a>
@@ -78,7 +79,7 @@
 
 <script>
 (() => {
-  const APP_VERSION = '20260209a';
+  const APP_VERSION = '20260209b';
   const url = new URL(window.location.href);
   if (url.searchParams.get('v') !== APP_VERSION) {
     url.searchParams.set('v', APP_VERSION);
@@ -105,12 +106,21 @@
   const wpmChip = document.getElementById('wpmChip');
 
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const LEVELS = [
+    { name: 'Warm-up', target: 80,  spawnGap: 1.1, speedMin: 60,  speedMax: 95,  letterPool: 'ASDFJKL' },
+    { name: 'Take-off', target: 200, spawnGap: 0.9, speedMin: 85,  speedMax: 130, letterPool: 'ASDFJKLQWERUIOP' },
+    { name: 'Sky Rush', target: 360, spawnGap: 0.75, speedMin: 110, speedMax: 165, letterPool: letters },
+    { name: 'Storm Run', target: 560, spawnGap: 0.62, speedMin: 130, speedMax: 195, letterPool: letters },
+    { name: 'Ace Mode', target: Infinity, spawnGap: 0.52, speedMin: 150, speedMax: 220, letterPool: letters }
+  ];
 
   const state = {
     mode: 'menu', // menu | playing | paused | gameover
     score: 0,
     lives: 3,
     level: 1,
+    levelIndex: 0,
+    levelBannerTimer: 0,
     t: 0,
     spawnTimer: 0,
     enemies: [],
@@ -125,6 +135,8 @@
     state.score = 0;
     state.lives = 3;
     state.level = 1;
+    state.levelIndex = 0;
+    state.levelBannerTimer = 2;
     state.t = 0;
     state.spawnTimer = 0;
     state.enemies = [];
@@ -150,26 +162,31 @@
   function syncUI(){
     scoreChip.textContent = `Score: ${state.score}`;
     livesChip.textContent = `Lives: ${state.lives}`;
-    levelChip.textContent = `Level: ${state.level}`;
+    levelChip.textContent = `Level ${state.level}: ${LEVELS[state.levelIndex].name}`;
     accChip.textContent = `Accuracy: ${calcAcc()}%`;
     wpmChip.textContent = `WPM: ${calcWPM()}`;
   }
 
+  function currentLevel(){
+    return LEVELS[state.levelIndex];
+  }
+
   function pickLetter(){
-    const base = letters[Math.floor(Math.random() * letters.length)];
-    // Slightly increase repeated letters in higher levels
-    if (state.level >= 4 && Math.random() < 0.2 && state.enemies.length) {
-      return state.enemies[Math.floor(Math.random()*state.enemies.length)].letter;
+    const pool = currentLevel().letterPool;
+    const base = pool[Math.floor(Math.random() * pool.length)];
+    if (state.level >= 3 && Math.random() < 0.2 && state.enemies.length) {
+      return state.enemies[Math.floor(Math.random() * state.enemies.length)].letter;
     }
     return base;
   }
 
   function spawnEnemy(){
-    const speed = Math.min(220, 65 + state.level * 10 + Math.random() * 40);
-    const w = 42, h = 30;
+    const lv = currentLevel();
+    const speed = lv.speedMin + Math.random() * (lv.speedMax - lv.speedMin);
+    const w = 46, h = 32;
     state.enemies.push({
-      x: 30 + Math.random() * (W - 60),
-      y: -20,
+      x: 34 + Math.random() * (W - 68),
+      y: -22,
       w, h, speed,
       letter: pickLetter()
     });
@@ -183,10 +200,16 @@
     if (state.mode !== 'playing') return;
 
     state.t += dt;
-    state.level = 1 + Math.floor(state.t / 18);
+    if (state.levelBannerTimer > 0) state.levelBannerTimer -= dt;
+
+    while (state.levelIndex < LEVELS.length - 1 && state.score >= LEVELS[state.levelIndex].target) {
+      state.levelIndex += 1;
+      state.level = state.levelIndex + 1;
+      state.levelBannerTimer = 2;
+    }
 
     state.spawnTimer -= dt;
-    const spawnGap = Math.max(0.28, 1.15 - state.level*0.06);
+    const spawnGap = currentLevel().spawnGap;
     if (state.spawnTimer <= 0){
       spawnEnemy();
       state.spawnTimer = spawnGap;
@@ -221,21 +244,54 @@
 
   function drawEnemy(e){
     ctx.save();
-    ctx.translate(e.x,e.y);
+    ctx.translate(e.x, e.y);
+
+    // fuselage
     ctx.fillStyle = '#ff7b7b';
     ctx.beginPath();
-    ctx.moveTo(0,e.h/2);
-    ctx.lineTo(e.w/2,-e.h/2);
-    ctx.lineTo(0,-e.h/3);
-    ctx.lineTo(-e.w/2,-e.h/2);
+    ctx.moveTo(0, -e.h * 0.55);
+    ctx.lineTo(e.w * 0.18, -e.h * 0.1);
+    ctx.lineTo(e.w * 0.16, e.h * 0.42);
+    ctx.lineTo(-e.w * 0.16, e.h * 0.42);
+    ctx.lineTo(-e.w * 0.18, -e.h * 0.1);
     ctx.closePath();
     ctx.fill();
 
+    // wings
+    ctx.fillStyle = '#ff9b9b';
+    ctx.beginPath();
+    ctx.moveTo(-e.w * 0.5, -e.h * 0.05);
+    ctx.lineTo(-e.w * 0.12, e.h * 0.05);
+    ctx.lineTo(-e.w * 0.08, e.h * 0.2);
+    ctx.lineTo(-e.w * 0.45, e.h * 0.18);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(e.w * 0.5, -e.h * 0.05);
+    ctx.lineTo(e.w * 0.12, e.h * 0.05);
+    ctx.lineTo(e.w * 0.08, e.h * 0.2);
+    ctx.lineTo(e.w * 0.45, e.h * 0.18);
+    ctx.closePath();
+    ctx.fill();
+
+    // cockpit
+    ctx.fillStyle = '#ffe8e8';
+    ctx.beginPath();
+    ctx.ellipse(0, -e.h * 0.2, e.w * 0.1, e.h * 0.12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // letter badge
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.beginPath();
+    ctx.arc(0, e.h * 0.1, e.h * 0.24, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px Segoe UI, Arial';
+    ctx.font = 'bold 18px Segoe UI, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(e.letter, 0, 3);
+    ctx.fillText(e.letter, 0, e.h * 0.12);
     ctx.restore();
   }
 
@@ -254,6 +310,21 @@
     // bottom defense bar
     ctx.fillStyle = '#29b6f6';
     ctx.fillRect(W/2 - 90, H - 18, 180, 6);
+
+    if (state.levelBannerTimer > 0 && state.mode === 'playing') {
+      const alpha = Math.min(1, state.levelBannerTimer);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgba(14,35,58,.85)';
+      ctx.fillRect(W/2 - 170, 24, 340, 40);
+      ctx.strokeStyle = '#5dc8ff';
+      ctx.strokeRect(W/2 - 170, 24, 340, 40);
+      ctx.fillStyle = '#d9f3ff';
+      ctx.font = 'bold 20px Segoe UI, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`LEVEL ${state.level}: ${currentLevel().name}`, W/2, 44);
+      ctx.globalAlpha = 1;
+    }
 
     for (const e of state.enemies) drawEnemy(e);
 
