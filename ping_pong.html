@@ -30,7 +30,7 @@
     }
 
     .wrap {
-      width: min(92vw, 900px);
+      width: min(96vw, 900px);
       background: color-mix(in oklab, var(--panel), #000 8%);
       border: 1px solid color-mix(in oklab, var(--accent), #000 65%);
       border-radius: 16px;
@@ -73,6 +73,30 @@
       border-radius: 12px;
       border: 1px solid color-mix(in oklab, var(--accent), #000 60%);
       background: linear-gradient(180deg, #0d1430, #090f22);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .mobile-controls {
+      display: none;
+      margin-top: 10px;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .touch-btn {
+      background: color-mix(in oklab, var(--accent), #000 12%);
+      color: #001512;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 48px;
+      font-size: 16px;
+      font-weight: 800;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .overlay {
@@ -101,6 +125,15 @@
 
     button:hover { transform: translateY(-1px); filter: brightness(1.06); }
     button:active { transform: translateY(0); }
+
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      .wrap { padding: 10px; border-radius: 12px; }
+      .hud { margin-bottom: 10px; }
+      .controls { text-align: left; font-size: 12px; }
+      .mobile-controls { display: grid; }
+      .overlay { margin-top: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -112,12 +145,17 @@
         <span id="cpuScore">0</span> <span class="cpu">CPU</span>
       </div>
       <div class="controls">
-        Move: <b>↑ ↓</b> or <b>← →</b><br />
+        Move: <b>↑ ↓</b> or <b>← →</b> (or touch/drag on phone)<br />
         Restart: <b>R</b> or button
       </div>
     </section>
 
     <canvas id="game" width="860" height="500" role="img" aria-label="Ping pong game area"></canvas>
+
+    <section class="mobile-controls" aria-label="Touch controls">
+      <button id="touchUp" class="touch-btn" type="button">▲ UP</button>
+      <button id="touchDown" class="touch-btn" type="button">▼ DOWN</button>
+    </section>
 
     <section class="overlay">
       <div id="status">First to 7 wins. Press any move key to begin.</div>
@@ -133,6 +171,8 @@
       const cpuScoreEl = document.getElementById('cpuScore');
       const statusEl = document.getElementById('status');
       const restartBtn = document.getElementById('restartBtn');
+      const touchUpBtn = document.getElementById('touchUp');
+      const touchDownBtn = document.getElementById('touchDown');
 
       const W = canvas.width;
       const H = canvas.height;
@@ -146,7 +186,8 @@
         cpuScore: 0,
         player: { x: 24, y: H / 2 - 48, w: 14, h: 96, speed: 520 },
         cpu: { x: W - 38, y: H / 2 - 48, w: 14, h: 96, speed: 430 },
-        ball: { x: W / 2, y: H / 2, r: 9, vx: 0, vy: 0, speed: 420 }
+        ball: { x: W / 2, y: H / 2, r: 9, vx: 0, vy: 0, speed: 420 },
+        touchDragActive: false
       };
 
       function clamp(v, min, max) {
@@ -171,6 +212,9 @@
         state.running = false;
         state.player.y = H / 2 - state.player.h / 2;
         state.cpu.y = H / 2 - state.cpu.h / 2;
+        state.keys.up = false;
+        state.keys.down = false;
+        state.touchDragActive = false;
         resetBall();
         updateHud();
         statusEl.textContent = 'First to 7 wins. Press any move key to begin.';
@@ -214,9 +258,11 @@
         const { player, cpu, ball, keys } = state;
 
         if (!state.gameOver) {
-          if (keys.up) player.y -= player.speed * dt;
-          if (keys.down) player.y += player.speed * dt;
-          player.y = clamp(player.y, 0, H - player.h);
+          if (!state.touchDragActive) {
+            if (keys.up) player.y -= player.speed * dt;
+            if (keys.down) player.y += player.speed * dt;
+            player.y = clamp(player.y, 0, H - player.h);
+          }
 
           const cpuCenter = cpu.y + cpu.h / 2;
           const targetY = ball.y;
@@ -294,7 +340,7 @@
           ctx.fillText('Move paddle to serve', W / 2, H / 2 - 10);
           ctx.font = '400 15px Inter, Segoe UI, sans-serif';
           ctx.fillStyle = 'rgba(155, 176, 214, 0.95)';
-          ctx.fillText('Use ↑ ↓ or ← →', W / 2, H / 2 + 16);
+          ctx.fillText('Use ↑ ↓ or touch drag/buttons', W / 2, H / 2 + 16);
         }
       }
 
@@ -317,6 +363,57 @@
           if (down && !state.gameOver) state.running = true;
         }
       }
+
+      function setTouchControl(direction, down) {
+        if (direction === 'up') state.keys.up = down;
+        if (direction === 'down') state.keys.down = down;
+        if (down && !state.gameOver) state.running = true;
+      }
+
+      function movePlayerToClientY(clientY) {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.height) return;
+        const y = (clientY - rect.top) * (H / rect.height);
+        state.player.y = clamp(y - state.player.h / 2, 0, H - state.player.h);
+        if (!state.gameOver) state.running = true;
+      }
+
+      function bindTouchButton(btn, dir) {
+        btn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          setTouchControl(dir, true);
+        });
+        const stop = (e) => {
+          e.preventDefault();
+          setTouchControl(dir, false);
+        };
+        btn.addEventListener('pointerup', stop);
+        btn.addEventListener('pointercancel', stop);
+        btn.addEventListener('pointerleave', stop);
+      }
+
+      bindTouchButton(touchUpBtn, 'up');
+      bindTouchButton(touchDownBtn, 'down');
+
+      canvas.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        state.touchDragActive = true;
+        movePlayerToClientY(e.clientY);
+        e.preventDefault();
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (!state.touchDragActive) return;
+        movePlayerToClientY(e.clientY);
+        e.preventDefault();
+      });
+
+      const stopDrag = () => { state.touchDragActive = false; };
+      canvas.addEventListener('pointerup', stopDrag);
+      canvas.addEventListener('pointercancel', stopDrag);
+      canvas.addEventListener('pointerleave', stopDrag);
+
+      canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
       window.addEventListener('keydown', (e) => {
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'r', 'R'].includes(e.key)) {
