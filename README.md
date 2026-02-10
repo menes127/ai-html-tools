@@ -11,6 +11,7 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 - Home: `index.html`
 - Pick's Theorem Visualizer: `pick_theorem.html`
 - Plane Shooter (English): `plane_shooter.html`
+- Ping Pong (Player vs CPU): `ping_pong.html`
 
 ## Plane Shooter Controls
 

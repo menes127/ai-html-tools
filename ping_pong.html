@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ping Pong · Player vs CPU</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #111831;
+      --line: #7de2d1;
+      --text: #e9f1ff;
+      --accent: #7de2d1;
+      --muted: #9bb0d6;
+      --danger: #ff8b8b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #1a2550, var(--bg) 60%);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .wrap {
+      width: min(92vw, 900px);
+      background: color-mix(in oklab, var(--panel), #000 8%);
+      border: 1px solid color-mix(in oklab, var(--accent), #000 65%);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      padding: 14px;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+    }
+
+    .score {
+      font-size: clamp(18px, 2.3vw, 26px);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .score .p { color: var(--accent); }
+    .score .cpu { color: var(--danger); }
+
+    .controls {
+      color: var(--muted);
+      font-size: clamp(12px, 1.8vw, 14px);
+      text-align: right;
+      line-height: 1.45;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid color-mix(in oklab, var(--accent), #000 60%);
+      background: linear-gradient(180deg, #0d1430, #090f22);
+    }
+
+    .overlay {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--accent);
+      color: #001512;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    button:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <main class="wrap" aria-label="Ping Pong game">
+    <section class="hud">
+      <div class="score">
+        <span class="p">Player</span> <span id="playerScore">0</span>
+        &nbsp;:&nbsp;
+        <span id="cpuScore">0</span> <span class="cpu">CPU</span>
+      </div>
+      <div class="controls">
+        Move: <b>↑ ↓</b> or <b>← →</b><br />
+        Restart: <b>R</b> or button
+      </div>
+    </section>
+
+    <canvas id="game" width="860" height="500" role="img" aria-label="Ping pong game area"></canvas>
+
+    <section class="overlay">
+      <div id="status">First to 7 wins. Press any move key to begin.</div>
+      <button id="restartBtn" type="button">Restart Game</button>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const playerScoreEl = document.getElementById('playerScore');
+      const cpuScoreEl = document.getElementById('cpuScore');
+      const statusEl = document.getElementById('status');
+      const restartBtn = document.getElementById('restartBtn');
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const WIN_SCORE = 7;
+
+      const state = {
+        running: false,
+        gameOver: false,
+        keys: { up: false, down: false },
+        playerScore: 0,
+        cpuScore: 0,
+        player: { x: 24, y: H / 2 - 48, w: 14, h: 96, speed: 520 },
+        cpu: { x: W - 38, y: H / 2 - 48, w: 14, h: 96, speed: 430 },
+        ball: { x: W / 2, y: H / 2, r: 9, vx: 0, vy: 0, speed: 420 }
+      };
+
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function resetBall(towardsPlayer = Math.random() < 0.5) {
+        const b = state.ball;
+        b.x = W / 2;
+        b.y = H / 2;
+        b.speed = 420;
+        const baseAngle = (Math.random() * 0.7 - 0.35);
+        const dir = towardsPlayer ? -1 : 1;
+        b.vx = Math.cos(baseAngle) * b.speed * dir;
+        b.vy = Math.sin(baseAngle) * b.speed;
+      }
+
+      function fullReset() {
+        state.playerScore = 0;
+        state.cpuScore = 0;
+        state.gameOver = false;
+        state.running = false;
+        state.player.y = H / 2 - state.player.h / 2;
+        state.cpu.y = H / 2 - state.cpu.h / 2;
+        resetBall();
+        updateHud();
+        statusEl.textContent = 'First to 7 wins. Press any move key to begin.';
+      }
+
+      function updateHud() {
+        playerScoreEl.textContent = String(state.playerScore);
+        cpuScoreEl.textContent = String(state.cpuScore);
+      }
+
+      function onScore(playerWonPoint) {
+        if (playerWonPoint) state.playerScore += 1;
+        else state.cpuScore += 1;
+
+        updateHud();
+
+        if (state.playerScore >= WIN_SCORE || state.cpuScore >= WIN_SCORE) {
+          state.gameOver = true;
+          state.running = false;
+          statusEl.textContent = state.playerScore > state.cpuScore
+            ? '🎉 You win! Press R or Restart to play again.'
+            : 'CPU wins this round. Press R or Restart to try again.';
+          return;
+        }
+
+        state.running = false;
+        resetBall(playerWonPoint);
+        statusEl.textContent = playerWonPoint
+          ? 'Point for you! Move to serve.'
+          : 'CPU scored. Move to continue.';
+      }
+
+      function rectBallCollide(p, b) {
+        return b.x + b.r > p.x &&
+               b.x - b.r < p.x + p.w &&
+               b.y + b.r > p.y &&
+               b.y - b.r < p.y + p.h;
+      }
+
+      function update(dt) {
+        const { player, cpu, ball, keys } = state;
+
+        if (!state.gameOver) {
+          if (keys.up) player.y -= player.speed * dt;
+          if (keys.down) player.y += player.speed * dt;
+          player.y = clamp(player.y, 0, H - player.h);
+
+          const cpuCenter = cpu.y + cpu.h / 2;
+          const targetY = ball.y;
+          const deadZone = 10;
+          if (targetY < cpuCenter - deadZone) cpu.y -= cpu.speed * dt;
+          else if (targetY > cpuCenter + deadZone) cpu.y += cpu.speed * dt;
+          cpu.y = clamp(cpu.y, 0, H - cpu.h);
+        }
+
+        if (!state.running || state.gameOver) return;
+
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+
+        if (ball.y - ball.r <= 0) {
+          ball.y = ball.r;
+          ball.vy *= -1;
+        } else if (ball.y + ball.r >= H) {
+          ball.y = H - ball.r;
+          ball.vy *= -1;
+        }
+
+        if (rectBallCollide(player, ball) && ball.vx < 0) {
+          const impact = ((ball.y - (player.y + player.h / 2)) / (player.h / 2));
+          ball.x = player.x + player.w + ball.r;
+          ball.speed = Math.min(900, ball.speed + 24);
+          ball.vx = Math.abs(ball.vx) + 16;
+          ball.vy = impact * ball.speed * 0.92;
+        }
+
+        if (rectBallCollide(cpu, ball) && ball.vx > 0) {
+          const impact = ((ball.y - (cpu.y + cpu.h / 2)) / (cpu.h / 2));
+          ball.x = cpu.x - ball.r;
+          ball.speed = Math.min(900, ball.speed + 24);
+          ball.vx = -Math.abs(ball.vx) - 16;
+          ball.vy = impact * ball.speed * 0.92;
+        }
+
+        if (ball.x + ball.r < 0) onScore(false);
+        if (ball.x - ball.r > W) onScore(true);
+      }
+
+      function drawCenterLine() {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(125, 226, 209, 0.45)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 14]);
+        ctx.beginPath();
+        ctx.moveTo(W / 2, 0);
+        ctx.lineTo(W / 2, H);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        drawCenterLine();
+
+        ctx.fillStyle = '#7de2d1';
+        ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
+
+        ctx.fillStyle = '#ff8b8b';
+        ctx.fillRect(state.cpu.x, state.cpu.y, state.cpu.w, state.cpu.h);
+
+        ctx.fillStyle = '#e9f1ff';
+        ctx.beginPath();
+        ctx.arc(state.ball.x, state.ball.y, state.ball.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (!state.running && !state.gameOver) {
+          ctx.fillStyle = 'rgba(233, 241, 255, 0.86)';
+          ctx.font = '600 22px Inter, Segoe UI, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Move paddle to serve', W / 2, H / 2 - 10);
+          ctx.font = '400 15px Inter, Segoe UI, sans-serif';
+          ctx.fillStyle = 'rgba(155, 176, 214, 0.95)';
+          ctx.fillText('Use ↑ ↓ or ← →', W / 2, H / 2 + 16);
+        }
+      }
+
+      let last = performance.now();
+      function loop(now) {
+        const dt = Math.min(0.033, (now - last) / 1000);
+        last = now;
+        update(dt);
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      function setKey(key, down) {
+        if (key === 'ArrowUp' || key === 'ArrowLeft') {
+          state.keys.up = down;
+          if (down && !state.gameOver) state.running = true;
+        }
+        if (key === 'ArrowDown' || key === 'ArrowRight') {
+          state.keys.down = down;
+          if (down && !state.gameOver) state.running = true;
+        }
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'r', 'R'].includes(e.key)) {
+          e.preventDefault();
+        }
+        if (e.key === 'r' || e.key === 'R') {
+          fullReset();
+          return;
+        }
+        setKey(e.key, true);
+      });
+
+      window.addEventListener('keyup', (e) => setKey(e.key, false));
+      restartBtn.addEventListener('click', fullReset);
+
+      fullReset();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>
