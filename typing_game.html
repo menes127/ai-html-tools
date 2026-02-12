@@ -3,344 +3,219 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>小朋友打字游戏（关卡版）</title>
+  <title>Typing Shooter - 字母射击训练</title>
   <style>
-    :root{
-      --bg:#f4fbff;
-      --card:#ffffff;
-      --ink:#203040;
-      --accent:#2bbbad;
-      --ok:#2e7d32;
-      --warn:#ef6c00;
-      --bad:#d32f2f;
-      --shadow:0 8px 22px rgba(24,60,90,.12);
-    }
+    :root{--bg:#0b1020;--panel:#121a33;--ink:#e8efff;--sub:#9db0d8;--ok:#3ddc97;--warn:#ffb020;--bad:#ff5d7a;--line:#243157}
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:"Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:linear-gradient(180deg,#e8f7ff,#f7fcff);
-      color:var(--ink);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:24px;
-    }
-    .app{ width:min(920px,100%); background:var(--card); border-radius:20px; box-shadow:var(--shadow); padding:24px; }
-    h1{ margin:0 0 6px; color:#0f766e; font-size:28px; }
-    .sub{margin:0 0 16px;color:#4f6b80}
-    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .btn, select{
-      border:2px solid #b6d9ee; background:#fff; color:#234; border-radius:12px;
-      padding:9px 14px; font-size:15px; cursor:pointer;
-    }
-    .btn:hover{border-color:var(--accent)}
-    .stats{ display:grid; grid-template-columns:repeat(4,minmax(120px,1fr)); gap:10px; margin:14px 0; }
-    .stat{ background:#f2fbff; border:1px solid #d9eef7; border-radius:12px; padding:10px; text-align:center; }
-    .stat .k{font-size:12px;color:#5f7c90}
-    .stat .v{font-size:22px;font-weight:700;color:#0f5a66}
-    .quote{
-      background:#f9fcff; border:2px dashed #b6d9ee; border-radius:14px;
-      padding:14px; font-size:28px; line-height:1.7; min-height:116px;
-      letter-spacing:1px; user-select:none; word-break:break-word;
-    }
-    .ok{color:var(--ok)}
-    .bad{color:var(--bad);text-decoration:underline}
-    input[type="text"]{
-      width:100%; margin-top:12px; font-size:24px; border:2px solid #b6d9ee;
-      border-radius:12px; padding:12px; outline:none;
-    }
-    input[type="text"]:focus{border-color:#60c9d8}
-    .tips{margin-top:10px;color:#557287;font-size:14px}
-    .result{ margin-top:14px; padding:12px; border-radius:12px; background:#f3fff5; border:1px solid #c8efcf; display:none; }
-    .link-home{display:inline-block;margin-top:12px;color:#116466;text-decoration:none}
-    .pill{display:inline-block; padding:2px 10px; border-radius:999px; background:#e5f9f5; color:#0d6b60; font-size:13px; margin-left:8px;}
-    @media (max-width:700px){
-      .stats{grid-template-columns:repeat(2,minmax(120px,1fr))}
-      .quote{font-size:22px}
-      input[type="text"]{font-size:20px}
-    }
+    body{margin:0;font-family:Inter,"PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(circle at 30% -10%,#1d2a56,#0b1020 55%);color:var(--ink);padding:16px}
+    .app{max-width:1080px;margin:0 auto}
+    .top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .title{font-size:26px;font-weight:800}
+    .title span{font-size:13px;color:#95f3ff;background:#17364b;border:1px solid #2d6b8b;padding:2px 8px;border-radius:999px;margin-left:8px}
+    .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    select,button{background:#1a2547;color:#e9f0ff;border:1px solid #304070;border-radius:10px;padding:8px 12px}
+    button{cursor:pointer}
+    button:hover{filter:brightness(1.08)}
+    .stats{display:grid;grid-template-columns:repeat(7,minmax(80px,1fr));gap:8px;margin-bottom:10px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+    .k{font-size:12px;color:var(--sub)} .v{font-size:20px;font-weight:700}
+    #gameWrap{background:#091126;border:1px solid var(--line);border-radius:14px;padding:10px}
+    canvas{width:100%;height:auto;display:block;background:linear-gradient(180deg,#091126,#0c1630)}
+    .bottom{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px;align-items:center}
+    #typed{font-size:28px;letter-spacing:1px;background:#111a36;border:1px solid #2c3c70;border-radius:12px;padding:10px 14px;min-height:56px}
+    #typed em{color:#7f92bf;font-style:normal}
+    .hint{color:var(--sub);font-size:13px;margin-top:8px}
+    #result{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#12283a;border:1px solid #295274}
+    a{color:#9fd4ff}
+    @media (max-width:900px){.stats{grid-template-columns:repeat(3,minmax(80px,1fr))}.bottom{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <h1>⌨️ 打字闯关游戏 <span class="pill">盲打训练</span></h1>
-    <p class="sub">关卡会逐步增加字母范围和难度：先从 <b>asdfghjkl</b> 入门，达到目标分数即可过关。</p>
-
-    <div class="row">
-      <label>关卡：
-        <select id="levelSelect"></select>
-      </label>
-      <label>时长：
-        <select id="timeSelect">
-          <option value="30">30秒</option>
-          <option value="60" selected>60秒</option>
-          <option value="90">90秒</option>
-        </select>
-      </label>
-      <button class="btn" id="startBtn">开始闯关</button>
-      <button class="btn" id="resetBtn">重置</button>
+<div class="app">
+  <div class="top">
+    <div class="title">🚀 Typing Shooter <span>仅英文字母</span></div>
+    <div class="controls">
+      <label>关卡 <select id="level"></select></label>
+      <label>时长 <select id="time"><option>60</option><option selected>90</option><option>120</option></select>s</label>
+      <button id="start">开始</button>
+      <button id="reset">重置</button>
     </div>
-
-    <div class="stats">
-      <div class="stat"><div class="k">关卡</div><div class="v" id="levelName">L1</div></div>
-      <div class="stat"><div class="k">倒计时</div><div class="v" id="time">60</div></div>
-      <div class="stat"><div class="k">当前分数</div><div class="v" id="score">0</div></div>
-      <div class="stat"><div class="k">过关目标</div><div class="v" id="targetScore">25</div></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><div class="k">速度 WPM</div><div class="v" id="wpm">0</div></div>
-      <div class="stat"><div class="k">准确率</div><div class="v" id="acc">100%</div></div>
-      <div class="stat"><div class="k">完成词条</div><div class="v" id="done">0</div></div>
-      <div class="stat"><div class="k">最高解锁</div><div class="v" id="unlock">L1</div></div>
-    </div>
-
-    <div id="quote" class="quote"></div>
-    <input id="input" type="text" placeholder="点击“开始闯关”后在这里输入…" disabled />
-    <div class="tips" id="tips">提示：只需要按目标字符输入，完整输入一条就得分。达标立即过关并解锁下一关。</div>
-
-    <div id="result" class="result"></div>
-    <a class="link-home" href="index.html">← 返回首页</a>
   </div>
 
-  <script>
-    const levels = [
-      { name: 'L1 入门（主排）', chars: 'asdfghjkl', minLen: 4, maxLen: 6, passScore: 25 },
-      { name: 'L2 扩展（上排）', chars: 'asdfghjklqwertyuiop', minLen: 5, maxLen: 7, passScore: 35 },
-      { name: 'L3 全字母', chars: 'abcdefghijklmnopqrstuvwxyz', minLen: 6, maxLen: 9, passScore: 45 },
-      { name: 'L4 混合强化', chars: 'abcdefghijklmnopqrstuvwxyz', minLen: 8, maxLen: 12, passScore: 60 }
-    ];
+  <div class="stats">
+    <div class="card"><div class="k">关卡</div><div class="v" id="sLevel">L1</div></div>
+    <div class="card"><div class="k">目标分</div><div class="v" id="sGoal">40</div></div>
+    <div class="card"><div class="k">得分</div><div class="v" id="sScore">0</div></div>
+    <div class="card"><div class="k">连击</div><div class="v" id="sCombo">0</div></div>
+    <div class="card"><div class="k">生命</div><div class="v" id="sLife">5</div></div>
+    <div class="card"><div class="k">时间</div><div class="v" id="sTime">90</div></div>
+    <div class="card"><div class="k">解锁</div><div class="v" id="sUnlock">L1</div></div>
+  </div>
 
-    const quoteEl = document.getElementById('quote');
-    const inputEl = document.getElementById('input');
-    const timeEl = document.getElementById('time');
-    const wpmEl = document.getElementById('wpm');
-    const accEl = document.getElementById('acc');
-    const doneEl = document.getElementById('done');
-    const resultEl = document.getElementById('result');
-    const startBtn = document.getElementById('startBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const timeSelect = document.getElementById('timeSelect');
-    const levelSelect = document.getElementById('levelSelect');
-    const levelNameEl = document.getElementById('levelName');
-    const scoreEl = document.getElementById('score');
-    const targetScoreEl = document.getElementById('targetScore');
-    const unlockEl = document.getElementById('unlock');
-    const tipsEl = document.getElementById('tips');
+  <div id="gameWrap"><canvas id="cv" width="1000" height="520"></canvas></div>
 
-    let timer = null;
-    let totalTime = 60;
-    let left = 60;
-    let started = false;
-    let finished = false;
-    let done = 0;
-    let totalTyped = 0;
-    let totalCorrect = 0;
-    let score = 0;
-    let target = '';
-    let currentLevel = 0;
-    let unlockedLevel = Number(localStorage.getItem('typingUnlockedLevel') || 0);
+  <div class="bottom">
+    <div id="typed"><em>输入字母以瞄准：完整打出目标词会发射并击中</em></div>
+    <div><a href="index.html">← 返回首页</a></div>
+  </div>
+  <div class="hint">玩法：天空中的目标带有字母串，键盘输入（a-z）匹配完整词条即可击中。Backspace 可删除；达标分数自动过关并解锁下一关。</div>
+  <div id="result"></div>
+</div>
 
-    function randInt(a, b){ return Math.floor(Math.random() * (b - a + 1)) + a; }
+<script>
+const levels=[
+  {name:'L1 主排入门', chars:'asdfghjkl', min:3, max:5, goal:40, speed:36, spawn:1300},
+  {name:'L2 上排扩展', chars:'asdfghjklqwertyuiop', min:4, max:6, goal:65, speed:42, spawn:1150},
+  {name:'L3 全字母', chars:'abcdefghijklmnopqrstuvwxyz', min:4, max:7, goal:90, speed:48, spawn:980},
+  {name:'L4 挑战强化', chars:'abcdefghijklmnopqrstuvwxyz', min:5, max:8, goal:120, speed:56, spawn:850}
+];
 
-    function generateTarget(){
-      const lv = levels[currentLevel];
-      const len = randInt(lv.minLen, lv.maxLen);
-      let s = '';
-      for (let i = 0; i < len; i++) s += lv.chars[randInt(0, lv.chars.length - 1)];
-      return s;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const el={level:document.getElementById('level'),time:document.getElementById('time'),start:document.getElementById('start'),reset:document.getElementById('reset'),typed:document.getElementById('typed'),result:document.getElementById('result'),sLevel:document.getElementById('sLevel'),sGoal:document.getElementById('sGoal'),sScore:document.getElementById('sScore'),sCombo:document.getElementById('sCombo'),sLife:document.getElementById('sLife'),sTime:document.getElementById('sTime'),sUnlock:document.getElementById('sUnlock')};
+
+let unlocked=+localStorage.getItem('typingShooterUnlocked')||0;
+let state;
+
+function setupLevelOptions(){
+  el.level.innerHTML=levels.map((l,i)=>`<option value="${i}" ${i>unlocked?'disabled':''}>${l.name}${i>unlocked?'（未解锁）':''}</option>`).join('');
+  if(+el.level.value>unlocked||el.level.value==='') el.level.value=String(unlocked);
+  el.sUnlock.textContent='L'+(unlocked+1);
+}
+function rint(a,b){return (Math.random()*(b-a+1)|0)+a}
+function makeWord(lv){let n=rint(lv.min,lv.max),s='';for(let i=0;i<n;i++)s+=lv.chars[rint(0,lv.chars.length-1)];return s}
+
+function resetState(){
+  const li=+el.level.value||0,lv=levels[li],tt=+el.time.value;
+  state={running:false,over:false,li,lv,time:tt,last:performance.now(),spawnAt:0,score:0,combo:0,life:5,typed:'',enemies:[],shots:[],explodes:[]};
+  syncUI();
+  el.result.style.display='none';
+}
+function syncUI(){
+  el.sLevel.textContent='L'+(state.li+1);
+  el.sGoal.textContent=state.lv.goal;
+  el.sScore.textContent=state.score;
+  el.sCombo.textContent=state.combo;
+  el.sLife.textContent=state.life;
+  el.sTime.textContent=Math.ceil(state.time);
+  el.sUnlock.textContent='L'+(unlocked+1);
+  el.typed.innerHTML=state.typed?`<b>${state.typed}</b>`:'<em>输入字母以瞄准：完整打出目标词会发射并击中</em>';
+}
+
+function spawnEnemy(){
+  const w=makeWord(state.lv);
+  const x=rint(90,cv.width-90), y=-20;
+  state.enemies.push({x,y,r:26+Math.min(14,w.length*2),word:w,v:state.lv.speed + Math.random()*18,hit:false});
+}
+function drawPlayer(){
+  const x=cv.width/2,y=cv.height-48;
+  ctx.fillStyle='#78d2ff';
+  ctx.beginPath();ctx.moveTo(x,y-16);ctx.lineTo(x-18,y+16);ctx.lineTo(x+18,y+16);ctx.closePath();ctx.fill();
+}
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  for(let i=0;i<80;i++){ctx.fillStyle='rgba(180,210,255,.12)';ctx.fillRect((i*131)%cv.width,(i*73+40)%cv.height,2,2)}
+
+  state.enemies.forEach(e=>{
+    ctx.fillStyle='#203a79';ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#4e7cff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#f2f6ff';ctx.font='bold 20px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(e.word,e.x,e.y+1);
+
+    if(state.typed && e.word.startsWith(state.typed)){
+      ctx.strokeStyle='rgba(97,235,175,.9)';ctx.lineWidth=3;ctx.strokeRect(e.x-e.r-4,e.y-e.r-4,e.r*2+8,e.r*2+8);
     }
+  });
 
-    function refreshLevelSelect(){
-      levelSelect.innerHTML = levels.map((lv, i) => {
-        const lock = i > unlockedLevel;
-        return `<option value="${i}" ${lock ? 'disabled' : ''}>${lv.name}${lock ? '（未解锁）' : ''}</option>`;
-      }).join('');
-      if (currentLevel > unlockedLevel) currentLevel = unlockedLevel;
-      levelSelect.value = String(currentLevel);
-      unlockEl.textContent = `L${unlockedLevel + 1}`;
-    }
+  state.shots.forEach(s=>{ctx.strokeStyle='#ffe082';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x2,s.y2);ctx.stroke();});
+  state.explodes.forEach(ex=>{ctx.strokeStyle=`rgba(255,160,100,${ex.a})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(ex.x,ex.y,ex.r,0,Math.PI*2);ctx.stroke();});
+  drawPlayer();
+}
 
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
+function fireAt(enemy){
+  const px=cv.width/2,py=cv.height-48;
+  state.shots.push({x1:px,y1:py,x2:enemy.x,y2:enemy.y,t:0.08});
+  state.explodes.push({x:enemy.x,y:enemy.y,r:10,a:1});
+}
 
-    function renderQuote() {
-      const typed = inputEl.value;
-      let html = '';
-      for (let i = 0; i < target.length; i++) {
-        const ch = target[i];
-        if (i < typed.length) {
-          html += typed[i] === ch ? `<span class="ok">${escapeHtml(ch)}</span>` : `<span class="bad">${escapeHtml(ch)}</span>`;
-        } else {
-          html += `<span>${escapeHtml(ch)}</span>`;
-        }
-      }
-      quoteEl.innerHTML = html;
-    }
+function update(dt){
+  if(!state.running||state.over) return;
+  state.time-=dt;
+  if(state.time<=0){ state.time=0; return gameEnd(false); }
 
-    function calcStats() {
-      const elapsedMin = Math.max((totalTime - left) / 60, 1/60);
-      const wpm = Math.round((totalCorrect / 5) / elapsedMin);
-      const acc = totalTyped ? Math.round((totalCorrect / totalTyped) * 100) : 100;
-      wpmEl.textContent = isFinite(wpm) ? wpm : 0;
-      accEl.textContent = `${acc}%`;
-      doneEl.textContent = done;
-      scoreEl.textContent = score;
-    }
+  state.spawnAt-=dt*1000;
+  if(state.spawnAt<=0){ spawnEnemy(); state.spawnAt=state.lv.spawn; }
 
-    function setLevelInfo(){
-      const lv = levels[currentLevel];
-      levelNameEl.textContent = `L${currentLevel + 1}`;
-      targetScoreEl.textContent = lv.passScore;
-      tipsEl.textContent = `当前字符范围：${lv.chars} ｜ 输入完整词条得分：+${lv.minLen}~+${lv.maxLen}，达到 ${lv.passScore} 分过关。`;
-    }
+  for(const e of state.enemies) e.y += e.v*dt;
+  let miss=0;
+  state.enemies = state.enemies.filter(e=>{ if(e.y-e.r>cv.height){miss++; return false;} return true;});
+  if(miss){ state.life-=miss; state.combo=0; }
+  if(state.life<=0){ state.life=0; return gameEnd(false); }
 
-    function nextTarget(){
-      target = generateTarget();
-      inputEl.value = '';
-      renderQuote();
-    }
+  state.shots=state.shots.filter(s=>(s.t-=dt)>0);
+  state.explodes=state.explodes.filter(ex=>{ex.r+=140*dt; ex.a-=2*dt; return ex.a>0});
 
-    function passLevel(){
-      if (timer) clearInterval(timer);
-      started = false;
-      finished = true;
-      inputEl.disabled = true;
-      const last = currentLevel === levels.length - 1;
-      let msg = `🏁 过关！你通过了 <b>${levels[currentLevel].name}</b>。`;
+  if(state.score>=state.lv.goal) return gameEnd(true);
+  syncUI();
+}
 
-      if (!last && unlockedLevel < currentLevel + 1) {
-        unlockedLevel = currentLevel + 1;
-        localStorage.setItem('typingUnlockedLevel', String(unlockedLevel));
-        msg += `<br>🔓 已解锁下一关：<b>${levels[unlockedLevel].name}</b>`;
-      }
-      if (last) msg += '<br>🌟 你已完成全部关卡，太强了！';
-      msg += `<br>成绩：分数 <b>${score}</b> / 目标 <b>${levels[currentLevel].passScore}</b>，速度 <b>${wpmEl.textContent}</b> WPM，准确率 <b>${accEl.textContent}</b>。`;
+function gameEnd(pass){
+  state.running=false; state.over=true; syncUI();
+  if(pass){
+    if(unlocked<state.li+1 && state.li<levels.length-1){unlocked=state.li+1;localStorage.setItem('typingShooterUnlocked',unlocked);setupLevelOptions();}
+    el.result.style.display='block';
+    el.result.innerHTML=`🎉 过关成功！<b>${levels[state.li].name}</b><br>得分 <b>${state.score}</b> / ${state.lv.goal}，连击最高表现很棒。${state.li<levels.length-1?`<br>已解锁：<b>${levels[Math.min(unlocked,levels.length-1)].name}</b>`:'<br>🌟 已完成全部关卡！'}`;
+  }else{
+    el.result.style.display='block';
+    el.result.innerHTML=`⏹️ 本局结束：得分 <b>${state.score}</b> / ${state.lv.goal}，生命已耗尽或时间到。<br>再来一局，你离过关很近了！`;
+  }
+}
 
-      refreshLevelSelect();
-      resultEl.style.display = 'block';
-      resultEl.innerHTML = msg;
-    }
+function tryHitByInput(){
+  const typed=state.typed;
+  if(!typed) return;
+  // exact match: choose nearest bottom threat first
+  const idx = state.enemies
+    .map((e,i)=>({e,i}))
+    .filter(x=>x.e.word===typed)
+    .sort((a,b)=>b.e.y-a.e.y)[0]?.i;
+  if(idx===undefined) return;
 
-    function startGame() {
-      currentLevel = Number(levelSelect.value);
-      const lv = levels[currentLevel];
-      totalTime = Number(timeSelect.value);
-      left = totalTime;
-      started = true;
-      finished = false;
-      done = 0;
-      totalTyped = 0;
-      totalCorrect = 0;
-      score = 0;
-      resultEl.style.display = 'none';
+  const e=state.enemies[idx];
+  fireAt(e);
+  state.enemies.splice(idx,1);
+  state.combo += 1;
+  state.score += typed.length + Math.min(10,state.combo);
+  state.typed='';
+  syncUI();
+}
 
-      timeEl.textContent = left;
-      setLevelInfo();
-      calcStats();
+function onKey(e){
+  if(!state.running||state.over) return;
+  if(e.key==='Backspace'){ state.typed=state.typed.slice(0,-1); syncUI(); e.preventDefault(); return; }
+  if(e.key==='Escape'){ state.typed=''; syncUI(); return; }
+  if(/^[a-zA-Z]$/.test(e.key)){
+    state.typed += e.key.toLowerCase();
+    // if no word starts with typed, break combo softly and clear
+    const hasPrefix = state.enemies.some(en=>en.word.startsWith(state.typed));
+    if(!hasPrefix){ state.combo=0; state.typed=''; }
+    tryHitByInput();
+    syncUI();
+  }
+}
 
-      inputEl.disabled = false;
-      inputEl.focus();
-      nextTarget();
+function loop(ts){
+  const dt=Math.min(0.033,(ts-state.last)/1000); state.last=ts;
+  update(dt); draw(); requestAnimationFrame(loop);
+}
 
-      if (timer) clearInterval(timer);
-      timer = setInterval(() => {
-        left--;
-        timeEl.textContent = left;
-        calcStats();
-        if (left <= 0) endGame();
-      }, 1000);
-    }
+el.start.onclick=()=>{ resetState(); state.running=true; state.spawnAt=500; el.result.style.display='none'; };
+el.reset.onclick=()=>resetState();
+el.level.onchange=()=>{ if(!state?.running) resetState(); };
+el.time.onchange=()=>{ if(!state?.running) resetState(); };
+document.addEventListener('keydown',onKey);
 
-    function endGame() {
-      if (timer) clearInterval(timer);
-      finished = true;
-      started = false;
-      inputEl.disabled = true;
-      calcStats();
-      resultEl.style.display = 'block';
-      const ok = score >= levels[currentLevel].passScore;
-      resultEl.innerHTML = ok
-        ? `🎉 时间到，但你已达标！<br>分数 <b>${score}</b> / 目标 <b>${levels[currentLevel].passScore}</b>，速度 <b>${wpmEl.textContent}</b> WPM，准确率 <b>${accEl.textContent}</b>。`
-        : `⏰ 时间到！<br>分数 <b>${score}</b> / 目标 <b>${levels[currentLevel].passScore}</b>，速度 <b>${wpmEl.textContent}</b> WPM，准确率 <b>${accEl.textContent}</b>。再来一次就能过关！`;
-      if (ok) passLevel();
-    }
-
-    function resetGame() {
-      if (timer) clearInterval(timer);
-      totalTime = Number(timeSelect.value);
-      left = totalTime;
-      started = false;
-      finished = false;
-      done = 0;
-      totalTyped = 0;
-      totalCorrect = 0;
-      score = 0;
-      target = '';
-      currentLevel = Math.min(Number(levelSelect.value || 0), unlockedLevel);
-      timeEl.textContent = left;
-      wpmEl.textContent = '0';
-      accEl.textContent = '100%';
-      doneEl.textContent = '0';
-      scoreEl.textContent = '0';
-      inputEl.value = '';
-      inputEl.disabled = true;
-      resultEl.style.display = 'none';
-      setLevelInfo();
-      quoteEl.textContent = '点击“开始闯关”开始吧！';
-    }
-
-    inputEl.addEventListener('input', () => {
-      if (!started || finished) return;
-
-      const typed = inputEl.value;
-      let nowCorrect = 0;
-      const n = Math.min(typed.length, target.length);
-      for (let i = 0; i < n; i++) if (typed[i] === target[i]) nowCorrect++;
-
-      totalTyped++;
-      const prevTyped = typed.slice(0, -1);
-      let prevCorrect = 0;
-      const m = Math.min(prevTyped.length, target.length);
-      for (let i = 0; i < m; i++) if (prevTyped[i] === target[i]) prevCorrect++;
-      totalCorrect += Math.max(0, nowCorrect - prevCorrect);
-
-      renderQuote();
-      calcStats();
-
-      if (typed === target) {
-        done++;
-        score += target.length;
-        calcStats();
-        if (score >= levels[currentLevel].passScore) {
-          passLevel();
-          return;
-        }
-        nextTarget();
-      }
-    });
-
-    startBtn.addEventListener('click', startGame);
-    resetBtn.addEventListener('click', resetGame);
-    levelSelect.addEventListener('change', () => {
-      if (!started) {
-        currentLevel = Number(levelSelect.value);
-        setLevelInfo();
-      }
-    });
-    timeSelect.addEventListener('change', () => {
-      if (!started) {
-        totalTime = Number(timeSelect.value);
-        left = totalTime;
-        timeEl.textContent = left;
-      }
-    });
-
-    refreshLevelSelect();
-    resetGame();
-  </script>
+setupLevelOptions();
+resetState();
+requestAnimationFrame(loop);
+</script>
 </body>
 </html>
