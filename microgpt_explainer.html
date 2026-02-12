@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MicroGPT 可视化拆解</title>
+  <style>
+    :root { --bg:#0f1220; --card:#181c2f; --text:#e9ecff; --muted:#a9b1d6; --ok:#4ade80; --hl:#7aa2ff; --warn:#fbbf24; }
+    body { margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text); }
+    .wrap { max-width:980px; margin:24px auto; padding:0 16px; }
+    .card { background:var(--card); border:1px solid #2a3157; border-radius:14px; padding:16px; margin-bottom:14px; }
+    h1 { margin:0 0 8px; font-size:28px; }
+    .muted { color:var(--muted); }
+    .steps { display:grid; gap:10px; }
+    .step { border:1px solid #2a3157; border-radius:12px; padding:10px; }
+    .step.active { border-color:var(--hl); box-shadow:0 0 0 1px var(--hl) inset; }
+    .step.done { border-color:#2f7d59; }
+    .badge { font-size:12px; padding:2px 8px; border-radius:999px; background:#273157; color:#bfd0ff; }
+    button { background:#2c3c78; color:#fff; border:0; border-radius:10px; padding:8px 12px; cursor:pointer; }
+    button:hover { filter:brightness(1.08); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    input[type=range] { width:100%; }
+    code { background:#11162c; padding:2px 6px; border-radius:6px; }
+    .kpi { font-size:22px; color:var(--ok); font-weight:700; }
+    @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>MicroGPT（243 行）到底在干嘛？</h1>
+      <div class="muted">这是 Karpathy 那份 gist 的教学版可视化：数据 → 前向 → loss → 反向传播 → Adam 更新 → 采样生成。</div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+        <button id="prev">上一步</button>
+        <button id="next">下一步</button>
+        <button id="reset">重置</button>
+        <span class="badge" id="stepTag">步骤 1/6</span>
+      </div>
+      <div class="steps" id="steps"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin-top:0">小型 next-token 演示</h3>
+        <div class="muted">用一个玩具词表 <code>[A,B,C,&lt;BOS&gt;]</code> 模拟 <code>softmax + NLL loss</code></div>
+        <p>logits: A=<span id="la">1.2</span>, B=<span id="lb">0.3</span>, C=<span id="lc">-0.5</span>, BOS=<span id="ls">0.1</span></p>
+        <label>temperature: <span id="tv">1.0</span></label>
+        <input id="temp" type="range" min="0.2" max="2.0" step="0.1" value="1.0" />
+        <p>目标 token（target）:
+          <select id="target">
+            <option>A</option><option selected>B</option><option>C</option><option>&lt;BOS&gt;</option>
+          </select>
+        </p>
+        <p>预测概率：<span id="probs"></span></p>
+        <p>NLL Loss: <span class="kpi" id="loss">-</span></p>
+        <button id="rand">随机一组 logits</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">代码映射速查</h3>
+        <ul>
+          <li><code>Value</code>：自动求导引擎（替代 PyTorch autograd）</li>
+          <li><code>state_dict</code>：全部可训练参数</li>
+          <li><code>gpt(...)</code>：一次 token 前向（attention+MLP）</li>
+          <li><code>loss.backward()</code>：链式法则反传梯度</li>
+          <li><code>Adam</code>：参数更新</li>
+          <li><code>inference</code>：按概率采样生成字符</li>
+        </ul>
+        <p class="muted">结论：它不是为“快”，而是为“看懂 GPT 训练闭环”。</p>
+      </div>
+    </div>
+
+    <div class="card muted">原帖：<a style="color:#9cc0ff" href="https://x.com/karpathy/status/2021694437152157847" target="_blank">karpathy/status/2021694437152157847</a> ｜ 原始代码：<a style="color:#9cc0ff" href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95" target="_blank">gist</a></div>
+  </div>
+
+<script>
+const data = [
+  ["数据与分词", "把字符串转成 token id（chars / stoi / itos / BOS）。"],
+  ["自动求导 Value", "定义 + * log exp 等运算，并记录计算图与 backward 规则。"],
+  ["参数初始化", "初始化 embedding、attention、MLP、lm_head 到 state_dict。"],
+  ["前向 gpt(...)", "每个位置做注意力与 MLP，得到下一 token 的 logits。"],
+  ["loss + backward + Adam", "计算交叉熵损失，反传梯度，再用 Adam 更新参数。"],
+  ["inference 采样", "用 softmax 概率+temperature，逐 token 采样生成文本。"]
+];
+let cur = 0;
+const stepsEl = document.getElementById('steps');
+function renderSteps(){
+  stepsEl.innerHTML = data.map((s,i)=>`<div class="step ${i===cur?'active':''} ${i<cur?'done':''}"><b>${i+1}. ${s[0]}</b><div class="muted">${s[1]}</div></div>`).join('');
+  document.getElementById('stepTag').textContent = `步骤 ${cur+1}/${data.length}`;
+}
+document.getElementById('next').onclick=()=>{cur=Math.min(cur+1,data.length-1);renderSteps();};
+document.getElementById('prev').onclick=()=>{cur=Math.max(cur-1,0);renderSteps();};
+document.getElementById('reset').onclick=()=>{cur=0;renderSteps();};
+renderSteps();
+
+let logits = {A:1.2,B:0.3,C:-0.5,BOS:0.1};
+const order = ['A','B','C','BOS'];
+const fmt=x=>Number(x).toFixed(3);
+function recalc(){
+  document.getElementById('la').textContent = fmt(logits.A);
+  document.getElementById('lb').textContent = fmt(logits.B);
+  document.getElementById('lc').textContent = fmt(logits.C);
+  document.getElementById('ls').textContent = fmt(logits.BOS);
+  const t = Number(document.getElementById('temp').value);
+  document.getElementById('tv').textContent = t.toFixed(1);
+  const exps = order.map(k=>Math.exp(logits[k]/t));
+  const z = exps.reduce((a,b)=>a+b,0);
+  const probs = Object.fromEntries(order.map((k,i)=>[k,exps[i]/z]));
+  document.getElementById('probs').textContent = order.map(k=>`${k}:${(probs[k]*100).toFixed(1)}%`).join(' | ');
+  const target = document.getElementById('target').value.replace('<BOS>','BOS');
+  const p = Math.max(probs[target],1e-9);
+  document.getElementById('loss').textContent = (-Math.log(p)).toFixed(4);
+}
+document.getElementById('temp').oninput = recalc;
+document.getElementById('target').onchange = recalc;
+document.getElementById('rand').onclick = ()=>{
+  order.forEach(k=>logits[k]=(Math.random()*4-2));
+  recalc();
+};
+recalc();
+</script>
+</body>
+</html>
