@@ -64,10 +64,11 @@
 
 <script>
 const levels=[
-  {name:'L1 主排入门', chars:'asdfghjkl', min:3, max:5, goal:40, speed:36, spawn:1300},
-  {name:'L2 上排扩展', chars:'asdfghjklqwertyuiop', min:4, max:6, goal:65, speed:42, spawn:1150},
-  {name:'L3 全字母', chars:'abcdefghijklmnopqrstuvwxyz', min:4, max:7, goal:90, speed:48, spawn:980},
-  {name:'L4 挑战强化', chars:'abcdefghijklmnopqrstuvwxyz', min:5, max:8, goal:120, speed:56, spawn:850}
+  {name:'L1 单字母热身', chars:'asdfghjkl', min:1, max:1, goal:24, speed:30, spawn:1500},
+  {name:'L2 双字母入门', chars:'asdfghjkl', min:2, max:3, goal:45, speed:36, spawn:1300},
+  {name:'L3 三四字母进阶', chars:'asdfghjklqwertyuiop', min:3, max:4, goal:70, speed:42, spawn:1120},
+  {name:'L4 全键区挑战', chars:'abcdefghijklmnopqrstuvwxyz', min:4, max:6, goal:95, speed:48, spawn:980},
+  {name:'L5 高压强化', chars:'abcdefghijklmnopqrstuvwxyz', min:5, max:8, goal:125, speed:56, spawn:850}
 ];
 
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
