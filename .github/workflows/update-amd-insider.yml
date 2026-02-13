@@ -5,6 +5,11 @@ on:
     # 09:00 Asia/Shanghai = 01:00 UTC
     - cron: '0 1 * * *'
   workflow_dispatch:
+    inputs:
+      days:
+        description: "Lookback days for Form 4 scan"
+        required: false
+        default: "365"
 
 permissions:
   contents: write
@@ -31,7 +36,9 @@ jobs:
           if [ -z "$SEC_USER_AGENT" ]; then
             export SEC_USER_AGENT="${{ github.actor }} sec-monitor-contact@example.com"
           fi
-          python amd-insider/amd_insider_monitor.py --days 180 --output amd-insider/amd_insider_trades.json
+          DAYS="${{ github.event.inputs.days || '365' }}"
+          echo "Using --days=${DAYS}"
+          python amd-insider/amd_insider_monitor.py --days "$DAYS" --output amd-insider/amd_insider_trades.json
           code=$?
           if [ $code -ne 0 ]; then
             echo "update_failed=true" >> $GITHUB_OUTPUT
