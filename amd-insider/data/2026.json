@@ -1,0 +1,85 @@
+{
+  "company": "AMD",
+  "cik": "0000002488",
+  "year": 2026,
+  "generated_at": "2026-02-13T16:40:22.686927+00:00",
+  "lookback_days": 365,
+  "filings_scanned": 62,
+  "summary": {
+    "total_transactions": 3,
+    "codes": {
+      "S": 1,
+      "M": 1,
+      "F": 1
+    },
+    "insiders": {
+      "Hahn Ava": 3
+    },
+    "latest_transaction_date": "2026-01-16"
+  },
+  "transactions": [
+    {
+      "filing_date": "2026-01-20",
+      "accepted_datetime": "2026-01-20T21:37:18.000Z",
+      "accession_number": "0000002488-26-000006",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000006/xslF345X05/wk-form4_1768945035.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-01-16",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 2442.0,
+      "price": 234.42,
+      "acquired_disposed": "D",
+      "shares_owned_after": 16359.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on June 2, 2025."
+    },
+    {
+      "filing_date": "2026-01-20",
+      "accepted_datetime": "2026-01-20T21:37:18.000Z",
+      "accession_number": "0000002488-26-000006",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000006/xslF345X05/wk-form4_1768945035.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-01-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 18142.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 27175.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-01-20",
+      "accepted_datetime": "2026-01-20T21:37:18.000Z",
+      "accession_number": "0000002488-26-000006",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000006/xslF345X05/wk-form4_1768945035.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-01-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 8374.0,
+      "price": 227.92,
+      "acquired_disposed": "D",
+      "shares_owned_after": 18801.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
+    }
+  ]
+}

@@ -38,7 +38,7 @@ jobs:
           fi
           DAYS="${{ github.event.inputs.days || '365' }}"
           echo "Using --days=${DAYS}"
-          python amd-insider/amd_insider_monitor.py --days "$DAYS" --output amd-insider/amd_insider_trades.json
+          python amd-insider/amd_insider_monitor.py --days "$DAYS" --output-dir amd-insider/data
           code=$?
           if [ $code -ne 0 ]; then
             echo "update_failed=true" >> $GITHUB_OUTPUT
@@ -56,7 +56,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add amd-insider/amd_insider_trades.json
+          git add amd-insider/data/*.json
           git commit -m "chore: daily update AMD insider trades"
           git push
 

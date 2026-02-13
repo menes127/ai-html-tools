@@ -6,13 +6,16 @@ What it does:
 1) Pulls AMD recent filings from SEC submissions endpoint
 2) Filters Form 4 / 4-A filings
 3) Downloads each filing's XML and parses insider transactions
-4) Outputs JSON for dashboard use
+4) Outputs either:
+   - one JSON file (legacy mode), or
+   - yearly shard files + index.json (recommended)
 
-Usage:
-  python amd_insider_monitor.py --days 30 --output amd_insider_trades.json
+Examples:
+  # legacy single file
+  python amd_insider_monitor.py --days 365 --output amd_insider_trades.json
 
-Optional:
-  export SEC_USER_AGENT="Your Name your@email.com"
+  # yearly shards (recommended)
+  python amd_insider_monitor.py --days 365 --output-dir data
 """
 
 from __future__ import annotations
@@ -20,7 +23,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 import time
 import urllib.error
@@ -29,6 +31,7 @@ from urllib.error import HTTPError, URLError
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 AMD_CIK = "0000002488"
@@ -75,7 +78,6 @@ def http_get(url: str, user_agent: str, timeout: int = 25, retries: int = 4) -> 
                 return resp.read()
         except HTTPError as e:
             last_err = e
-            # Retry on temporary or rate-limit style errors
             if e.code in (403, 429, 500, 502, 503, 504) and attempt < retries:
                 time.sleep(min(2 ** attempt, 12))
                 continue
@@ -125,9 +127,7 @@ def get_recent_form4_filings(submissions: Dict[str, Any], days: int) -> List[Dic
         accession_nodash = accession.replace("-", "")
         primary_doc = primary_docs[i]
 
-        filing_url = (
-            f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{accession_nodash}/{primary_doc}"
-        )
+        filing_url = f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{accession_nodash}/{primary_doc}"
 
         out.append(
             {
@@ -161,12 +161,10 @@ def to_float(s: Optional[str]) -> Optional[float]:
 
 
 def boolish(s: Optional[str]) -> bool:
-    if s is None:
-        return False
-    return s.strip().lower() in {"1", "true", "yes", "y"}
+    return (s or "").strip().lower() in {"1", "true", "yes", "y"}
 
 
-def parse_relationship(root: ET.Element) -> (str, Optional[str], List[str]):
+def parse_relationship(root: ET.Element) -> tuple[str, Optional[str], List[str]]:
     owner = root.find("reportingOwner")
     if owner is None:
         return "Unknown", None, []
@@ -188,11 +186,11 @@ def parse_relationship(root: ET.Element) -> (str, Optional[str], List[str]):
         if boolish(text_of(owner_rel.find("isOther"))):
             rel.append("Other")
 
-    return (insider_name or "Unknown", insider_title, rel)
+    return insider_name or "Unknown", insider_title, rel
 
 
 def parse_footnotes(root: ET.Element) -> Dict[str, str]:
-    notes = {}
+    notes: Dict[str, str] = {}
     for fn in root.findall("footnotes/footnote"):
         fid = fn.attrib.get("id")
         txt = text_of(fn)
@@ -201,10 +199,7 @@ def parse_footnotes(root: ET.Element) -> Dict[str, str]:
     return notes
 
 
-def parse_non_derivative_transactions(
-    root: ET.Element,
-    filing_meta: Dict[str, str],
-) -> List[Trade]:
+def parse_non_derivative_transactions(root: ET.Element, filing_meta: Dict[str, str]) -> List[Trade]:
     trades: List[Trade] = []
 
     insider_name, insider_title, relationship = parse_relationship(root)
@@ -223,14 +218,8 @@ def parse_non_derivative_transactions(
         shares = to_float(text_of(tx.find("transactionAmounts/transactionShares/value")))
         price = to_float(text_of(tx.find("transactionAmounts/transactionPricePerShare/value")))
         acq_disp = text_of(tx.find("transactionAmounts/transactionAcquiredDisposedCode/value"))
-
         shares_after = to_float(text_of(tx.find("postTransactionAmounts/sharesOwnedFollowingTransaction/value")))
         ownership_nature = text_of(tx.find("ownershipNature/directOrIndirectOwnership/value"))
-
-        # detect 10b5-1 hints via footnotes references in this transaction
-        refs = []
-        for ref in tx.findall(".//*[@id]"):
-            pass
 
         tx_footnote_ids = [
             node.attrib.get("id")
@@ -239,7 +228,6 @@ def parse_non_derivative_transactions(
         ]
         texts = [footnotes[fid] for fid in tx_footnote_ids if fid in footnotes]
         hint = " | ".join(texts) if texts else None
-
         hint_lower = (hint or "").lower()
         is_10b5_1 = "10b5-1" in hint_lower or "10b5" in hint_lower
 
@@ -274,7 +262,6 @@ def parse_form4_xml(xml_bytes: bytes, filing_meta: Dict[str, str]) -> List[Trade
     except ET.ParseError:
         return []
 
-    # Some documents may wrap inside ownershipDocument; normalize if needed
     if root.tag != "ownershipDocument":
         found = root.find(".//ownershipDocument")
         if found is not None:
@@ -287,20 +274,16 @@ def parse_form4_xml(xml_bytes: bytes, filing_meta: Dict[str, str]) -> List[Trade
 
 
 def fetch_and_parse_filing(filing_meta: Dict[str, str], user_agent: str) -> List[Trade]:
-    # primaryDocument may be .txt or .xml
     primary_url = filing_meta["filing_url"]
-
     try:
         raw = http_get(primary_url, user_agent)
     except urllib.error.HTTPError:
         return []
 
-    # If primary doc is XML and parseable, use it directly
     trades = parse_form4_xml(raw, filing_meta)
     if trades:
         return trades
 
-    # fallback: find XML doc listed in filing directory index
     accession_nodash = filing_meta["accession"].replace("-", "")
     dir_url = f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{accession_nodash}/index.json"
 
@@ -341,10 +324,72 @@ def summarize(trades: List[Trade]) -> Dict[str, Any]:
     }
 
 
+def year_of(tx: Trade) -> int:
+    try:
+        return datetime.strptime(tx.transaction_date, "%Y-%m-%d").year
+    except Exception:
+        try:
+            return datetime.strptime(tx.filing_date, "%Y-%m-%d").year
+        except Exception:
+            return datetime.now(timezone.utc).year
+
+
+def write_yearly_shards(trades: List[Trade], out_dir: Path, meta: Dict[str, Any]) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    by_year: Dict[int, List[Trade]] = {}
+    for t in trades:
+        y = year_of(t)
+        by_year.setdefault(y, []).append(t)
+
+    years = sorted(by_year.keys(), reverse=True)
+    year_summaries = []
+
+    for y in years:
+        rows = by_year[y]
+        rows.sort(key=lambda t: (t.transaction_date, t.filing_date), reverse=True)
+        payload = {
+            "company": "AMD",
+            "cik": AMD_CIK,
+            "year": y,
+            "generated_at": meta["generated_at"],
+            "lookback_days": meta["lookback_days"],
+            "filings_scanned": meta["filings_scanned"],
+            "summary": summarize(rows),
+            "transactions": [asdict(t) for t in rows],
+        }
+        with open(out_dir / f"{y}.json", "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+
+        year_summaries.append(
+            {
+                "year": y,
+                "count": len(rows),
+                "latest_transaction_date": payload["summary"].get("latest_transaction_date"),
+                "file": f"{y}.json",
+            }
+        )
+
+    index = {
+        "company": "AMD",
+        "cik": AMD_CIK,
+        "generated_at": meta["generated_at"],
+        "lookback_days": meta["lookback_days"],
+        "filings_scanned": meta["filings_scanned"],
+        "summary": summarize(trades),
+        "years": year_summaries,
+        "default_year": years[0] if years else None,
+    }
+
+    with open(out_dir / "index.json", "w", encoding="utf-8") as f:
+        json.dump(index, f, ensure_ascii=False, indent=2)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="AMD Form 4 insider transaction monitor")
-    parser.add_argument("--days", type=int, default=90, help="Look back N days in filings.recent")
-    parser.add_argument("--output", default="amd_insider_trades.json", help="Output JSON path")
+    parser.add_argument("--days", type=int, default=365, help="Look back N days in filings.recent")
+    parser.add_argument("--output", default=None, help="Output JSON path (legacy single-file mode)")
+    parser.add_argument("--output-dir", default=None, help="Output directory for yearly shards (recommended)")
     parser.add_argument("--sleep", type=float, default=0.25, help="Pause between SEC requests")
     parser.add_argument(
         "--user-agent",
@@ -352,6 +397,9 @@ def main() -> int:
         help="SEC-compatible User-Agent",
     )
     args = parser.parse_args()
+
+    if not args.output and not args.output_dir:
+        parser.error("Either --output or --output-dir must be provided")
 
     ua = args.user_agent
     if "@" not in ua and "contact" not in ua.lower():
@@ -361,29 +409,35 @@ def main() -> int:
     filings = get_recent_form4_filings(submissions, args.days)
 
     all_trades: List[Trade] = []
-    for idx, filing in enumerate(filings, start=1):
-        trades = fetch_and_parse_filing(filing, ua)
-        all_trades.extend(trades)
+    for filing in filings:
+        all_trades.extend(fetch_and_parse_filing(filing, ua))
         if args.sleep > 0:
             time.sleep(args.sleep)
 
-    # newest first
     all_trades.sort(key=lambda t: (t.transaction_date, t.filing_date), reverse=True)
 
-    payload = {
-        "company": "AMD",
-        "cik": AMD_CIK,
+    meta = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "lookback_days": args.days,
         "filings_scanned": len(filings),
-        "summary": summarize(all_trades),
-        "transactions": [asdict(t) for t in all_trades],
     }
 
-    with open(args.output, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
+    if args.output:
+        payload = {
+            "company": "AMD",
+            "cik": AMD_CIK,
+            **meta,
+            "summary": summarize(all_trades),
+            "transactions": [asdict(t) for t in all_trades],
+        }
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        print(f"Saved {len(all_trades)} transactions from {len(filings)} filings -> {args.output}")
 
-    print(f"Saved {len(all_trades)} transactions from {len(filings)} filings -> {args.output}")
+    if args.output_dir:
+        write_yearly_shards(all_trades, Path(args.output_dir), meta)
+        print(f"Saved {len(all_trades)} transactions from {len(filings)} filings -> {args.output_dir}/(index + yearly json)")
+
     return 0
 
 

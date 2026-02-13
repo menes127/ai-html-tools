@@ -1,0 +1,109 @@
+{
+  "company": "AMD",
+  "cik": "0000002488",
+  "year": 2024,
+  "generated_at": "2026-02-13T16:40:22.686927+00:00",
+  "lookback_days": 365,
+  "filings_scanned": 62,
+  "summary": {
+    "total_transactions": 4,
+    "codes": {
+      "M": 1,
+      "S": 3
+    },
+    "insiders": {
+      "Su Lisa T": 4
+    },
+    "latest_transaction_date": "2024-12-04"
+  },
+  "transactions": [
+    {
+      "filing_date": "2025-03-03",
+      "accepted_datetime": "2025-03-03T21:21:30.000Z",
+      "accession_number": "0000002488-25-000030",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000030/xslF345X05/wk-form4a_1741036878.xml",
+      "insider_name": "Su Lisa T",
+      "insider_title": "Chair, President & CEO",
+      "relationship": [
+        "Director",
+        "Officer"
+      ],
+      "transaction_date": "2024-12-04",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 76496.0,
+      "price": 19.1,
+      "acquired_disposed": "A",
+      "shares_owned_after": 3640526.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The stock option exercises reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the reporting person on November 20, 2023. | The original Form 4, filed on December 6, 2024, is being amended by this Form 4 to correct an administrative error.  The original Form 4 inadvertently reported that the Reporting Person directly owned 3,643,258 AMD shares. However, as reported in this amended Form 4, the Reporting Person directly owned 3,640,526 AMD Shares. | Includes 2,068 AMD shares held by the Reporting Person's spouse."
+    },
+    {
+      "filing_date": "2025-03-03",
+      "accepted_datetime": "2025-03-03T21:21:30.000Z",
+      "accession_number": "0000002488-25-000030",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000030/xslF345X05/wk-form4a_1741036878.xml",
+      "insider_name": "Su Lisa T",
+      "insider_title": "Chair, President & CEO",
+      "relationship": [
+        "Director",
+        "Officer"
+      ],
+      "transaction_date": "2024-12-04",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 28218.0,
+      "price": 141.89,
+      "acquired_disposed": "D",
+      "shares_owned_after": 3612308.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on November 20, 2023. | Transaction executed in multiple trades at prices ranging from $141.28 to $142.27 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2025-03-03",
+      "accepted_datetime": "2025-03-03T21:21:30.000Z",
+      "accession_number": "0000002488-25-000030",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000030/xslF345X05/wk-form4a_1741036878.xml",
+      "insider_name": "Su Lisa T",
+      "insider_title": "Chair, President & CEO",
+      "relationship": [
+        "Director",
+        "Officer"
+      ],
+      "transaction_date": "2024-12-04",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 30299.0,
+      "price": 142.76,
+      "acquired_disposed": "D",
+      "shares_owned_after": 3582009.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on November 20, 2023. | Transaction executed in multiple trades at prices ranging from $142.28 to $143.27 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2025-03-03",
+      "accepted_datetime": "2025-03-03T21:21:30.000Z",
+      "accession_number": "0000002488-25-000030",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000030/xslF345X05/wk-form4a_1741036878.xml",
+      "insider_name": "Su Lisa T",
+      "insider_title": "Chair, President & CEO",
+      "relationship": [
+        "Director",
+        "Officer"
+      ],
+      "transaction_date": "2024-12-04",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 17979.0,
+      "price": 143.69,
+      "acquired_disposed": "D",
+      "shares_owned_after": 3564030.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on November 20, 2023. | Transaction executed in multiple trades at prices ranging from $143.28 to $144.10 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    }
+  ]
+}

@@ -29,6 +29,9 @@
   <div class="row" id="summary"></div>
 
   <div class="filters">
+    <label>年份：
+      <select id="yearFilter"></select>
+    </label>
     <label>姓名：<input id="nameFilter" placeholder="例如 Lisa" /></label>
     <label>代码：
       <select id="codeFilter">
@@ -61,8 +64,9 @@
   </table>
 
   <script>
-    const dataUrl = './amd_insider_trades.json';
-    let rows = [];
+    const dataBase = './data';
+    let indexData = null;
+    let yearRows = [];
 
     const fmtNum = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '-' : Number(n).toLocaleString();
 
@@ -82,7 +86,7 @@
       const el = document.getElementById('summary');
       const codes = Object.entries(summary.codes || {}).map(([k,v]) => `${k}: ${v}`).join(' / ') || '-';
       el.innerHTML = `
-        <div class="card"><div class="muted">总交易条数</div><div><b>${summary.total_transactions ?? 0}</b></div></div>
+        <div class="card"><div class="muted">总交易条数（当前年份）</div><div><b>${summary.total_transactions ?? 0}</b></div></div>
         <div class="card"><div class="muted">最近交易日</div><div><b>${summary.latest_transaction_date ?? '-'}</b></div></div>
         <div class="card"><div class="muted">代码分布</div><div><b>${codes}</b></div></div>
       `;
@@ -93,7 +97,7 @@
       const code = document.getElementById('codeFilter').value;
       const onlySignal = document.getElementById('onlySignal').checked;
 
-      return rows.filter(r => {
+      return yearRows.filter(r => {
         if (name && !(r.insider_name || '').toLowerCase().includes(name)) return false;
         if (code && r.code !== code) return false;
         if (onlySignal && !['P','S'].includes(r.code)) return false;
@@ -127,17 +131,33 @@
       }).join('');
     }
 
-    async function loadData() {
-      const res = await fetch(dataUrl, { cache: 'no-store' });
-      if (!res.ok) throw new Error('无法读取 amd_insider_trades.json');
-      const data = await res.json();
-      rows = data.transactions || [];
+    async function loadIndex() {
+      const res = await fetch(`${dataBase}/index.json`, { cache: 'no-store' });
+      if (!res.ok) throw new Error('无法读取 data/index.json');
+      indexData = await res.json();
+
+      const yearSel = document.getElementById('yearFilter');
+      const years = indexData.years || [];
+      yearSel.innerHTML = years.map(y => `<option value="${y.year}">${y.year} (${y.count})</option>`).join('');
+      if (indexData.default_year) yearSel.value = String(indexData.default_year);
 
       document.getElementById('meta').textContent =
-        `生成时间(UTC): ${data.generated_at || '-'} | 扫描文件: ${data.filings_scanned || 0} | 回看天数: ${data.lookback_days || 0}`;
+        `生成时间(UTC): ${indexData.generated_at || '-'} | 扫描文件: ${indexData.filings_scanned || 0} | 回看天数: ${indexData.lookback_days || 0}`;
+    }
 
+    async function loadYear(year) {
+      const res = await fetch(`${dataBase}/${year}.json`, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`无法读取 ${year}.json`);
+      const data = await res.json();
+      yearRows = data.transactions || [];
       renderSummary(data.summary || {});
       renderTable();
+    }
+
+    async function loadData() {
+      await loadIndex();
+      const year = document.getElementById('yearFilter').value;
+      await loadYear(year);
     }
 
     ['nameFilter','codeFilter','onlySignal'].forEach(id => {
@@ -145,10 +165,14 @@
       document.getElementById(id).addEventListener('change', renderTable);
     });
 
+    document.getElementById('yearFilter').addEventListener('change', async (e) => {
+      await loadYear(e.target.value);
+    });
+
     document.getElementById('refreshBtn').addEventListener('click', loadData);
 
     loadData().catch(err => {
-      document.getElementById('meta').textContent = err.message + '（先运行脚本生成 JSON）';
+      document.getElementById('meta').textContent = err.message + '（先运行脚本生成 data/index.json 与 data/YYYY.json）';
     });
   </script>
 </body>

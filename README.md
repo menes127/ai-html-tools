@@ -18,7 +18,7 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 
 - Data source: SEC Form 4 filings for AMD insiders
 - Script: `amd-insider/amd_insider_monitor.py`
-- Data file: `amd-insider/amd_insider_trades.json`
+- Data files: `amd-insider/data/index.json` + `amd-insider/data/YYYY.json` (按年分片)
 - Daily update workflow: `.github/workflows/update-amd-insider.yml`
 - Schedule: every day 01:00 UTC (09:00 Asia/Shanghai)
 
