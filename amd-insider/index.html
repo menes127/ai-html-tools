@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD 高管 Form 4 监控面板</title>
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; margin: 20px; color: #111; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+    .card { border:1px solid #ddd; border-radius:10px; padding:12px; min-width:180px; }
+    .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0; }
+    input, select, button { padding:8px 10px; border:1px solid #ccc; border-radius:8px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; vertical-align:top; }
+    th { background:#fafafa; position:sticky; top:0; }
+    .pill { border-radius:999px; padding:2px 8px; font-size:12px; display:inline-block; }
+    .buy { background:#e8f7ea; color:#0b7a2a; }
+    .sell { background:#fdecec; color:#b42318; }
+    .muted { color:#666; font-size:12px; }
+    .warn { color:#9a6700; }
+    a { color:#0059c9; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <h2>AMD 高管买卖监控（SEC Form 4）</h2>
+  <div class="muted" id="meta">加载中...</div>
+
+  <div class="row" id="summary"></div>
+
+  <div class="filters">
+    <label>姓名：<input id="nameFilter" placeholder="例如 Lisa" /></label>
+    <label>代码：
+      <select id="codeFilter">
+        <option value="">全部</option>
+        <option value="P">P（公开市场买入）</option>
+        <option value="S">S（公开市场卖出）</option>
+        <option value="M">M（期权行权）</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="onlySignal" /> 仅显示强/中信号（P/S）</label>
+    <button id="refreshBtn">刷新</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>交易日</th>
+        <th>姓名 / 职位</th>
+        <th>代码</th>
+        <th>股数</th>
+        <th>价格</th>
+        <th>方向</th>
+        <th>交易后持仓</th>
+        <th>10b5-1</th>
+        <th>备注</th>
+        <th>SEC</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <script>
+    const dataUrl = './amd_insider_trades.json';
+    let rows = [];
+
+    const fmtNum = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '-' : Number(n).toLocaleString();
+
+    function signalClass(code) {
+      if (code === 'P') return 'pill buy';
+      if (code === 'S') return 'pill sell';
+      return 'pill';
+    }
+
+    function signalText(code) {
+      if (code === 'P') return '买入';
+      if (code === 'S') return '卖出';
+      return '其他';
+    }
+
+    function renderSummary(summary) {
+      const el = document.getElementById('summary');
+      const codes = Object.entries(summary.codes || {}).map(([k,v]) => `${k}: ${v}`).join(' / ') || '-';
+      el.innerHTML = `
+        <div class="card"><div class="muted">总交易条数</div><div><b>${summary.total_transactions ?? 0}</b></div></div>
+        <div class="card"><div class="muted">最近交易日</div><div><b>${summary.latest_transaction_date ?? '-'}</b></div></div>
+        <div class="card"><div class="muted">代码分布</div><div><b>${codes}</b></div></div>
+      `;
+    }
+
+    function applyFilters() {
+      const name = document.getElementById('nameFilter').value.trim().toLowerCase();
+      const code = document.getElementById('codeFilter').value;
+      const onlySignal = document.getElementById('onlySignal').checked;
+
+      return rows.filter(r => {
+        if (name && !(r.insider_name || '').toLowerCase().includes(name)) return false;
+        if (code && r.code !== code) return false;
+        if (onlySignal && !['P','S'].includes(r.code)) return false;
+        return true;
+      });
+    }
+
+    function renderTable() {
+      const body = document.getElementById('tbody');
+      const filtered = applyFilters();
+
+      body.innerHTML = filtered.map(r => {
+        const footnote = (r.footnote_hint || '').slice(0, 120);
+        return `
+          <tr>
+            <td>${r.transaction_date || '-'}</td>
+            <td>
+              <div><b>${r.insider_name || '-'}</b></div>
+              <div class="muted">${r.insider_title || (r.relationship || []).join(', ') || '-'}</div>
+            </td>
+            <td><span class="${signalClass(r.code)}">${r.code || '-'}</span></td>
+            <td>${fmtNum(r.shares)}</td>
+            <td>${r.price ? ('$' + Number(r.price).toFixed(2)) : '-'}</td>
+            <td>${signalText(r.code)}</td>
+            <td>${fmtNum(r.shares_owned_after)}</td>
+            <td>${r.is_10b5_1 ? '是' : '否'}</td>
+            <td class="${r.is_10b5_1 ? 'warn' : ''}">${footnote || '-'}</td>
+            <td><a href="${r.filing_url}" target="_blank" rel="noopener">查看</a></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadData() {
+      const res = await fetch(dataUrl, { cache: 'no-store' });
+      if (!res.ok) throw new Error('无法读取 amd_insider_trades.json');
+      const data = await res.json();
+      rows = data.transactions || [];
+
+      document.getElementById('meta').textContent =
+        `生成时间(UTC): ${data.generated_at || '-'} | 扫描文件: ${data.filings_scanned || 0} | 回看天数: ${data.lookback_days || 0}`;
+
+      renderSummary(data.summary || {});
+      renderTable();
+    }
+
+    ['nameFilter','codeFilter','onlySignal'].forEach(id => {
+      document.getElementById(id).addEventListener('input', renderTable);
+      document.getElementById(id).addEventListener('change', renderTable);
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+    loadData().catch(err => {
+      document.getElementById('meta').textContent = err.message + '（先运行脚本生成 JSON）';
+    });
+  </script>
+</body>
+</html>

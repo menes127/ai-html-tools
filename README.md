@@ -12,6 +12,15 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 - Pick's Theorem Visualizer: `pick_theorem.html`
 - Plane Shooter (English): `plane_shooter.html`
 - Ping Pong (Player vs CPU): `ping_pong.html`
+- AMD Insider Monitor: `amd-insider/index.html`
+
+## AMD Insider Monitor (Auto Update)
+
+- Data source: SEC Form 4 filings for AMD insiders
+- Script: `amd-insider/amd_insider_monitor.py`
+- Data file: `amd-insider/amd_insider_trades.json`
+- Daily update workflow: `.github/workflows/update-amd-insider.yml`
+- Schedule: every day 01:00 UTC (09:00 Asia/Shanghai)
 
 ## Plane Shooter Controls
 
