@@ -2,17 +2,17 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2025,
-  "generated_at": "2026-02-13T16:40:22.686927+00:00",
-  "lookback_days": 365,
+  "generated_at": "2026-02-13T16:55:38.153885+00:00",
+  "lookback_days": 3650,
   "filings_scanned": 62,
   "summary": {
-    "total_transactions": 143,
+    "total_transactions": 148,
     "codes": {
       "S": 73,
       "G": 14,
-      "M": 36,
-      "F": 18,
-      "P": 1,
+      "M": 38,
+      "F": 20,
+      "P": 2,
       "A": 1
     },
     "insiders": {
@@ -21,10 +21,10 @@
       "Papermaster Mark D": 52,
       "Hu Jean X.": 11,
       "Norrod Forrest Eugene": 18,
-      "Hahn Ava": 6,
-      "HUYNH JACK M": 6,
+      "Hahn Ava": 8,
+      "HUYNH JACK M": 8,
       "Olson Jon A": 2,
-      "GUIDO PHILIP": 5,
+      "GUIDO PHILIP": 6,
       "VANDERSLICE ELIZABETH W": 5,
       "TALWALKAR ABHIJIT Y": 1,
       "HOUSEHOLDER JOSEPH A": 1,
@@ -3064,6 +3064,111 @@
       "ownership_nature": "D",
       "is_10b5_1": true,
       "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on November 5, 2024. | Transaction executed in multiple trades at prices ranging from $114.40 to $114.52 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2025-02-12",
+      "accepted_datetime": "2025-02-12T21:45:33.000Z",
+      "accession_number": "0000002488-25-000014",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000014/xslF345X05/wk-form4_1739396726.xml",
+      "insider_name": "GUIDO PHILIP",
+      "insider_title": "EVP & Chief Commercial Officer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2025-02-07",
+      "security_title": "Common Stock",
+      "code": "P",
+      "shares": 4645.0,
+      "price": 107.56,
+      "acquired_disposed": "A",
+      "shares_owned_after": 33522.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "Transaction executed in multiple trades at prices ranging from $107.49 to $107.61 per share, inclusive. The price reported in column 4 above reflects the weighted average purchase price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares purchased at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2025-01-17",
+      "accepted_datetime": "2025-01-17T21:23:27.000Z",
+      "accession_number": "0000002488-25-000005",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000005/xslF345X05/wk-form4_1737149001.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2025-01-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 12095.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 15143.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2025-01-17",
+      "accepted_datetime": "2025-01-17T21:23:27.000Z",
+      "accession_number": "0000002488-25-000005",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000005/xslF345X05/wk-form4_1737149001.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2025-01-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 4813.0,
+      "price": 119.96,
+      "acquired_disposed": "D",
+      "shares_owned_after": 10330.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
+    },
+    {
+      "filing_date": "2025-01-17",
+      "accepted_datetime": "2025-01-17T21:20:53.000Z",
+      "accession_number": "0000002488-25-000003",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000003/xslF345X05/wk-form4_1737148846.xml",
+      "insider_name": "HUYNH JACK M",
+      "insider_title": "SVP & GM, Computing & Graphics",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2025-01-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 1773.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 430098.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2025-01-17",
+      "accepted_datetime": "2025-01-17T21:20:53.000Z",
+      "accession_number": "0000002488-25-000003",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000003/xslF345X05/wk-form4_1737148846.xml",
+      "insider_name": "HUYNH JACK M",
+      "insider_title": "SVP & GM, Computing & Graphics",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2025-01-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 498.0,
+      "price": 119.96,
+      "acquired_disposed": "D",
+      "shares_owned_after": 429600.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
     }
   ]
 }
