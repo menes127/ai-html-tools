@@ -25,6 +25,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from urllib.error import HTTPError, URLError
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
@@ -55,16 +56,40 @@ class Trade:
     footnote_hint: Optional[str]
 
 
-def http_get(url: str, user_agent: str, timeout: int = 25) -> bytes:
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": user_agent,
-            "Host": "data.sec.gov" if "data.sec.gov" in url else "www.sec.gov",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+def http_get(url: str, user_agent: str, timeout: int = 25, retries: int = 4) -> bytes:
+    last_err: Optional[Exception] = None
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": user_agent,
+                    "Accept": "application/json,text/plain,*/*",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Connection": "close",
+                    "Referer": "https://www.sec.gov/",
+                    "Host": "data.sec.gov" if "data.sec.gov" in url else "www.sec.gov",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except HTTPError as e:
+            last_err = e
+            # Retry on temporary or rate-limit style errors
+            if e.code in (403, 429, 500, 502, 503, 504) and attempt < retries:
+                time.sleep(min(2 ** attempt, 12))
+                continue
+            raise
+        except URLError as e:
+            last_err = e
+            if attempt < retries:
+                time.sleep(min(2 ** attempt, 12))
+                continue
+            raise
+
+    if last_err:
+        raise last_err
+    raise RuntimeError("http_get failed without specific error")
 
 
 def load_submissions(user_agent: str) -> Dict[str, Any]:

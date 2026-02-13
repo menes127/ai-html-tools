@@ -22,10 +22,24 @@ jobs:
           python-version: '3.11'
 
       - name: Update AMD insider JSON
+        id: update_json
         env:
-          SEC_USER_AGENT: "${{ github.actor }} (GitHub Actions) <${{ github.actor }}@users.noreply.github.com>"
+          # Optional: set this in repo Settings -> Secrets -> Actions -> SEC_USER_AGENT
+          SEC_USER_AGENT: "${{ secrets.SEC_USER_AGENT }}"
         run: |
+          set +e
+          if [ -z "$SEC_USER_AGENT" ]; then
+            export SEC_USER_AGENT="${{ github.actor }} sec-monitor-contact@example.com"
+          fi
           python amd-insider/amd_insider_monitor.py --days 180 --output amd-insider/amd_insider_trades.json
+          code=$?
+          if [ $code -ne 0 ]; then
+            echo "update_failed=true" >> $GITHUB_OUTPUT
+            echo "SEC fetch failed (exit $code). Keep previous JSON and continue."
+          else
+            echo "update_failed=false" >> $GITHUB_OUTPUT
+          fi
+          exit 0
 
       - name: Commit and push if changed
         run: |
@@ -38,3 +52,8 @@ jobs:
           git add amd-insider/amd_insider_trades.json
           git commit -m "chore: daily update AMD insider trades"
           git push
+
+      - name: Notice when SEC blocks request
+        if: steps.update_json.outputs.update_failed == 'true'
+        run: |
+          echo "SEC returned blocking/rate-limit response. Consider setting repo secret SEC_USER_AGENT with real contact email."
