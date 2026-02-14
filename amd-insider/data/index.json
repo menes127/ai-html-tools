@@ -1,36 +1,47 @@
 {
   "company": "AMD",
   "cik": "0000002488",
-  "generated_at": "2026-02-13T16:55:38.153885+00:00",
+  "generated_at": "2026-02-14T02:48:35.339597+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 62,
+  "filings_scanned": 100,
   "summary": {
-    "total_transactions": 312,
+    "total_transactions": 1322,
     "codes": {
-      "S": 150,
-      "M": 86,
-      "F": 47,
-      "G": 25,
+      "S": 675,
+      "M": 466,
+      "F": 130,
+      "G": 41,
       "P": 2,
-      "A": 2
+      "A": 6,
+      "X": 1,
+      "J": 1
     },
     "insiders": {
       "Hahn Ava": 13,
-      "Su Lisa T": 86,
-      "GRASBY PAUL DARREN": 9,
-      "Papermaster Mark D": 84,
+      "Su Lisa T": 291,
+      "GRASBY PAUL DARREN": 64,
+      "Papermaster Mark D": 235,
       "Hu Jean X.": 19,
-      "Norrod Forrest Eugene": 29,
-      "HUYNH JACK M": 18,
-      "Olson Jon A": 3,
+      "Norrod Forrest Eugene": 191,
+      "HUYNH JACK M": 22,
+      "Olson Jon A": 6,
       "GUIDO PHILIP": 10,
-      "VANDERSLICE ELIZABETH W": 8,
-      "TALWALKAR ABHIJIT Y": 2,
-      "HOUSEHOLDER JOSEPH A": 3,
-      "Denzel Nora": 2,
-      "SMITH DARLA M": 9,
-      "PENG VICTOR": 15,
-      "WOLIN HARRY A": 2
+      "VANDERSLICE ELIZABETH W": 12,
+      "TALWALKAR ABHIJIT Y": 4,
+      "HOUSEHOLDER JOSEPH A": 6,
+      "Denzel Nora": 9,
+      "SMITH DARLA M": 100,
+      "PENG VICTOR": 43,
+      "WOLIN HARRY A": 69,
+      "KUMAR DEVINDER": 148,
+      "Bergman Rick": 19,
+      "CALDWELL JOHN EDWARD": 4,
+      "YAHIA AHMED": 9,
+      "Mubadala Investment Co PJSC": 4,
+      "ANDERSON JAMES ROBERT": 36,
+      "DONOFRIO NICHOLAS M": 3,
+      "Claflin Bruce L.": 4,
+      "MUBADALA DEVELOPMENT CO PJSC": 1
     },
     "latest_transaction_date": "2026-01-16"
   },
@@ -52,6 +63,48 @@
       "count": 161,
       "latest_transaction_date": "2024-12-04",
       "file": "2024.json"
+    },
+    {
+      "year": 2023,
+      "count": 133,
+      "latest_transaction_date": "2023-12-07",
+      "file": "2023.json"
+    },
+    {
+      "year": 2022,
+      "count": 89,
+      "latest_transaction_date": "2022-12-14",
+      "file": "2022.json"
+    },
+    {
+      "year": 2021,
+      "count": 184,
+      "latest_transaction_date": "2021-12-15",
+      "file": "2021.json"
+    },
+    {
+      "year": 2020,
+      "count": 148,
+      "latest_transaction_date": "2020-12-15",
+      "file": "2020.json"
+    },
+    {
+      "year": 2019,
+      "count": 113,
+      "latest_transaction_date": "2019-12-13",
+      "file": "2019.json"
+    },
+    {
+      "year": 2018,
+      "count": 146,
+      "latest_transaction_date": "2018-12-27",
+      "file": "2018.json"
+    },
+    {
+      "year": 2017,
+      "count": 197,
+      "latest_transaction_date": "2017-12-28",
+      "file": "2017.json"
     }
   ],
   "default_year": 2026
