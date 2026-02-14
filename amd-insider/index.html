@@ -20,14 +20,11 @@
     .warn { color:#9a6700; }
     a { color:#0059c9; text-decoration:none; }
     a:hover { text-decoration:underline; }
-    .chart-row { display:grid; grid-template-columns: 90px 1fr; gap:8px; align-items:center; margin:8px 0; }
-    .bar-stack { display:flex; flex-direction:column; gap:5px; }
-    .bar-wrap { background:#eef2ff; border-radius:6px; height:18px; overflow:hidden; }
-    .bar { height:18px; color:#fff; font-size:11px; line-height:18px; padding-left:6px; white-space:nowrap; }
-    .bar.buy { background:#2563eb; }
-    .bar.sell { background:#f97316; }
-    .bar.grant { background:#8b5cf6; }
-    .bar.other { background:#14b8a6; }
+    .chart-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .chart-table th,.chart-table td { border-bottom:1px solid #eee; padding:6px 8px; text-align:right; }
+    .chart-table th:first-child,.chart-table td:first-child { text-align:left; }
+    .code-hint { margin-top:8px; font-size:12px; color:#555; line-height:1.6; }
+    .code-tag { display:inline-block; padding:1px 6px; border-radius:999px; border:1px solid #ddd; margin-right:4px; font-size:11px; }
   </style>
 </head>
 <body>
@@ -68,6 +65,11 @@
     </div>
     <div id="chartMeta" class="muted" style="margin-bottom:6px;"></div>
     <div id="chartRows"></div>
+    <div class="code-hint">
+      <span class="code-tag">A</span>Acquired（获得，常见授予/归属）
+      <span class="code-tag">G</span>Gift（赠与）
+      <span class="code-tag">M</span>Option Exercise（期权行权）
+    </div>
   </div>
 
   <table>
@@ -229,27 +231,36 @@
         holder.innerHTML = `<div class="muted">暂无可绘制数据</div>`;
         return;
       }
-      let maxV = 0;
-      items.forEach(([,v]) => { maxV = Math.max(maxV, v.buy, v.sell, v.grant, v.other); });
-      if (maxV <= 0) maxV = 1;
 
-      holder.innerHTML = items.map(([label,v]) => {
-        const buyW = (v.buy / maxV) * 100;
-        const sellW = (v.sell / maxV) * 100;
-        const grantW = (v.grant / maxV) * 100;
-        const otherW = (v.other / maxV) * 100;
+      const rows = items.map(([label, v]) => {
+        const total = (v.buy || 0) + (v.sell || 0) + (v.grant || 0) + (v.other || 0);
         return `
-          <div class="chart-row">
-            <div class="muted">${label}</div>
-            <div class="bar-stack">
-              <div class="bar-wrap"><div class="bar buy" style="width:${buyW.toFixed(2)}%">买入(P) ${fmtNum(Math.round(v.buy))}</div></div>
-              <div class="bar-wrap"><div class="bar sell" style="width:${sellW.toFixed(2)}%">卖出(S) ${fmtNum(Math.round(v.sell))}</div></div>
-              <div class="bar-wrap"><div class="bar grant" style="width:${grantW.toFixed(2)}%">授予/行权(A/G/M) ${fmtNum(Math.round(v.grant))}</div></div>
-              <div class="bar-wrap"><div class="bar other" style="width:${otherW.toFixed(2)}%">其他代码 ${fmtNum(Math.round(v.other))}</div></div>
-            </div>
-          </div>
+          <tr>
+            <td>${label}</td>
+            <td>${fmtNum(Math.round(v.buy || 0))}</td>
+            <td>${fmtNum(Math.round(v.sell || 0))}</td>
+            <td>${fmtNum(Math.round(v.grant || 0))}</td>
+            <td>${fmtNum(Math.round(v.other || 0))}</td>
+            <td><b>${fmtNum(Math.round(total))}</b></td>
+          </tr>
         `;
       }).join('');
+
+      holder.innerHTML = `
+        <table class="chart-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>买入 (P)</th>
+              <th>卖出 (S)</th>
+              <th>授予/行权 (A/G/M)</th>
+              <th>其他代码</th>
+              <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
     }
 
     async function renderChart() {
