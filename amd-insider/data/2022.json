@@ -2,15 +2,16 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2022,
-  "generated_at": "2026-02-13T17:08:04.678253+00:00",
+  "generated_at": "2026-02-14T03:32:42.147961+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 58,
+  "filings_scanned": 710,
   "summary": {
-    "total_transactions": 89,
+    "total_transactions": 90,
     "codes": {
       "S": 21,
       "M": 36,
       "F": 28,
+      "G": 1,
       "A": 4
     },
     "insiders": {
@@ -19,7 +20,7 @@
       "Bergman Rick": 8,
       "Norrod Forrest Eugene": 8,
       "KUMAR DEVINDER": 11,
-      "Papermaster Mark D": 10,
+      "Papermaster Mark D": 11,
       "WOLIN HARRY A": 8,
       "SMITH DARLA M": 4,
       "PENG VICTOR": 10,
@@ -1192,6 +1193,27 @@
       "price": 88.73,
       "acquired_disposed": "D",
       "shares_owned_after": 1386043.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2023-02-08",
+      "accepted_datetime": "2023-02-08T21:31:32.000Z",
+      "accession_number": "0000002488-23-000014",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248823000014/xslF345X03/wf-form4_167589187255098.xml",
+      "insider_name": "Papermaster Mark D",
+      "insider_title": "Chief Technology Officer & EVP",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2022-06-13",
+      "security_title": "Common Stock",
+      "code": "G",
+      "shares": 3000.0,
+      "price": 0.0,
+      "acquired_disposed": "D",
+      "shares_owned_after": 1516945.0,
       "ownership_nature": "D",
       "is_10b5_1": false,
       "footnote_hint": null

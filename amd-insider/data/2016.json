@@ -2,15 +2,15 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2016,
-  "generated_at": "2026-02-14T02:53:59.681597+00:00",
+  "generated_at": "2026-02-14T03:32:42.147961+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 69,
+  "filings_scanned": 710,
   "summary": {
-    "total_transactions": 85,
+    "total_transactions": 83,
     "codes": {
       "S": 23,
-      "M": 40,
-      "F": 21,
+      "M": 39,
+      "F": 20,
       "J": 1
     },
     "insiders": {
@@ -18,7 +18,7 @@
       "Papermaster Mark D": 9,
       "WOLIN HARRY A": 15,
       "Su Lisa T": 10,
-      "KUMAR DEVINDER": 17,
+      "KUMAR DEVINDER": 15,
       "ANDERSON JAMES ROBERT": 6,
       "Claflin Bruce L.": 2,
       "SMITH DARLA M": 6,
@@ -1780,48 +1780,6 @@
       "price": 1.83,
       "acquired_disposed": "D",
       "shares_owned_after": 250659.0,
-      "ownership_nature": "D",
-      "is_10b5_1": false,
-      "footnote_hint": null
-    },
-    {
-      "filing_date": "2016-02-11",
-      "accepted_datetime": "2016-02-11T21:48:48.000Z",
-      "accession_number": "0000002488-16-000104",
-      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248816000104/xslF345X03/wf-form4_145522731742012.xml",
-      "insider_name": "KUMAR DEVINDER",
-      "insider_title": "SVP, CFO & Treasurer",
-      "relationship": [
-        "Officer"
-      ],
-      "transaction_date": "2016-02-09",
-      "security_title": "Common Stock",
-      "code": "M",
-      "shares": 112108.0,
-      "price": 0.0,
-      "acquired_disposed": "A",
-      "shares_owned_after": 474869.0,
-      "ownership_nature": "D",
-      "is_10b5_1": false,
-      "footnote_hint": null
-    },
-    {
-      "filing_date": "2016-02-11",
-      "accepted_datetime": "2016-02-11T21:48:48.000Z",
-      "accession_number": "0000002488-16-000104",
-      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248816000104/xslF345X03/wf-form4_145522731742012.xml",
-      "insider_name": "KUMAR DEVINDER",
-      "insider_title": "SVP, CFO & Treasurer",
-      "relationship": [
-        "Officer"
-      ],
-      "transaction_date": "2016-02-09",
-      "security_title": "Common Stock",
-      "code": "F",
-      "shares": 43039.0,
-      "price": 1.9,
-      "acquired_disposed": "D",
-      "shares_owned_after": 431830.0,
       "ownership_nature": "D",
       "is_10b5_1": false,
       "footnote_hint": null

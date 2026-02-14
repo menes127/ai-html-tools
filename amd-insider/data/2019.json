@@ -2,9 +2,9 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2019,
-  "generated_at": "2026-02-13T17:14:49.082265+00:00",
+  "generated_at": "2026-02-14T03:32:42.147961+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 63,
+  "filings_scanned": 710,
   "summary": {
     "total_transactions": 113,
     "codes": {

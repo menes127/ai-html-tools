@@ -1,28 +1,28 @@
 {
   "company": "AMD",
   "cik": "0000002488",
-  "generated_at": "2026-02-14T03:00:38.235270+00:00",
+  "generated_at": "2026-02-14T03:32:42.147961+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 52,
+  "filings_scanned": 710,
   "summary": {
-    "total_transactions": 1619,
+    "total_transactions": 1637,
     "codes": {
-      "S": 725,
-      "M": 628,
-      "F": 212,
-      "G": 41,
+      "M": 629,
+      "S": 742,
+      "F": 211,
+      "G": 42,
       "P": 4,
       "A": 6,
       "X": 1,
       "J": 2
     },
     "insiders": {
+      "Norrod Forrest Eugene": 209,
+      "Su Lisa T": 332,
       "Hahn Ava": 13,
-      "Su Lisa T": 318,
       "GRASBY PAUL DARREN": 64,
-      "Papermaster Mark D": 262,
+      "Papermaster Mark D": 263,
       "Hu Jean X.": 19,
-      "Norrod Forrest Eugene": 204,
       "HUYNH JACK M": 22,
       "Olson Jon A": 6,
       "GUIDO PHILIP": 10,
@@ -33,7 +33,7 @@
       "SMITH DARLA M": 106,
       "PENG VICTOR": 43,
       "WOLIN HARRY A": 120,
-      "KUMAR DEVINDER": 189,
+      "KUMAR DEVINDER": 187,
       "Bergman Rick": 19,
       "CALDWELL JOHN EDWARD": 9,
       "YAHIA AHMED": 17,
@@ -54,13 +54,13 @@
       "SEIFERT THOMAS J": 2,
       "GHILARDI EMILIO": 4
     },
-    "latest_transaction_date": "2026-01-16"
+    "latest_transaction_date": "2026-02-11"
   },
   "years": [
     {
       "year": 2026,
-      "count": 3,
-      "latest_transaction_date": "2026-01-16",
+      "count": 18,
+      "latest_transaction_date": "2026-02-11",
       "file": "2026.json"
     },
     {
@@ -71,7 +71,7 @@
     },
     {
       "year": 2024,
-      "count": 161,
+      "count": 165,
       "latest_transaction_date": "2024-12-04",
       "file": "2024.json"
     },
@@ -83,7 +83,7 @@
     },
     {
       "year": 2022,
-      "count": 89,
+      "count": 90,
       "latest_transaction_date": "2022-12-14",
       "file": "2022.json"
     },
@@ -119,7 +119,7 @@
     },
     {
       "year": 2016,
-      "count": 85,
+      "count": 83,
       "latest_transaction_date": "2016-12-28",
       "file": "2016.json"
     },
