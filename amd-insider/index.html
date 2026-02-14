@@ -69,6 +69,7 @@
       <span class="code-tag">A</span>Acquired（获得，常见授予/归属）
       <span class="code-tag">G</span>Gift（赠与）
       <span class="code-tag">M</span>Option Exercise（期权行权）
+      <br/>* 期末持仓：按该时间段内最后一笔交易记录的 `sharesOwnedFollowingTransaction` 近似展示。
     </div>
   </div>
 
@@ -213,13 +214,22 @@
       for (const r of rows) {
         if (insider && r.insider_name !== insider) continue;
         const k = keyFn(r);
-        if (!map[k]) map[k] = { buy: 0, sell: 0, grant: 0, other: 0 };
+        if (!map[k]) map[k] = { buy: 0, sell: 0, grant: 0, other: 0, sellAmount: 0, latestDate: '', endHolding: null };
         const v = Number(r.shares || 0);
 
         if (r.code === 'P') map[k].buy += v;
-        else if (r.code === 'S') map[k].sell += v;
+        else if (r.code === 'S') {
+          map[k].sell += v;
+          map[k].sellAmount += v * Number(r.price || 0);
+        }
         else if (['A','G','M'].includes(r.code)) map[k].grant += v;
         else map[k].other += v;
+
+        const d = r.transaction_date || '';
+        if (d && d >= map[k].latestDate) {
+          map[k].latestDate = d;
+          map[k].endHolding = r.shares_owned_after ?? map[k].endHolding;
+        }
       }
       return map;
     }
@@ -234,13 +244,17 @@
 
       const rows = items.map(([label, v]) => {
         const total = (v.buy || 0) + (v.sell || 0) + (v.grant || 0) + (v.other || 0);
+        const avgSellPrice = (v.sell && v.sell > 0) ? (v.sellAmount / v.sell) : 0;
         return `
           <tr>
             <td>${label}</td>
             <td>${fmtNum(Math.round(v.buy || 0))}</td>
             <td>${fmtNum(Math.round(v.sell || 0))}</td>
+            <td>${avgSellPrice > 0 ? ('$' + avgSellPrice.toFixed(2)) : '-'}</td>
+            <td>${v.sellAmount > 0 ? ('$' + fmtNum(Math.round(v.sellAmount))) : '-'}</td>
             <td>${fmtNum(Math.round(v.grant || 0))}</td>
             <td>${fmtNum(Math.round(v.other || 0))}</td>
+            <td>${v.endHolding !== null && v.endHolding !== undefined ? fmtNum(Math.round(Number(v.endHolding))) : '-'}</td>
             <td><b>${fmtNum(Math.round(total))}</b></td>
           </tr>
         `;
@@ -253,8 +267,11 @@
               <th>时间</th>
               <th>买入 (P)</th>
               <th>卖出 (S)</th>
+              <th>卖出均价</th>
+              <th>卖出金额</th>
               <th>授予/行权 (A/G/M)</th>
               <th>其他代码</th>
+              <th>期末持仓*</th>
               <th>合计</th>
             </tr>
           </thead>
