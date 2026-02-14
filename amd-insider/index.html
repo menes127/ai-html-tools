@@ -31,6 +31,7 @@
   <h2>AMD 高管买卖监控（SEC Form 4）</h2>
   <div class="muted" id="meta">加载中...</div>
 
+  <div class="row" id="marketSignal"></div>
   <div class="row" id="summary"></div>
 
   <div class="filters">
@@ -47,6 +48,13 @@
       </select>
     </label>
     <label><input type="checkbox" id="onlySignal" /> 仅显示强/中信号（P/S）</label>
+    <label>10b5-1：
+      <select id="b5Filter">
+        <option value="">全部</option>
+        <option value="yes">仅10b5-1</option>
+        <option value="no">排除10b5-1</option>
+      </select>
+    </label>
     <button id="refreshBtn">刷新</button>
   </div>
 
@@ -71,6 +79,13 @@
       <span class="code-tag">M</span>Option Exercise（期权行权）
       <br/>* 期末持仓：按该时间段内最后一笔交易记录的 `sharesOwnedFollowingTransaction` 近似展示。
     </div>
+    <details style="margin-top:10px;">
+      <summary style="cursor:pointer;font-weight:600;">交易代码说明（Form 4）</summary>
+      <div class="muted" style="margin-top:8px;line-height:1.7;">
+        <b>P</b> 公开市场买入；<b>S</b> 公开市场卖出；<b>M</b> 期权行权；<b>A</b> 获得/授予；<b>G</b> 赠与；<b>F</b> 税务预扣相关处置。<br/>
+        说明：S 不一定看空，需结合 10b5-1 与 footnote 判断。
+      </div>
+    </details>
   </div>
 
   <table>
@@ -111,12 +126,27 @@
       return '其他';
     }
 
-    function renderSummary(summary) {
+    function calcAmounts(rows) {
+      let buyAmt = 0, sellAmt = 0;
+      for (const r of rows || []) {
+        const shares = Number(r.shares || 0);
+        const price = Number(r.price || 0);
+        if (r.code === 'P') buyAmt += shares * price;
+        if (r.code === 'S') sellAmt += shares * price;
+      }
+      return { buyAmt, sellAmt, net: sellAmt - buyAmt };
+    }
+
+    function renderSummary(summary, rows, allTimeNet) {
       const el = document.getElementById('summary');
       const codes = Object.entries(summary.codes || {}).map(([k,v]) => `${k}: ${v}`).join(' / ') || '-';
+      const amt = calcAmounts(rows);
       el.innerHTML = `
         <div class="card"><div class="muted">总交易条数（当前年份）</div><div><b>${summary.total_transactions ?? 0}</b></div></div>
         <div class="card"><div class="muted">最近交易日</div><div><b>${summary.latest_transaction_date ?? '-'}</b></div></div>
+        <div class="card"><div class="muted">年度买入金额(P)</div><div><b>$${fmtNum(Math.round(amt.buyAmt))}</b></div></div>
+        <div class="card"><div class="muted">年度卖出金额(S)</div><div><b>$${fmtNum(Math.round(amt.sellAmt))}</b></div></div>
+        <div class="card"><div class="muted">全时段净额(卖-买)</div><div><b>$${fmtNum(Math.round(allTimeNet || 0))}</b></div></div>
         <div class="card"><div class="muted">代码分布</div><div><b>${codes}</b></div></div>
       `;
     }
@@ -125,11 +155,14 @@
       const name = document.getElementById('nameFilter').value.trim().toLowerCase();
       const code = document.getElementById('codeFilter').value;
       const onlySignal = document.getElementById('onlySignal').checked;
+      const b5 = document.getElementById('b5Filter').value;
 
       return yearRows.filter(r => {
         if (name && !(r.insider_name || '').toLowerCase().includes(name)) return false;
         if (code && r.code !== code) return false;
         if (onlySignal && !['P','S'].includes(r.code)) return false;
+        if (b5 === 'yes' && !r.is_10b5_1) return false;
+        if (b5 === 'no' && r.is_10b5_1) return false;
         return true;
       });
     }
@@ -160,6 +193,55 @@
       }).join('');
     }
 
+    function sma(arr, n) {
+      if (arr.length < n) return null;
+      const s = arr.slice(arr.length - n).reduce((a,b)=>a+b,0);
+      return s / n;
+    }
+
+    function rsi(closes, period = 14) {
+      if (closes.length < period + 1) return null;
+      let gains = 0, losses = 0;
+      for (let i = closes.length - period; i < closes.length; i++) {
+        const diff = closes[i] - closes[i-1];
+        if (diff >= 0) gains += diff; else losses += -diff;
+      }
+      if (losses === 0) return 100;
+      const rs = gains / losses;
+      return 100 - (100 / (1 + rs));
+    }
+
+    async function renderMarketSignal() {
+      const el = document.getElementById('marketSignal');
+      try {
+        const res = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/AMD?range=6mo&interval=1d');
+        const data = await res.json();
+        const q = data?.chart?.result?.[0]?.indicators?.quote?.[0];
+        const closes = (q?.close || []).filter(v => typeof v === 'number');
+        if (!closes.length) throw new Error('no price');
+        const last = closes[closes.length - 1];
+        const s20 = sma(closes, 20);
+        const s60 = sma(closes, 60);
+        const rv = rsi(closes, 14);
+
+        let trend = '中性';
+        let action = '观望';
+        if (s20 && s60 && rv !== null) {
+          if (last > s20 && s20 > s60 && rv >= 50 && rv <= 72) { trend = '强势'; action = '偏买入'; }
+          else if (last < s20 && s20 < s60 && rv <= 48) { trend = '弱势'; action = '偏卖出/减仓'; }
+        }
+
+        el.innerHTML = `
+          <div class="card"><div class="muted">AMD 价格强弱</div><div><b>${trend}</b></div></div>
+          <div class="card"><div class="muted">AI 信号（技术面）</div><div><b>${action}</b></div></div>
+          <div class="card"><div class="muted">现价 / SMA20 / SMA60</div><div><b>$${last.toFixed(2)} / $${s20?.toFixed(2) || '-'} / $${s60?.toFixed(2) || '-'}</b></div></div>
+          <div class="card"><div class="muted">RSI(14)</div><div><b>${rv?.toFixed(1) || '-'}</b></div></div>
+        `;
+      } catch (e) {
+        el.innerHTML = `<div class="card"><div class="muted">AMD 价格强弱</div><div><b>暂不可用</b></div><div class="muted">价格源获取失败，可稍后刷新</div></div>`;
+      }
+    }
+
     async function loadIndex() {
       const res = await fetch(`${dataBase}/index.json`, { cache: 'no-store' });
       if (!res.ok) throw new Error('无法读取 data/index.json');
@@ -174,20 +256,19 @@
         `生成时间(UTC): ${indexData.generated_at || '-'} | 扫描文件: ${indexData.filings_scanned || 0} | 回看天数: ${indexData.lookback_days || 0}`;
     }
 
+    function calcAllTimeNet() {
+      const allRows = Object.values(yearCache).flatMap(d => d.transactions || []);
+      return calcAmounts(allRows).net;
+    }
+
     async function loadYear(year) {
-      if (yearCache[year]) {
-        yearRows = yearCache[year].transactions || [];
-        renderSummary(yearCache[year].summary || {});
-        renderTable();
-        renderChart();
-        return;
+      if (!yearCache[year]) {
+        const res = await fetch(`${dataBase}/${year}.json`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`无法读取 ${year}.json`);
+        yearCache[year] = await res.json();
       }
-      const res = await fetch(`${dataBase}/${year}.json`, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`无法读取 ${year}.json`);
-      const data = await res.json();
-      yearCache[year] = data;
-      yearRows = data.transactions || [];
-      renderSummary(data.summary || {});
+      yearRows = yearCache[year].transactions || [];
+      renderSummary(yearCache[year].summary || {}, yearRows, calcAllTimeNet());
       renderTable();
       updateChartInsiderOptions();
       renderChart();
@@ -303,13 +384,15 @@
 
     async function loadData() {
       await loadIndex();
+      await renderMarketSignal();
+      await ensureAllYearsLoaded();
       const year = document.getElementById('yearFilter').value;
       await loadYear(year);
       updateChartInsiderOptions();
       renderChart();
     }
 
-    ['nameFilter','codeFilter','onlySignal'].forEach(id => {
+    ['nameFilter','codeFilter','onlySignal','b5Filter'].forEach(id => {
       document.getElementById(id).addEventListener('input', renderTable);
       document.getElementById(id).addEventListener('change', renderTable);
     });
