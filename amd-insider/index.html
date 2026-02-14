@@ -20,6 +20,11 @@
     .warn { color:#9a6700; }
     a { color:#0059c9; text-decoration:none; }
     a:hover { text-decoration:underline; }
+    .chart-row { display:grid; grid-template-columns: 90px 1fr 1fr; gap:8px; align-items:center; margin:6px 0; }
+    .bar-wrap { background:#f4f4f4; border-radius:6px; height:18px; overflow:hidden; }
+    .bar { height:18px; color:#fff; font-size:11px; line-height:18px; padding-left:6px; white-space:nowrap; }
+    .bar.buy { background:#16a34a; }
+    .bar.sell { background:#dc2626; }
   </style>
 </head>
 <body>
@@ -45,6 +50,23 @@
     <button id="refreshBtn">刷新</button>
   </div>
 
+  <div class="card" style="margin-bottom:14px;">
+    <div style="font-weight:600;margin-bottom:8px;">买卖趋势图（仅统计 P=买入 / S=卖出）</div>
+    <div class="filters" style="margin:8px 0;">
+      <label>维度：
+        <select id="chartGranularity">
+          <option value="year">按年</option>
+          <option value="month">按月（当前年份）</option>
+        </select>
+      </label>
+      <label>高管：
+        <select id="chartInsider"></select>
+      </label>
+    </div>
+    <div id="chartMeta" class="muted" style="margin-bottom:6px;"></div>
+    <div id="chartRows"></div>
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -67,6 +89,7 @@
     const dataBase = './data';
     let indexData = null;
     let yearRows = [];
+    const yearCache = {};
 
     const fmtNum = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '-' : Number(n).toLocaleString();
 
@@ -146,18 +169,105 @@
     }
 
     async function loadYear(year) {
+      if (yearCache[year]) {
+        yearRows = yearCache[year].transactions || [];
+        renderSummary(yearCache[year].summary || {});
+        renderTable();
+        renderChart();
+        return;
+      }
       const res = await fetch(`${dataBase}/${year}.json`, { cache: 'no-store' });
       if (!res.ok) throw new Error(`无法读取 ${year}.json`);
       const data = await res.json();
+      yearCache[year] = data;
       yearRows = data.transactions || [];
       renderSummary(data.summary || {});
       renderTable();
+      updateChartInsiderOptions();
+      renderChart();
+    }
+
+    function updateChartInsiderOptions() {
+      const sel = document.getElementById('chartInsider');
+      const names = Array.from(new Set(yearRows.map(r => r.insider_name).filter(Boolean))).sort();
+      sel.innerHTML = `<option value="">全部高管</option>` + names.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
+
+    async function ensureAllYearsLoaded() {
+      const years = (indexData?.years || []).map(y => String(y.year));
+      for (const y of years) {
+        if (!yearCache[y]) {
+          const res = await fetch(`${dataBase}/${y}.json`, { cache: 'no-store' });
+          if (res.ok) yearCache[y] = await res.json();
+        }
+      }
+    }
+
+    function aggregate(rows, keyFn, insider) {
+      const map = {};
+      for (const r of rows) {
+        if (insider && r.insider_name !== insider) continue;
+        if (!['P','S'].includes(r.code)) continue;
+        const k = keyFn(r);
+        if (!map[k]) map[k] = { buy: 0, sell: 0 };
+        const v = Number(r.shares || 0);
+        if (r.code === 'P') map[k].buy += v;
+        if (r.code === 'S') map[k].sell += v;
+      }
+      return map;
+    }
+
+    function renderChartRows(series) {
+      const holder = document.getElementById('chartRows');
+      const items = Object.entries(series);
+      if (!items.length) {
+        holder.innerHTML = `<div class="muted">暂无可绘制数据（需有 P/S 交易）</div>`;
+        return;
+      }
+      let maxV = 0;
+      items.forEach(([,v]) => { maxV = Math.max(maxV, v.buy, v.sell); });
+      if (maxV <= 0) maxV = 1;
+
+      holder.innerHTML = items.map(([label,v]) => {
+        const buyW = (v.buy / maxV) * 100;
+        const sellW = (v.sell / maxV) * 100;
+        return `
+          <div class="chart-row">
+            <div class="muted">${label}</div>
+            <div class="bar-wrap"><div class="bar buy" style="width:${buyW.toFixed(2)}%">买 ${fmtNum(Math.round(v.buy))}</div></div>
+            <div class="bar-wrap"><div class="bar sell" style="width:${sellW.toFixed(2)}%">卖 ${fmtNum(Math.round(v.sell))}</div></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function renderChart() {
+      const granularity = document.getElementById('chartGranularity').value;
+      const insider = document.getElementById('chartInsider').value;
+      const currentYear = document.getElementById('yearFilter').value;
+      const meta = document.getElementById('chartMeta');
+
+      if (granularity === 'year') {
+        await ensureAllYearsLoaded();
+        const allRows = Object.values(yearCache).flatMap(d => d.transactions || []);
+        const series = aggregate(allRows, (r) => (r.transaction_date || '').slice(0,4), insider);
+        const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
+        meta.textContent = `按年统计（单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
+        renderChartRows(ordered);
+      } else {
+        const series = aggregate(yearRows, (r) => (r.transaction_date || '').slice(0,7), insider);
+        const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
+        meta.textContent = `按月统计（${currentYear}，单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
+        renderChartRows(ordered);
+      }
     }
 
     async function loadData() {
       await loadIndex();
       const year = document.getElementById('yearFilter').value;
       await loadYear(year);
+      updateChartInsiderOptions();
+      renderChart();
     }
 
     ['nameFilter','codeFilter','onlySignal'].forEach(id => {
@@ -167,8 +277,12 @@
 
     document.getElementById('yearFilter').addEventListener('change', async (e) => {
       await loadYear(e.target.value);
+      updateChartInsiderOptions();
+      renderChart();
     });
 
+    document.getElementById('chartGranularity').addEventListener('change', renderChart);
+    document.getElementById('chartInsider').addEventListener('change', renderChart);
     document.getElementById('refreshBtn').addEventListener('click', loadData);
 
     loadData().catch(err => {
