@@ -1,47 +1,58 @@
 {
   "company": "AMD",
   "cik": "0000002488",
-  "generated_at": "2026-02-14T02:48:35.339597+00:00",
+  "generated_at": "2026-02-14T03:00:38.235270+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 100,
+  "filings_scanned": 52,
   "summary": {
-    "total_transactions": 1322,
+    "total_transactions": 1619,
     "codes": {
-      "S": 675,
-      "M": 466,
-      "F": 130,
+      "S": 725,
+      "M": 628,
+      "F": 212,
       "G": 41,
-      "P": 2,
+      "P": 4,
       "A": 6,
       "X": 1,
-      "J": 1
+      "J": 2
     },
     "insiders": {
       "Hahn Ava": 13,
-      "Su Lisa T": 291,
+      "Su Lisa T": 318,
       "GRASBY PAUL DARREN": 64,
-      "Papermaster Mark D": 235,
+      "Papermaster Mark D": 262,
       "Hu Jean X.": 19,
-      "Norrod Forrest Eugene": 191,
+      "Norrod Forrest Eugene": 204,
       "HUYNH JACK M": 22,
       "Olson Jon A": 6,
       "GUIDO PHILIP": 10,
       "VANDERSLICE ELIZABETH W": 12,
       "TALWALKAR ABHIJIT Y": 4,
       "HOUSEHOLDER JOSEPH A": 6,
-      "Denzel Nora": 9,
-      "SMITH DARLA M": 100,
+      "Denzel Nora": 12,
+      "SMITH DARLA M": 106,
       "PENG VICTOR": 43,
-      "WOLIN HARRY A": 69,
-      "KUMAR DEVINDER": 148,
+      "WOLIN HARRY A": 120,
+      "KUMAR DEVINDER": 189,
       "Bergman Rick": 19,
-      "CALDWELL JOHN EDWARD": 4,
-      "YAHIA AHMED": 9,
+      "CALDWELL JOHN EDWARD": 9,
+      "YAHIA AHMED": 17,
       "Mubadala Investment Co PJSC": 4,
-      "ANDERSON JAMES ROBERT": 36,
-      "DONOFRIO NICHOLAS M": 3,
-      "Claflin Bruce L.": 4,
-      "MUBADALA DEVELOPMENT CO PJSC": 1
+      "ANDERSON JAMES ROBERT": 42,
+      "DONOFRIO NICHOLAS M": 12,
+      "Claflin Bruce L.": 20,
+      "MUBADALA DEVELOPMENT CO PJSC": 2,
+      "CHOW HENRY": 9,
+      "HARDING JOHN R": 1,
+      "BARNES W MICHAEL": 9,
+      "BYRNE JOHN": 16,
+      "READ RORY P": 11,
+      "EBERHART PAULETT": 8,
+      "CONWAY CRAIG A": 15,
+      "PALMER ROBERT B": 1,
+      "AL MUHAIRI AL MOKARRAB WALEED": 8,
+      "SEIFERT THOMAS J": 2,
+      "GHILARDI EMILIO": 4
     },
     "latest_transaction_date": "2026-01-16"
   },
@@ -105,6 +116,36 @@
       "count": 197,
       "latest_transaction_date": "2017-12-28",
       "file": "2017.json"
+    },
+    {
+      "year": 2016,
+      "count": 85,
+      "latest_transaction_date": "2016-12-28",
+      "file": "2016.json"
+    },
+    {
+      "year": 2015,
+      "count": 44,
+      "latest_transaction_date": "2015-12-08",
+      "file": "2015.json"
+    },
+    {
+      "year": 2014,
+      "count": 66,
+      "latest_transaction_date": "2014-11-09",
+      "file": "2014.json"
+    },
+    {
+      "year": 2013,
+      "count": 54,
+      "latest_transaction_date": "2013-11-22",
+      "file": "2013.json"
+    },
+    {
+      "year": 2012,
+      "count": 48,
+      "latest_transaction_date": "2012-12-03",
+      "file": "2012.json"
     }
   ],
   "default_year": 2026
