@@ -20,11 +20,14 @@
     .warn { color:#9a6700; }
     a { color:#0059c9; text-decoration:none; }
     a:hover { text-decoration:underline; }
-    .chart-row { display:grid; grid-template-columns: 90px 1fr 1fr; gap:8px; align-items:center; margin:6px 0; }
-    .bar-wrap { background:#f4f4f4; border-radius:6px; height:18px; overflow:hidden; }
+    .chart-row { display:grid; grid-template-columns: 90px 1fr; gap:8px; align-items:center; margin:8px 0; }
+    .bar-stack { display:flex; flex-direction:column; gap:5px; }
+    .bar-wrap { background:#eef2ff; border-radius:6px; height:18px; overflow:hidden; }
     .bar { height:18px; color:#fff; font-size:11px; line-height:18px; padding-left:6px; white-space:nowrap; }
-    .bar.buy { background:#16a34a; }
-    .bar.sell { background:#dc2626; }
+    .bar.buy { background:#2563eb; }
+    .bar.sell { background:#f97316; }
+    .bar.grant { background:#8b5cf6; }
+    .bar.other { background:#14b8a6; }
   </style>
 </head>
 <body>
@@ -51,7 +54,7 @@
   </div>
 
   <div class="card" style="margin-bottom:14px;">
-    <div style="font-weight:600;margin-bottom:8px;">买卖趋势图（仅统计 P=买入 / S=卖出）</div>
+    <div style="font-weight:600;margin-bottom:8px;">高管股票操作趋势图（买入/卖出/授予/其他）</div>
     <div class="filters" style="margin:8px 0;">
       <label>维度：
         <select id="chartGranularity">
@@ -207,12 +210,14 @@
       const map = {};
       for (const r of rows) {
         if (insider && r.insider_name !== insider) continue;
-        if (!['P','S'].includes(r.code)) continue;
         const k = keyFn(r);
-        if (!map[k]) map[k] = { buy: 0, sell: 0 };
+        if (!map[k]) map[k] = { buy: 0, sell: 0, grant: 0, other: 0 };
         const v = Number(r.shares || 0);
+
         if (r.code === 'P') map[k].buy += v;
-        if (r.code === 'S') map[k].sell += v;
+        else if (r.code === 'S') map[k].sell += v;
+        else if (['A','G','M'].includes(r.code)) map[k].grant += v;
+        else map[k].other += v;
       }
       return map;
     }
@@ -221,21 +226,27 @@
       const holder = document.getElementById('chartRows');
       const items = Object.entries(series);
       if (!items.length) {
-        holder.innerHTML = `<div class="muted">暂无可绘制数据（需有 P/S 交易）</div>`;
+        holder.innerHTML = `<div class="muted">暂无可绘制数据</div>`;
         return;
       }
       let maxV = 0;
-      items.forEach(([,v]) => { maxV = Math.max(maxV, v.buy, v.sell); });
+      items.forEach(([,v]) => { maxV = Math.max(maxV, v.buy, v.sell, v.grant, v.other); });
       if (maxV <= 0) maxV = 1;
 
       holder.innerHTML = items.map(([label,v]) => {
         const buyW = (v.buy / maxV) * 100;
         const sellW = (v.sell / maxV) * 100;
+        const grantW = (v.grant / maxV) * 100;
+        const otherW = (v.other / maxV) * 100;
         return `
           <div class="chart-row">
             <div class="muted">${label}</div>
-            <div class="bar-wrap"><div class="bar buy" style="width:${buyW.toFixed(2)}%">买 ${fmtNum(Math.round(v.buy))}</div></div>
-            <div class="bar-wrap"><div class="bar sell" style="width:${sellW.toFixed(2)}%">卖 ${fmtNum(Math.round(v.sell))}</div></div>
+            <div class="bar-stack">
+              <div class="bar-wrap"><div class="bar buy" style="width:${buyW.toFixed(2)}%">买入(P) ${fmtNum(Math.round(v.buy))}</div></div>
+              <div class="bar-wrap"><div class="bar sell" style="width:${sellW.toFixed(2)}%">卖出(S) ${fmtNum(Math.round(v.sell))}</div></div>
+              <div class="bar-wrap"><div class="bar grant" style="width:${grantW.toFixed(2)}%">授予/行权(A/G/M) ${fmtNum(Math.round(v.grant))}</div></div>
+              <div class="bar-wrap"><div class="bar other" style="width:${otherW.toFixed(2)}%">其他代码 ${fmtNum(Math.round(v.other))}</div></div>
+            </div>
           </div>
         `;
       }).join('');
@@ -252,12 +263,12 @@
         const allRows = Object.values(yearCache).flatMap(d => d.transactions || []);
         const series = aggregate(allRows, (r) => (r.transaction_date || '').slice(0,4), insider);
         const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
-        meta.textContent = `按年统计（单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
+        meta.textContent = `按年统计（单位：股数；含买入/卖出/授予(A/G/M)/其他）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
         renderChartRows(ordered);
       } else {
         const series = aggregate(yearRows, (r) => (r.transaction_date || '').slice(0,7), insider);
         const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
-        meta.textContent = `按月统计（${currentYear}，单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
+        meta.textContent = `按月统计（${currentYear}，单位：股数；含买入/卖出/授予(A/G/M)/其他）${insider ? `｜高管：${insider}` : '｜高管：全部'}`;
         renderChartRows(ordered);
       }
     }
