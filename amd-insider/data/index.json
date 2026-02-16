@@ -1,15 +1,15 @@
 {
   "company": "AMD",
   "cik": "0000002488",
-  "generated_at": "2026-02-15T03:43:09.673786+00:00",
+  "generated_at": "2026-02-16T03:43:03.524279+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 710,
+  "filings_scanned": 709,
   "summary": {
-    "total_transactions": 1637,
+    "total_transactions": 1635,
     "codes": {
-      "M": 629,
+      "M": 628,
       "S": 742,
-      "F": 211,
+      "F": 210,
       "G": 42,
       "P": 4,
       "A": 6,
@@ -17,7 +17,7 @@
       "J": 2
     },
     "insiders": {
-      "Norrod Forrest Eugene": 209,
+      "Norrod Forrest Eugene": 207,
       "Su Lisa T": 332,
       "Hahn Ava": 13,
       "GRASBY PAUL DARREN": 64,
@@ -119,7 +119,7 @@
     },
     {
       "year": 2016,
-      "count": 83,
+      "count": 81,
       "latest_transaction_date": "2016-12-28",
       "file": "2016.json"
     },

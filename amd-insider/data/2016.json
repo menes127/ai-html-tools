@@ -2,19 +2,19 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2016,
-  "generated_at": "2026-02-15T03:43:09.673786+00:00",
+  "generated_at": "2026-02-16T03:43:03.524279+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 710,
+  "filings_scanned": 709,
   "summary": {
-    "total_transactions": 83,
+    "total_transactions": 81,
     "codes": {
       "S": 23,
-      "M": 39,
-      "F": 20,
+      "M": 38,
+      "F": 19,
       "J": 1
     },
     "insiders": {
-      "Norrod Forrest Eugene": 11,
+      "Norrod Forrest Eugene": 9,
       "Papermaster Mark D": 9,
       "WOLIN HARRY A": 15,
       "Su Lisa T": 10,
@@ -1738,48 +1738,6 @@
       "price": 2.83,
       "acquired_disposed": "D",
       "shares_owned_after": 435354.0,
-      "ownership_nature": "D",
-      "is_10b5_1": false,
-      "footnote_hint": null
-    },
-    {
-      "filing_date": "2016-02-18",
-      "accepted_datetime": "2016-02-18T19:14:21.000Z",
-      "accession_number": "0000002488-16-000109",
-      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248816000109/xslF345X03/wf-form4_145582284974286.xml",
-      "insider_name": "Norrod Forrest Eugene",
-      "insider_title": "SVP & GM EESC",
-      "relationship": [
-        "Officer"
-      ],
-      "transaction_date": "2016-02-16",
-      "security_title": "Common Stock",
-      "code": "M",
-      "shares": 102779.0,
-      "price": 0.0,
-      "acquired_disposed": "A",
-      "shares_owned_after": 280032.0,
-      "ownership_nature": "D",
-      "is_10b5_1": false,
-      "footnote_hint": null
-    },
-    {
-      "filing_date": "2016-02-18",
-      "accepted_datetime": "2016-02-18T19:14:21.000Z",
-      "accession_number": "0000002488-16-000109",
-      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248816000109/xslF345X03/wf-form4_145582284974286.xml",
-      "insider_name": "Norrod Forrest Eugene",
-      "insider_title": "SVP & GM EESC",
-      "relationship": [
-        "Officer"
-      ],
-      "transaction_date": "2016-02-16",
-      "security_title": "Common Stock",
-      "code": "F",
-      "shares": 29373.0,
-      "price": 1.83,
-      "acquired_disposed": "D",
-      "shares_owned_after": 250659.0,
       "ownership_nature": "D",
       "is_10b5_1": false,
       "footnote_hint": null
