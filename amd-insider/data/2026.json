@@ -2,27 +2,471 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2026,
-  "generated_at": "2026-02-18T03:44:10.620642+00:00",
+  "generated_at": "2026-02-19T03:40:21.868807+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 709,
+  "filings_scanned": 714,
   "summary": {
-    "total_transactions": 18,
+    "total_transactions": 39,
     "codes": {
-      "M": 2,
-      "S": 15,
-      "F": 1
+      "S": 24,
+      "M": 9,
+      "F": 6
     },
     "insiders": {
-      "Norrod Forrest Eugene": 5,
-      "Su Lisa T": 10,
-      "Hahn Ava": 3
+      "Hu Jean X.": 11,
+      "HUYNH JACK M": 3,
+      "GRASBY PAUL DARREN": 2,
+      "Hahn Ava": 5,
+      "Norrod Forrest Eugene": 8,
+      "Su Lisa T": 10
     },
-    "latest_transaction_date": "2026-02-11"
+    "latest_transaction_date": "2026-02-17"
   },
   "transactions": [
     {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 690.0,
+      "price": 196.78,
+      "acquired_disposed": "D",
+      "shares_owned_after": 44214.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $196.25 to $197.18 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 2355.0,
+      "price": 197.73,
+      "acquired_disposed": "D",
+      "shares_owned_after": 41859.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $197.35 to $198.23 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 1513.0,
+      "price": 198.73,
+      "acquired_disposed": "D",
+      "shares_owned_after": 40346.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $198.50 to $199.17 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 1431.0,
+      "price": 200.36,
+      "acquired_disposed": "D",
+      "shares_owned_after": 38915.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $199.92 to $200.85 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 3564.0,
+      "price": 201.41,
+      "acquired_disposed": "D",
+      "shares_owned_after": 35351.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $200.92 to $201.89 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 4254.0,
+      "price": 202.35,
+      "acquired_disposed": "D",
+      "shares_owned_after": 31097.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $201.95 to $202.93 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 2134.0,
+      "price": 203.49,
+      "acquired_disposed": "D",
+      "shares_owned_after": 28963.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $202.98 to $203.96 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 3215.0,
+      "price": 204.6,
+      "acquired_disposed": "D",
+      "shares_owned_after": 25748.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $204.05 to $204.98 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-17",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 800.0,
+      "price": 205.12,
+      "acquired_disposed": "D",
+      "shares_owned_after": 24948.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on August 22, 2025. | Transaction executed in multiple trades at prices ranging from $205.08 to $205.20 per share, inclusive. The price reported in column 4 above reflects the weighted average sale price per share. The Reporting Person hereby undertakes to provide the SEC staff, the Issuer or a security holder of the Issuer, upon request, full information regarding the number of shares sold at each respective price within the range set forth in this footnote."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 30788.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 56320.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accession_number": "0000002488-26-000039",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
+      "insider_name": "Hu Jean X.",
+      "insider_title": "EVP, CFO and Treasurer",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 11416.0,
+      "price": 207.32,
+      "acquired_disposed": "D",
+      "shares_owned_after": 44904.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accession_number": "0000002488-26-000037",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
+      "insider_name": "HUYNH JACK M",
+      "insider_title": "SVP & GM, Computing & Graphics",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 2474.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 439074.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accession_number": "0000002488-26-000037",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
+      "insider_name": "HUYNH JACK M",
+      "insider_title": "SVP & GM, Computing & Graphics",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 36570.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 475644.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accession_number": "0000002488-26-000037",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
+      "insider_name": "HUYNH JACK M",
+      "insider_title": "SVP & GM, Computing & Graphics",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 14669.0,
+      "price": 207.32,
+      "acquired_disposed": "D",
+      "shares_owned_after": 460975.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\") and performance-based restricted stock units (\"PRSU\")."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:24:34.000Z",
+      "accession_number": "0000002488-26-000035",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000035/xslF345X05/wk-form4_1771449870.xml",
+      "insider_name": "GRASBY PAUL DARREN",
+      "insider_title": "EVP & CSO",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 7084.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 140428.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:24:34.000Z",
+      "accession_number": "0000002488-26-000035",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000035/xslF345X05/wk-form4_1771449870.xml",
+      "insider_name": "GRASBY PAUL DARREN",
+      "insider_title": "EVP & CSO",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 3330.0,
+      "price": 207.32,
+      "acquired_disposed": "D",
+      "shares_owned_after": 137098.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:20:27.000Z",
+      "accession_number": "0000002488-26-000033",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000033/xslF345X05/wk-form4_1771449622.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 2268.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 18627.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:20:27.000Z",
+      "accession_number": "0000002488-26-000033",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000033/xslF345X05/wk-form4_1771449622.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 1125.0,
+      "price": 207.32,
+      "acquired_disposed": "D",
+      "shares_owned_after": 17502.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\")."
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accession_number": "0000002488-26-000031",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
+      "insider_name": "Norrod Forrest Eugene",
+      "insider_title": "EVP & GM DESG",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 10996.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 300094.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accession_number": "0000002488-26-000031",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
+      "insider_name": "Norrod Forrest Eugene",
+      "insider_title": "EVP & GM DESG",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "M",
+      "shares": 65970.0,
+      "price": 0.0,
+      "acquired_disposed": "A",
+      "shares_owned_after": 366064.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": null
+    },
+    {
+      "filing_date": "2026-02-18",
+      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accession_number": "0000002488-26-000031",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
+      "insider_name": "Norrod Forrest Eugene",
+      "insider_title": "EVP & GM DESG",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-15",
+      "security_title": "Common Stock",
+      "code": "F",
+      "shares": 30287.0,
+      "price": 207.32,
+      "acquired_disposed": "D",
+      "shares_owned_after": 335777.0,
+      "ownership_nature": "D",
+      "is_10b5_1": false,
+      "footnote_hint": "The shares are withheld at the election of the Reporting Person to satisfy tax withholding obligations in connection with the release of restricted stock units (\"RSU\") and performance-based restricted stock units (\"PRSU\")."
+    },
+    {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:20:51.000Z",
+      "accepted_datetime": "2026-02-13T21:20:51.000Z",
       "accession_number": "0000002488-26-000026",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000026/xslF345X05/wk-form4_1771017649.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -43,7 +487,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:20:51.000Z",
+      "accepted_datetime": "2026-02-13T21:20:51.000Z",
       "accession_number": "0000002488-26-000026",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000026/xslF345X05/wk-form4_1771017649.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -64,7 +508,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:20:51.000Z",
+      "accepted_datetime": "2026-02-13T21:20:51.000Z",
       "accession_number": "0000002488-26-000026",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000026/xslF345X05/wk-form4_1771017649.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -85,7 +529,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:20:51.000Z",
+      "accepted_datetime": "2026-02-13T21:20:51.000Z",
       "accession_number": "0000002488-26-000026",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000026/xslF345X05/wk-form4_1771017649.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -106,7 +550,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:20:51.000Z",
+      "accepted_datetime": "2026-02-13T21:20:51.000Z",
       "accession_number": "0000002488-26-000026",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000026/xslF345X05/wk-form4_1771017649.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -127,7 +571,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -149,7 +593,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -171,7 +615,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -193,7 +637,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -215,7 +659,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -237,7 +681,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -259,7 +703,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -281,7 +725,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -303,7 +747,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
@@ -325,7 +769,7 @@
     },
     {
       "filing_date": "2026-02-13",
-      "accepted_datetime": "2026-02-13T16:11:43.000Z",
+      "accepted_datetime": "2026-02-13T21:11:43.000Z",
       "accession_number": "0000002488-26-000024",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000024/xslF345X05/wk-form4_1771017100.xml",
       "insider_name": "Su Lisa T",
