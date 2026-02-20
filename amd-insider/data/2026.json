@@ -2,7 +2,7 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2026,
-  "generated_at": "2026-02-19T03:40:21.868807+00:00",
+  "generated_at": "2026-02-20T03:40:10.959142+00:00",
   "lookback_days": 3650,
   "filings_scanned": 714,
   "summary": {
@@ -25,7 +25,7 @@
   "transactions": [
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -46,7 +46,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -67,7 +67,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -88,7 +88,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -109,7 +109,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -130,7 +130,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -151,7 +151,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -172,7 +172,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -193,7 +193,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -214,7 +214,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -235,7 +235,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:39:47.000Z",
+      "accepted_datetime": "2026-02-18T21:39:47.000Z",
       "accession_number": "0000002488-26-000039",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000039/xslF345X05/wk-form4_1771450784.xml",
       "insider_name": "Hu Jean X.",
@@ -256,7 +256,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accepted_datetime": "2026-02-18T21:28:06.000Z",
       "accession_number": "0000002488-26-000037",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
       "insider_name": "HUYNH JACK M",
@@ -277,7 +277,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accepted_datetime": "2026-02-18T21:28:06.000Z",
       "accession_number": "0000002488-26-000037",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
       "insider_name": "HUYNH JACK M",
@@ -298,7 +298,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:28:06.000Z",
+      "accepted_datetime": "2026-02-18T21:28:06.000Z",
       "accession_number": "0000002488-26-000037",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000037/xslF345X05/wk-form4_1771450082.xml",
       "insider_name": "HUYNH JACK M",
@@ -319,7 +319,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:24:34.000Z",
+      "accepted_datetime": "2026-02-18T21:24:34.000Z",
       "accession_number": "0000002488-26-000035",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000035/xslF345X05/wk-form4_1771449870.xml",
       "insider_name": "GRASBY PAUL DARREN",
@@ -340,7 +340,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:24:34.000Z",
+      "accepted_datetime": "2026-02-18T21:24:34.000Z",
       "accession_number": "0000002488-26-000035",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000035/xslF345X05/wk-form4_1771449870.xml",
       "insider_name": "GRASBY PAUL DARREN",
@@ -361,7 +361,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:20:27.000Z",
+      "accepted_datetime": "2026-02-18T21:20:27.000Z",
       "accession_number": "0000002488-26-000033",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000033/xslF345X05/wk-form4_1771449622.xml",
       "insider_name": "Hahn Ava",
@@ -382,7 +382,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:20:27.000Z",
+      "accepted_datetime": "2026-02-18T21:20:27.000Z",
       "accession_number": "0000002488-26-000033",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000033/xslF345X05/wk-form4_1771449622.xml",
       "insider_name": "Hahn Ava",
@@ -403,7 +403,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accepted_datetime": "2026-02-18T21:17:55.000Z",
       "accession_number": "0000002488-26-000031",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -424,7 +424,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accepted_datetime": "2026-02-18T21:17:55.000Z",
       "accession_number": "0000002488-26-000031",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
       "insider_name": "Norrod Forrest Eugene",
@@ -445,7 +445,7 @@
     },
     {
       "filing_date": "2026-02-18",
-      "accepted_datetime": "2026-02-18T16:17:55.000Z",
+      "accepted_datetime": "2026-02-18T21:17:55.000Z",
       "accession_number": "0000002488-26-000031",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000031/xslF345X05/wk-form4_1771449472.xml",
       "insider_name": "Norrod Forrest Eugene",
