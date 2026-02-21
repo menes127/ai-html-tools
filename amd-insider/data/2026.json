@@ -2,27 +2,48 @@
   "company": "AMD",
   "cik": "0000002488",
   "year": 2026,
-  "generated_at": "2026-02-20T03:40:10.959142+00:00",
+  "generated_at": "2026-02-21T03:21:58.973118+00:00",
   "lookback_days": 3650,
-  "filings_scanned": 714,
+  "filings_scanned": 715,
   "summary": {
-    "total_transactions": 39,
+    "total_transactions": 40,
     "codes": {
-      "S": 24,
+      "S": 25,
       "M": 9,
       "F": 6
     },
     "insiders": {
+      "Hahn Ava": 6,
       "Hu Jean X.": 11,
       "HUYNH JACK M": 3,
       "GRASBY PAUL DARREN": 2,
-      "Hahn Ava": 5,
       "Norrod Forrest Eugene": 8,
       "Su Lisa T": 10
     },
-    "latest_transaction_date": "2026-02-17"
+    "latest_transaction_date": "2026-02-18"
   },
   "transactions": [
+    {
+      "filing_date": "2026-02-20",
+      "accepted_datetime": "2026-02-20T16:05:40.000Z",
+      "accession_number": "0000002488-26-000042",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000042/xslF345X05/wk-form4_1771621537.xml",
+      "insider_name": "Hahn Ava",
+      "insider_title": "SVP, GC & Corporate Secretary",
+      "relationship": [
+        "Officer"
+      ],
+      "transaction_date": "2026-02-18",
+      "security_title": "Common Stock",
+      "code": "S",
+      "shares": 286.0,
+      "price": 198.65,
+      "acquired_disposed": "D",
+      "shares_owned_after": 17216.0,
+      "ownership_nature": "D",
+      "is_10b5_1": true,
+      "footnote_hint": "The sales reported in this Form 4 were effected pursuant to a Rule 10b5-1 trading plan adopted by the Reporting Person on June 2, 2025."
+    },
     {
       "filing_date": "2026-02-18",
       "accepted_datetime": "2026-02-18T21:39:47.000Z",
