@@ -19,6 +19,20 @@
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `SEC_USER_AGENT`
 
+## 本地环境变量（`.env`）
+
+在 `amd-insider/.env` 中配置：
+
+```env
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_ANON_KEY=<publishable-or-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+SEC_USER_AGENT=<name email@example.com>
+```
+
+- `SUPABASE_SERVICE_ROLE_KEY` 仅用于后端写入（抓取/回填脚本），不要暴露到前端。
+- `SUPABASE_ANON_KEY` 仅用于前端只读查询（配合 RLS 只读视图）。
+
 ## 常用命令
 
 ```bash
@@ -37,7 +51,7 @@ python3 scripts/backfill_json_to_supabase.py --batch-size 500
 
 ## 前端本地预览
 
-`index.html` 依赖全局变量：
+`index.html` 依赖全局变量（可从 `.env` 手动复制）：
 
 ```html
 <script>
@@ -52,6 +66,10 @@ python3 scripts/backfill_json_to_supabase.py --batch-size 500
 python3 -m http.server 8000
 # 打开 http://localhost:8000/amd-insider/
 ```
+
+建议先在浏览器开发者工具确认：
+- `window.SUPABASE_URL` 不为空
+- `window.SUPABASE_ANON_KEY` 不为空
 
 ## SEC 访问提示
 

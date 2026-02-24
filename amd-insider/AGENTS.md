@@ -8,6 +8,7 @@
 - `tests/`: Python unit tests for payload mapping and CLI validation.
 
 ## Build, Test, and Development Commands
+- `set -a && source .env && set +a`: load local env vars before write/read tests.
 - `python3 amd_insider_monitor.py --days 365 --to-supabase`: sync recent filings to Supabase.
 - `python3 amd_insider_monitor.py --year 2025 --to-supabase`: refresh one year.
 - `python3 scripts/backfill_json_to_supabase.py --dry-run`: inspect backfill counts without writes.
@@ -32,6 +33,7 @@
 - PRs should include: change summary, verification commands, required secrets/env updates, and UI screenshots for `index.html` changes.
 
 ## Security & Configuration Tips
+- Keep `.env` local-only and ignored by git.
 - Never commit service role keys; store in GitHub Secrets.
 - Frontend must use only `SUPABASE_ANON_KEY` with read-only view access.
 - Keep RLS enabled and avoid granting anon access to base tables.
