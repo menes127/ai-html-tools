@@ -2,7 +2,6 @@ name: Update AMD Insider Data
 
 on:
   schedule:
-    # 09:00 Asia/Shanghai = 01:00 UTC
     - cron: '0 1 * * *'
   workflow_dispatch:
     inputs:
@@ -16,7 +15,7 @@ on:
         default: ""
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   update:
@@ -30,49 +29,30 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Update AMD insider yearly data
-        id: update_json
+      - name: Update AMD insider data to Supabase
         env:
           SEC_USER_AGENT: "${{ secrets.SEC_USER_AGENT }}"
+          SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
+          SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
         run: |
-          set +e
-          if [ -z "$SEC_USER_AGENT" ]; then
+          set -euo pipefail
+
+          if [ -z "${SEC_USER_AGENT:-}" ]; then
             export SEC_USER_AGENT="${{ github.actor }} sec-monitor-contact@example.com"
+          fi
+
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+            echo "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY secret"
+            exit 1
           fi
 
           DAYS="${{ github.event.inputs.days || '3650' }}"
           YEAR="${{ github.event.inputs.year || '' }}"
 
           if [ -n "$YEAR" ]; then
-            echo "Updating only year=$YEAR"
-            python amd-insider/amd_insider_monitor.py --year "$YEAR" --days "$DAYS" --output-dir amd-insider/data
+            echo "Updating Supabase for year=$YEAR"
+            python amd-insider/amd_insider_monitor.py --year "$YEAR" --days "$DAYS" --to-supabase
           else
-            echo "Updating full window days=$DAYS"
-            python amd-insider/amd_insider_monitor.py --days "$DAYS" --output-dir amd-insider/data
+            echo "Updating Supabase for days=$DAYS"
+            python amd-insider/amd_insider_monitor.py --days "$DAYS" --to-supabase
           fi
-
-          code=$?
-          if [ $code -ne 0 ]; then
-            echo "update_failed=true" >> $GITHUB_OUTPUT
-            echo "SEC fetch failed (exit $code). Keep previous data and continue."
-          else
-            echo "update_failed=false" >> $GITHUB_OUTPUT
-          fi
-          exit 0
-
-      - name: Commit and push if changed
-        run: |
-          if git diff --quiet; then
-            echo "No changes"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add amd-insider/data/*.json
-          git commit -m "chore: update AMD insider yearly shards"
-          git push
-
-      - name: Notice when SEC blocks request
-        if: steps.update_json.outputs.update_failed == 'true'
-        run: |
-          echo "SEC returned blocking/rate-limit response. Consider setting repo secret SEC_USER_AGENT with real contact email."

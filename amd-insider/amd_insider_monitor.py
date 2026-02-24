@@ -6,13 +6,14 @@ import json
 import os
 import sys
 import time
+import urllib.parse
 import urllib.request
 from urllib.error import HTTPError, URLError
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 AMD_CIK = "0000002488"
 SUBMISSIONS_URL = f"https://data.sec.gov/submissions/CIK{AMD_CIK}.json"
@@ -71,6 +72,37 @@ def http_get(url: str, user_agent: str, timeout: int = 25, retries: int = 4) -> 
     if last_err:
         raise last_err
     raise RuntimeError("http_get failed")
+
+
+def http_post_json(url: str, payload: Any, headers: Dict[str, str], timeout: int = 30, retries: int = 4) -> bytes:
+    last_err: Optional[Exception] = None
+    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(
+                url,
+                data=data,
+                headers={"Content-Type": "application/json", **headers},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except HTTPError as e:
+            last_err = e
+            if e.code in (408, 409, 425, 429, 500, 502, 503, 504) and attempt < retries:
+                time.sleep(min(2**attempt, 12))
+                continue
+            detail = e.read().decode("utf-8", errors="ignore")[:600]
+            raise RuntimeError(f"POST {url} failed ({e.code}): {detail}") from e
+        except URLError as e:
+            last_err = e
+            if attempt < retries:
+                time.sleep(min(2**attempt, 12))
+                continue
+            raise
+    if last_err:
+        raise last_err
+    raise RuntimeError("http_post_json failed")
 
 
 def load_json(url: str, ua: str) -> Dict[str, Any]:
@@ -158,10 +190,14 @@ def parse_relationship(root: ET.Element) -> tuple[str, Optional[str], List[str]]
     insider_title = text_of(owner_rel.find("officerTitle")) if owner_rel is not None else None
     rel = []
     if owner_rel is not None:
-        if boolish(text_of(owner_rel.find("isDirector"))): rel.append("Director")
-        if boolish(text_of(owner_rel.find("isOfficer"))): rel.append("Officer")
-        if boolish(text_of(owner_rel.find("isTenPercentOwner"))): rel.append("10% Owner")
-        if boolish(text_of(owner_rel.find("isOther"))): rel.append("Other")
+        if boolish(text_of(owner_rel.find("isDirector"))):
+            rel.append("Director")
+        if boolish(text_of(owner_rel.find("isOfficer"))):
+            rel.append("Officer")
+        if boolish(text_of(owner_rel.find("isTenPercentOwner"))):
+            rel.append("10% Owner")
+        if boolish(text_of(owner_rel.find("isOther"))):
+            rel.append("Other")
     return insider_name or "Unknown", insider_title, rel
 
 
@@ -302,7 +338,6 @@ def write_year_shards(trades: List[Trade], out_dir: Path, meta: Dict[str, Any], 
         }
         (out_dir / f"{y}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    # rebuild index from existing yearly files (preserve other years)
     years_meta = []
     all_rows: List[Trade] = []
     for p in sorted(out_dir.glob("*.json"), reverse=True):
@@ -339,18 +374,116 @@ def write_year_shards(trades: List[Trade], out_dir: Path, meta: Dict[str, Any], 
     (out_dir / "index.json").write_text(json.dumps(idx, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def filing_to_row(filing_meta: Dict[str, str]) -> Dict[str, Any]:
+    return {
+        "accession_number": filing_meta["accession"],
+        "filing_date": filing_meta["filing_date"],
+        "accepted_datetime": filing_meta.get("accepted_datetime"),
+        "filing_url": filing_meta["filing_url"],
+    }
+
+
+def trade_to_row(t: Trade) -> Dict[str, Any]:
+    return {
+        "accession_number": t.accession_number,
+        "transaction_date": t.transaction_date,
+        "filing_date": t.filing_date,
+        "filing_url": t.filing_url,
+        "insider_name": t.insider_name,
+        "insider_title": t.insider_title,
+        "relationship": t.relationship,
+        "security_title": t.security_title,
+        "code": t.code,
+        "shares": t.shares,
+        "price": t.price,
+        "acquired_disposed": t.acquired_disposed,
+        "shares_owned_after": t.shares_owned_after,
+        "ownership_nature": t.ownership_nature,
+        "is_10b5_1": t.is_10b5_1,
+        "footnote_hint": t.footnote_hint,
+    }
+
+
+def chunks(rows: List[Dict[str, Any]], size: int) -> Iterable[List[Dict[str, Any]]]:
+    for i in range(0, len(rows), size):
+        yield rows[i : i + size]
+
+
+def upsert_rows(
+    *,
+    supabase_url: str,
+    api_key: str,
+    table: str,
+    rows: List[Dict[str, Any]],
+    on_conflict: str,
+    batch_size: int,
+) -> int:
+    if not rows:
+        return 0
+
+    encoded_conflict = urllib.parse.quote(on_conflict, safe=",")
+    url = f"{supabase_url.rstrip('/')}/rest/v1/{table}?on_conflict={encoded_conflict}"
+    headers = {
+        "apikey": api_key,
+        "Authorization": f"Bearer {api_key}",
+        "Prefer": "resolution=merge-duplicates,return=minimal",
+    }
+    written = 0
+    for batch in chunks(rows, batch_size):
+        http_post_json(url, batch, headers)
+        written += len(batch)
+    return written
+
+
+def upsert_to_supabase(
+    *,
+    filings: List[Dict[str, str]],
+    trades: List[Trade],
+    supabase_url: str,
+    api_key: str,
+    batch_size: int,
+) -> Dict[str, int]:
+    filing_rows = [filing_to_row(f) for f in filings]
+    tx_rows = [trade_to_row(t) for t in trades]
+
+    filed = upsert_rows(
+        supabase_url=supabase_url,
+        api_key=api_key,
+        table="filings",
+        rows=filing_rows,
+        on_conflict="accession_number",
+        batch_size=batch_size,
+    )
+    transacted = upsert_rows(
+        supabase_url=supabase_url,
+        api_key=api_key,
+        table="transactions",
+        rows=tx_rows,
+        on_conflict="accession_number,transaction_date,insider_name,code,shares,price",
+        batch_size=batch_size,
+    )
+    return {"filings_upserted": filed, "transactions_upserted": transacted}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="AMD Form 4 insider monitor")
     parser.add_argument("--days", type=int, default=3650, help="Lookback days (default 10 years)")
     parser.add_argument("--year", type=int, default=None, help="Only update one specific year, e.g. 2021")
     parser.add_argument("--output", default=None, help="Legacy single-file output")
-    parser.add_argument("--output-dir", default=None, help="Year-shard output directory")
+    parser.add_argument("--output-dir", default=None, help="Legacy year-shard output directory")
+    parser.add_argument("--to-supabase", action=argparse.BooleanOptionalAction, default=True, help="Upsert data to Supabase (default true)")
+    parser.add_argument("--supabase-url", default=os.getenv("SUPABASE_URL"), help="Supabase project URL")
+    parser.add_argument("--supabase-key", default=os.getenv("SUPABASE_SERVICE_ROLE_KEY"), help="Supabase service role key")
+    parser.add_argument("--batch-size", type=int, default=500, help="Supabase upsert batch size")
     parser.add_argument("--sleep", type=float, default=0.2, help="Pause between SEC requests")
     parser.add_argument("--user-agent", default=os.getenv("SEC_USER_AGENT", "amd-monitor contact: your@email.com"))
     args = parser.parse_args()
 
-    if not args.output and not args.output_dir:
-        parser.error("Either --output or --output-dir is required")
+    if not args.to_supabase and not args.output and not args.output_dir:
+        parser.error("At least one output is required: --to-supabase, --output, or --output-dir")
+
+    if args.to_supabase and (not args.supabase_url or not args.supabase_key):
+        parser.error("--to-supabase requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or CLI overrides)")
 
     if args.year:
         start = date(args.year, 1, 1)
@@ -379,8 +512,27 @@ def main() -> int:
         "filings_scanned": len(filings),
     }
 
+    if args.to_supabase:
+        result = upsert_to_supabase(
+            filings=filings,
+            trades=trades,
+            supabase_url=args.supabase_url,
+            api_key=args.supabase_key,
+            batch_size=args.batch_size,
+        )
+        print(
+            "Upserted to Supabase: "
+            f"filings={result['filings_upserted']} transactions={result['transactions_upserted']}"
+        )
+
     if args.output:
-        payload = {"company": "AMD", "cik": AMD_CIK, **meta, "summary": summarize(trades), "transactions": [asdict(t) for t in trades]}
+        payload = {
+            "company": "AMD",
+            "cik": AMD_CIK,
+            **meta,
+            "summary": summarize(trades),
+            "transactions": [asdict(t) for t in trades],
+        }
         Path(args.output).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Saved {len(trades)} transactions -> {args.output}")
 
