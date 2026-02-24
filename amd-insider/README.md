@@ -49,14 +49,14 @@ python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --batch-si
 
 ## 前端本地预览
 
-`index.html` 依赖全局变量（可从 `.env` 手动复制）：
+`index.html` 通过 `config.js` 读取前端只读配置：
 
-```html
-<script>
-  window.SUPABASE_URL = 'https://<project>.supabase.co';
-  window.SUPABASE_ANON_KEY = '<anon-key>';
-</script>
+```js
+window.SUPABASE_URL = 'https://<project>.supabase.co';
+window.SUPABASE_ANON_KEY = '<anon-key>';
 ```
+
+请确保 `config.js` 中仅包含公开可见的 URL + publishable/anon key，不要放 service role key。
 
 然后启动静态服务：
 
