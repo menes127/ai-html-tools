@@ -10,9 +10,8 @@ import urllib.parse
 import urllib.request
 from urllib.error import HTTPError, URLError
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 AMD_CIK = "0000002488"
@@ -286,94 +285,6 @@ def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str) -> List[Trade]:
     return []
 
 
-def summarize(trades: List[Trade]) -> Dict[str, Any]:
-    codes: Dict[str, int] = {}
-    insiders: Dict[str, int] = {}
-    for t in trades:
-        codes[t.code] = codes.get(t.code, 0) + 1
-        insiders[t.insider_name] = insiders.get(t.insider_name, 0) + 1
-    return {
-        "total_transactions": len(trades),
-        "codes": codes,
-        "insiders": insiders,
-        "latest_transaction_date": max((t.transaction_date for t in trades), default=None),
-    }
-
-
-def tx_year(t: Trade) -> int:
-    try:
-        return int(t.transaction_date[:4])
-    except Exception:
-        return int(t.filing_date[:4])
-
-
-def load_year_file(path: Path) -> Optional[Dict[str, Any]]:
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return None
-
-
-def write_year_shards(trades: List[Trade], out_dir: Path, meta: Dict[str, Any], year_only: Optional[int]) -> None:
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    by_year: Dict[int, List[Trade]] = {}
-    for t in trades:
-        y = tx_year(t)
-        if year_only and y != year_only:
-            continue
-        by_year.setdefault(y, []).append(t)
-
-    for y, rows in by_year.items():
-        rows.sort(key=lambda t: (t.transaction_date, t.filing_date), reverse=True)
-        payload = {
-            "company": "AMD",
-            "cik": AMD_CIK,
-            "year": y,
-            **meta,
-            "summary": summarize(rows),
-            "transactions": [asdict(t) for t in rows],
-        }
-        (out_dir / f"{y}.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-
-    years_meta = []
-    all_rows: List[Trade] = []
-    for p in sorted(out_dir.glob("*.json"), reverse=True):
-        if p.name == "index.json":
-            continue
-        d = load_year_file(p)
-        if not d:
-            continue
-        y = d.get("year")
-        txs = d.get("transactions", [])
-        years_meta.append(
-            {
-                "year": y,
-                "count": len(txs),
-                "latest_transaction_date": d.get("summary", {}).get("latest_transaction_date"),
-                "file": p.name,
-            }
-        )
-        for x in txs:
-            try:
-                all_rows.append(Trade(**x))
-            except Exception:
-                pass
-
-    years_meta.sort(key=lambda x: int(x.get("year", 0)), reverse=True)
-    idx = {
-        "company": "AMD",
-        "cik": AMD_CIK,
-        **meta,
-        "summary": summarize(all_rows),
-        "years": years_meta,
-        "default_year": years_meta[0]["year"] if years_meta else None,
-    }
-    (out_dir / "index.json").write_text(json.dumps(idx, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 def filing_to_row(filing_meta: Dict[str, str]) -> Dict[str, Any]:
     return {
         "accession_number": filing_meta["accession"],
@@ -469,9 +380,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="AMD Form 4 insider monitor")
     parser.add_argument("--days", type=int, default=3650, help="Lookback days (default 10 years)")
     parser.add_argument("--year", type=int, default=None, help="Only update one specific year, e.g. 2021")
-    parser.add_argument("--output", default=None, help="Legacy single-file output")
-    parser.add_argument("--output-dir", default=None, help="Legacy year-shard output directory")
-    parser.add_argument("--to-supabase", action=argparse.BooleanOptionalAction, default=True, help="Upsert data to Supabase (default true)")
     parser.add_argument("--supabase-url", default=os.getenv("SUPABASE_URL"), help="Supabase project URL")
     parser.add_argument("--supabase-key", default=os.getenv("SUPABASE_SERVICE_ROLE_KEY"), help="Supabase service role key")
     parser.add_argument("--batch-size", type=int, default=500, help="Supabase upsert batch size")
@@ -479,11 +387,8 @@ def main() -> int:
     parser.add_argument("--user-agent", default=os.getenv("SEC_USER_AGENT", "amd-monitor contact: your@email.com"))
     args = parser.parse_args()
 
-    if not args.to_supabase and not args.output and not args.output_dir:
-        parser.error("At least one output is required: --to-supabase, --output, or --output-dir")
-
-    if args.to_supabase and (not args.supabase_url or not args.supabase_key):
-        parser.error("--to-supabase requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or CLI overrides)")
+    if not args.supabase_url or not args.supabase_key:
+        parser.error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required (or pass --supabase-url/--supabase-key)")
 
     if args.year:
         start = date(args.year, 1, 1)
@@ -506,40 +411,17 @@ def main() -> int:
             time.sleep(args.sleep)
 
     trades.sort(key=lambda t: (t.transaction_date, t.filing_date), reverse=True)
-    meta = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "lookback_days": args.days,
-        "filings_scanned": len(filings),
-    }
-
-    if args.to_supabase:
-        result = upsert_to_supabase(
-            filings=filings,
-            trades=trades,
-            supabase_url=args.supabase_url,
-            api_key=args.supabase_key,
-            batch_size=args.batch_size,
-        )
-        print(
-            "Upserted to Supabase: "
-            f"filings={result['filings_upserted']} transactions={result['transactions_upserted']}"
-        )
-
-    if args.output:
-        payload = {
-            "company": "AMD",
-            "cik": AMD_CIK,
-            **meta,
-            "summary": summarize(trades),
-            "transactions": [asdict(t) for t in trades],
-        }
-        Path(args.output).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"Saved {len(trades)} transactions -> {args.output}")
-
-    if args.output_dir:
-        write_year_shards(trades, Path(args.output_dir), meta, args.year)
-        target = f"year {args.year}" if args.year else "yearly shards"
-        print(f"Saved {len(trades)} transactions -> {args.output_dir} ({target})")
+    result = upsert_to_supabase(
+        filings=filings,
+        trades=trades,
+        supabase_url=args.supabase_url,
+        api_key=args.supabase_key,
+        batch_size=args.batch_size,
+    )
+    print(
+        "Upserted to Supabase: "
+        f"filings={result['filings_upserted']} transactions={result['transactions_upserted']}"
+    )
 
     return 0
 

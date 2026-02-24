@@ -51,8 +51,8 @@ jobs:
 
           if [ -n "$YEAR" ]; then
             echo "Updating Supabase for year=$YEAR"
-            python amd-insider/amd_insider_monitor.py --year "$YEAR" --days "$DAYS" --to-supabase
+            python amd-insider/amd_insider_monitor.py --year "$YEAR" --days "$DAYS"
           else
             echo "Updating Supabase for days=$DAYS"
-            python amd-insider/amd_insider_monitor.py --days "$DAYS" --to-supabase
+            python amd-insider/amd_insider_monitor.py --days "$DAYS"
           fi

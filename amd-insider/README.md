@@ -37,10 +37,10 @@ SEC_USER_AGENT=<name email@example.com>
 
 ```bash
 # 同步最近 365 天到 Supabase
-python3 amd_insider_monitor.py --days 365 --to-supabase
+python3 amd_insider_monitor.py --days 365
 
 # 只更新某一年
-python3 amd_insider_monitor.py --year 2025 --to-supabase
+python3 amd_insider_monitor.py --year 2025
 
 # （可选）从外部 JSON 文件做一次性回填
 python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --dry-run

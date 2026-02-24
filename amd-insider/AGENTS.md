@@ -9,8 +9,8 @@
 
 ## Build, Test, and Development Commands
 - `set -a && source .env && set +a`: load local env vars before write/read tests.
-- `python3 amd_insider_monitor.py --days 365 --to-supabase`: sync recent filings to Supabase.
-- `python3 amd_insider_monitor.py --year 2025 --to-supabase`: refresh one year.
+- `python3 amd_insider_monitor.py --days 365`: sync recent filings to Supabase.
+- `python3 amd_insider_monitor.py --year 2025`: refresh one year.
 - `python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --dry-run`: inspect external backfill counts without writes.
 - `python3 -m unittest discover -s tests -v`: run unit tests.
 - `python3 -m py_compile amd_insider_monitor.py scripts/backfill_json_to_supabase.py`: syntax check.
