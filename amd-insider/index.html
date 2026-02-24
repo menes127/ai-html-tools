@@ -311,7 +311,7 @@
       });
       indexData = {
         years,
-        default_year: years.length ? years[0].year : null,
+        default_year: 'all',
       };
 
       const summaryRows = await sbFetch('v_summary', {
@@ -321,7 +321,8 @@
       globalSummary = summaryRows[0] || {};
 
       const yearSel = document.getElementById('yearFilter');
-      yearSel.innerHTML = years.map(y => `<option value="${y.year}">${y.year} (${y.count})</option>`).join('');
+      yearSel.innerHTML = '<option value="all">全部年份</option>' +
+        years.map(y => `<option value="${y.year}">${y.year} (${y.count})</option>`).join('');
       if (indexData.default_year) yearSel.value = String(indexData.default_year);
 
       document.getElementById('meta').textContent =
@@ -329,6 +330,17 @@
     }
 
     async function loadYear(year) {
+      if (String(year) === 'all') {
+        await ensureAllYearsLoaded();
+        yearRows = Object.values(yearCache).flat();
+        const allSummary = summarizeRows(yearRows);
+        renderSummary(allSummary, yearRows, globalSummary.net_amount || 0);
+        renderTable();
+        updateChartInsiderOptions();
+        renderChart();
+        return;
+      }
+
       if (!yearCache[year]) {
         yearCache[year] = await fetchTransactionsByYear(year);
       }
