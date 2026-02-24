@@ -1,15 +1,15 @@
 {
   "company": "AMD",
   "cik": "0000002488",
-  "generated_at": "2026-02-24T03:41:02.119726+00:00",
-  "lookback_days": 3650,
-  "filings_scanned": 715,
+  "generated_at": "2026-02-24T17:03:42.030985+00:00",
+  "lookback_days": 10,
+  "filings_scanned": 6,
   "summary": {
-    "total_transactions": 1657,
+    "total_transactions": 1639,
     "codes": {
-      "S": 752,
-      "M": 635,
-      "F": 215,
+      "S": 737,
+      "M": 633,
+      "F": 214,
       "G": 42,
       "P": 4,
       "A": 6,
@@ -17,12 +17,12 @@
       "J": 2
     },
     "insiders": {
-      "Hahn Ava": 16,
+      "Hahn Ava": 13,
       "Hu Jean X.": 30,
       "HUYNH JACK M": 25,
       "GRASBY PAUL DARREN": 66,
-      "Norrod Forrest Eugene": 210,
-      "Su Lisa T": 332,
+      "Norrod Forrest Eugene": 205,
+      "Su Lisa T": 322,
       "Papermaster Mark D": 263,
       "Olson Jon A": 6,
       "GUIDO PHILIP": 10,
@@ -59,7 +59,7 @@
   "years": [
     {
       "year": 2026,
-      "count": 40,
+      "count": 22,
       "latest_transaction_date": "2026-02-18",
       "file": "2026.json"
     },
