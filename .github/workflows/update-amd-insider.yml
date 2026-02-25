@@ -8,7 +8,7 @@ on:
       days:
         description: "Lookback days (used when year is empty)"
         required: false
-        default: "3650"
+        default: "30"
       year:
         description: "Optional: update only this year (e.g. 2024)"
         required: false
@@ -46,7 +46,7 @@ jobs:
             exit 1
           fi
 
-          DAYS="${{ github.event.inputs.days || '3650' }}"
+          DAYS="${{ github.event.inputs.days || '30' }}"
           YEAR="${{ github.event.inputs.year || '' }}"
 
           if [ -n "$YEAR" ]; then
