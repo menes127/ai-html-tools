@@ -49,9 +49,11 @@ python3 amd_insider_monitor.py --year 2025
 ```js
 window.SUPABASE_URL = 'https://<project>.supabase.co';
 window.SUPABASE_ANON_KEY = '<anon-key>';
+window.ALPHA_VANTAGE_API_KEY = '<alpha-vantage-key>';
 ```
 
-请确保 `config.js` 中仅包含公开可见的 URL + publishable/anon key，不要放 service role key。
+请确保 `config.js` 中仅包含公开可见的 URL + publishable/anon key，不要放 service role key。  
+`ALPHA_VANTAGE_API_KEY` 用于前端行情展示（AMD 价格强弱/最新价），可使用免费 key。
 
 然后启动静态服务：
 
