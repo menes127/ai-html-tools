@@ -3,7 +3,6 @@
 ## Project Structure & Module Organization
 - `amd_insider_monitor.py`: SEC Form 4 ingestion pipeline; parses filings and upserts to Supabase.
 - `supabase/schema.sql`: canonical DB schema (tables, views, RLS, anon grants).
-- `scripts/backfill_json_to_supabase.py`: optional one-time backfill from external JSON input.
 - `index.html`: static dashboard querying Supabase REST views.
 - `tests/`: Python unit tests for payload mapping and CLI validation.
 
@@ -11,9 +10,8 @@
 - `set -a && source .env && set +a`: load local env vars before write/read tests.
 - `python3 amd_insider_monitor.py --days 365`: sync recent filings to Supabase.
 - `python3 amd_insider_monitor.py --year 2025`: refresh one year.
-- `python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --dry-run`: inspect external backfill counts without writes.
 - `python3 -m unittest discover -s tests -v`: run unit tests.
-- `python3 -m py_compile amd_insider_monitor.py scripts/backfill_json_to_supabase.py`: syntax check.
+- `python3 -m py_compile amd_insider_monitor.py`: syntax check.
 - `python3 -m http.server 8000`: local static preview (`/amd-insider/`).
 
 ## Coding Style & Naming Conventions

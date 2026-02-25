@@ -5,7 +5,6 @@
 ## 项目结构
 
 - `amd_insider_monitor.py`：抓取并解析 SEC Form 4，并 upsert 到 Supabase
-- `scripts/backfill_json_to_supabase.py`：一次性回填工具（从外部 JSON 输入回填到 Supabase）
 - `supabase/schema.sql`：表结构、视图、RLS 与只读授权
 - `index.html`：前端 dashboard（读取 Supabase `v_summary` / `v_years` / `v_transactions`）
 - `../.github/workflows/update-amd-insider.yml`：每日自动同步到 Supabase
@@ -30,7 +29,7 @@ SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 SEC_USER_AGENT=<name email@example.com>
 ```
 
-- `SUPABASE_SERVICE_ROLE_KEY` 仅用于后端写入（抓取/回填脚本），不要暴露到前端。
+- `SUPABASE_SERVICE_ROLE_KEY` 仅用于后端写入（抓取脚本），不要暴露到前端。
 - `SUPABASE_ANON_KEY` 仅用于前端只读查询（配合 RLS 只读视图）。
 
 ## 常用命令
@@ -41,10 +40,6 @@ python3 amd_insider_monitor.py --days 365
 
 # 只更新某一年
 python3 amd_insider_monitor.py --year 2025
-
-# （可选）从外部 JSON 文件做一次性回填
-python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --dry-run
-python3 scripts/backfill_json_to_supabase.py --data-dir /path/to/json --batch-size 500
 ```
 
 ## 前端本地预览

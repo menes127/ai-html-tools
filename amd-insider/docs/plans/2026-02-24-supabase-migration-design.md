@@ -1,5 +1,7 @@
 # Supabase Migration Design (AMD Insider)
 
+> Status update (2026-02-25): migration is complete and the JSON backfill utility has been removed. Runtime and ingestion are SEC Form 4 -> Supabase only.
+
 ## Goal
 Migrate from local JSON shard storage to Supabase as the only runtime data source, while keeping the existing Python SEC parser and GitHub Actions scheduler for low maintenance.
 
@@ -68,17 +70,12 @@ Unique constraint on:
 - Grant `anon` role `SELECT` on `v_summary`, `v_years`, `v_transactions` only.
 - No direct write access from frontend.
 
-## Ingestion and Backfill
+## Ingestion
 ### Daily Ingestion
 - Parse SEC filings in date window.
 - Upsert `filings` by `accession_number`.
 - Upsert `transactions` using unique dedupe key.
 - Emit run metrics: scanned, parsed, inserted, updated, skipped.
-
-### One-Time Backfill
-- Read all existing `data/YYYY.json` files.
-- Transform and batch upsert (500-1000 rows per batch).
-- Validate counts; then stop local JSON generation.
 
 ## Error Handling and Reliability
 - Keep current SEC retry/backoff behavior.
@@ -88,10 +85,9 @@ Unique constraint on:
 
 ## Rollout Plan
 1. Create schema, constraints, and views in Supabase.
-2. Add backfill script and load historical JSON into Supabase.
-3. Update ingestion script and workflow to write Supabase only.
-4. Update frontend data fetch from local files to Supabase views.
-5. Verify end-to-end and remove JSON runtime path.
+2. Update ingestion script and workflow to write Supabase only.
+3. Update frontend data fetch from local files to Supabase views.
+4. Verify end-to-end and remove JSON runtime path.
 
 ## Validation Criteria
 - Summary and year dropdown match expected historical totals.
@@ -102,4 +98,4 @@ Unique constraint on:
 ## Risks and Mitigations
 - API quota/rate limits on free tier: batch writes, reduce polling, cache stable reads.
 - Exposed anon key misuse: strict RLS and read-only view access.
-- Migration mismatch: parallel compare old JSON vs Supabase outputs before cutover.
+- Data quality regressions: keep ingestion idempotent and verify row counts/date freshness after runs.
