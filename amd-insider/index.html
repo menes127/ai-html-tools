@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AMD 高管 Form 4 监控面板</title>
+  <title>高管 Form 4 监控面板</title>
   <style>
     body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; margin: 20px; color: #111; background: linear-gradient(180deg, #f7faff 0%, #ffffff 45%); }
     .row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
@@ -75,6 +75,9 @@
     .kline-btn { background:transparent; border:0; border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer; color:#475569; }
     .kline-btn.active { background:#ffffff; color:#1d4ed8; font-weight:700; box-shadow:0 1px 2px rgba(15, 23, 42, 0.12); }
     #klineStatus { font-size:12px; color:#556277; }
+    #globalLoadingMask { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15, 23, 42, 0.24); z-index:9999; }
+    #globalLoadingMask.active { display:flex; }
+    .loading-box { background:#fff; border:1px solid #dbe6f2; border-radius:10px; padding:10px 14px; color:#334155; font-size:13px; box-shadow:0 8px 24px rgba(15, 23, 42, 0.15); }
     #klineWrap { position:relative; }
     #klineChart { height:440px; }
     #klineTooltip { position:absolute; top:10px; right:10px; display:none; pointer-events:none; z-index:9; background:rgba(17,24,39,0.92); color:#f8fafc; border-radius:8px; padding:8px 10px; font-size:12px; line-height:1.4; min-width:190px; border:1px solid rgba(148, 163, 184, 0.28); }
@@ -89,8 +92,16 @@
   </style>
 </head>
 <body>
-  <h2>AMD 高管买卖监控（SEC Form 4）</h2>
+  <h2 id="pageTitle">AMD 高管买卖监控（SEC Form 4）</h2>
+  <div class="filters" style="margin:8px 0 10px;">
+    <label>公司：
+      <select id="companyFilter"></select>
+    </label>
+  </div>
   <div class="muted" id="meta">加载中...</div>
+  <div id="globalLoadingMask" aria-live="polite" aria-busy="true">
+    <div class="loading-box" id="globalLoadingText">正在请求数据...</div>
+  </div>
 
   <div class="dashboard-stack">
     <section class="panel stock-panel row-panel" data-row-key="stock">
@@ -98,7 +109,7 @@
         <button class="row-toggle" type="button" aria-label="折叠或展开股票信息">▾</button>
         <div class="row-headtext">
           <h3 class="panel-title">股票信息</h3>
-          <p class="panel-subtitle">AMD 实时价格状态、技术面信号与 K 线走势</p>
+          <p class="panel-subtitle" id="stockSubtitle">AMD 实时价格状态、技术面信号与 K 线走势</p>
         </div>
       </div>
       <div class="row-body stock-grid">
@@ -108,7 +119,7 @@
         </div>
         <div class="card kline-card">
           <div class="kline-toolbar">
-            <div style="font-weight:600;">AMD K 线图</div>
+            <div id="klineTitle" style="font-weight:600;">AMD K 线图</div>
             <div class="kline-switch">
               <button id="klineDayBtn" class="kline-btn active" type="button">日线</button>
               <button id="klineWeekBtn" class="kline-btn" type="button">周线</button>
@@ -136,8 +147,8 @@
         <div class="filters" style="margin:8px 0;">
           <label>维度：
             <select id="chartGranularity">
+              <option value="month" selected>按月（当前年份）</option>
               <option value="year">按年</option>
-              <option value="month">按月（当前年份）</option>
             </select>
           </label>
           <label>高管：
@@ -250,11 +261,23 @@
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
     const ALPHA_VANTAGE_API_KEY = window.ALPHA_VANTAGE_API_KEY || '';
     const PAGE_SIZE = 1000;
+    const MARKET_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+    const DEFAULT_COMPANIES = [
+      { ticker: 'AMD', name: 'Advanced Micro Devices' },
+      { ticker: 'NVDA', name: 'NVIDIA' },
+    ];
+    const COMPANY_OPTIONS = Array.isArray(window.DASHBOARD_COMPANIES) && window.DASHBOARD_COMPANIES.length
+      ? window.DASHBOARD_COMPANIES
+      : DEFAULT_COMPANIES;
+    const LOADING_SHOW_DELAY_MS = 160;
+    const LOADING_MIN_VISIBLE_MS = 260;
 
     let indexData = null;
     let yearRows = [];
     const yearCache = {};
     let globalSummary = {};
+    let selectedTicker = 'AMD';
+    const companyNameByTicker = {};
     const klineState = {
       mode: 'day',
       daily: [],
@@ -264,8 +287,53 @@
       volumeSeries: null,
       resizeBound: false,
     };
+    let pendingNetworkCount = 0;
+    let loadingShowTimer = null;
+    let loadingHideTimer = null;
+    let loadingVisibleSince = 0;
 
     const fmtNum = (n) => (n === null || n === undefined || Number.isNaN(n)) ? '-' : Number(n).toLocaleString();
+
+    function companyStorageKey() {
+      return 'dashboard.company';
+    }
+
+    function normalizeTicker(raw) {
+      return String(raw || '').trim().toUpperCase();
+    }
+
+    function currentCompanyName() {
+      return companyNameByTicker[selectedTicker] || selectedTicker;
+    }
+
+    function updateCompanyHeaders() {
+      document.getElementById('pageTitle').textContent = `${selectedTicker} 高管买卖监控（SEC Form 4）`;
+      document.getElementById('stockSubtitle').textContent = `${selectedTicker} 实时价格状态、技术面信号与 K 线走势`;
+      document.getElementById('klineTitle').textContent = `${selectedTicker} K 线图`;
+    }
+
+    function renderCompanyFilter() {
+      const sel = document.getElementById('companyFilter');
+      const requested = normalizeTicker(localStorage.getItem(companyStorageKey()) || selectedTicker);
+      const available = COMPANY_OPTIONS
+        .map(c => ({ ticker: normalizeTicker(c.ticker), name: c.name || normalizeTicker(c.ticker) }))
+        .filter(c => c.ticker);
+      const rowsCompanies = Object.entries(companyNameByTicker).map(([ticker, name]) => ({ ticker, name: name || ticker }));
+      const merged = {};
+      for (const c of [...available, ...rowsCompanies]) merged[c.ticker] = c.name;
+      const entries = Object.entries(merged).sort((a, b) => a[0].localeCompare(b[0]));
+      if (!entries.length) entries.push(['AMD', 'Advanced Micro Devices']);
+      for (const [ticker, name] of entries) {
+        if (!companyNameByTicker[ticker]) companyNameByTicker[ticker] = name || ticker;
+      }
+      sel.innerHTML = entries.map(([ticker, name]) => `<option value="${ticker}">${ticker} (${name})</option>`).join('');
+
+      const hasRequested = entries.some(([ticker]) => ticker === requested);
+      selectedTicker = hasRequested ? requested : entries[0][0];
+      sel.value = selectedTicker;
+      localStorage.setItem(companyStorageKey(), selectedTicker);
+      updateCompanyHeaders();
+    }
 
     function rowStorageKey(key) {
       return `dashboard.row.${key}`;
@@ -309,6 +377,59 @@
       const el = document.getElementById('klineStatus');
       el.textContent = msg;
       el.style.color = isError ? '#b42318' : '#556277';
+    }
+
+    function setGlobalLoading(active, text = '正在请求数据...') {
+      const mask = document.getElementById('globalLoadingMask');
+      const label = document.getElementById('globalLoadingText');
+      if (!mask || !label) return;
+      label.textContent = text;
+      if (active) {
+        if (loadingHideTimer) {
+          clearTimeout(loadingHideTimer);
+          loadingHideTimer = null;
+        }
+        if (mask.classList.contains('active')) return;
+        if (loadingShowTimer) return;
+        loadingShowTimer = window.setTimeout(() => {
+          loadingShowTimer = null;
+          if (pendingNetworkCount <= 0) return;
+          mask.classList.add('active');
+          loadingVisibleSince = Date.now();
+        }, LOADING_SHOW_DELAY_MS);
+        return;
+      }
+
+      if (loadingShowTimer) {
+        clearTimeout(loadingShowTimer);
+        loadingShowTimer = null;
+      }
+      if (!mask.classList.contains('active')) return;
+
+      const elapsed = Date.now() - loadingVisibleSince;
+      const hide = () => {
+        if (loadingHideTimer) {
+          clearTimeout(loadingHideTimer);
+          loadingHideTimer = null;
+        }
+        mask.classList.remove('active');
+      };
+      if (elapsed >= LOADING_MIN_VISIBLE_MS) {
+        hide();
+      } else {
+        loadingHideTimer = window.setTimeout(hide, LOADING_MIN_VISIBLE_MS - elapsed);
+      }
+    }
+
+    async function trackedFetch(url, options = {}, loadingText = '正在请求数据...') {
+      pendingNetworkCount += 1;
+      setGlobalLoading(true, loadingText);
+      try {
+        return await fetch(url, options);
+      } finally {
+        pendingNetworkCount = Math.max(0, pendingNetworkCount - 1);
+        if (pendingNetworkCount === 0) setGlobalLoading(false);
+      }
     }
 
     function toWeeklyCandles(daily) {
@@ -457,12 +578,12 @@
           url.searchParams.set(k, String(v));
         }
       });
-      const res = await fetch(url.toString(), {
+      const res = await trackedFetch(url.toString(), {
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         },
-      });
+      }, `正在加载 ${selectedTicker} 交易数据...`);
       if (!res.ok) {
         const msg = await res.text();
         throw new Error(`Supabase 请求失败: ${res.status} ${msg.slice(0, 200)}`);
@@ -581,57 +702,36 @@
       return 100 - (100 / (1 + rs));
     }
 
-    async function fetchAlphaVantageDaily(symbol = 'AMD') {
-      if (!ALPHA_VANTAGE_API_KEY) {
-        throw new Error('请在 config.js 配置 window.ALPHA_VANTAGE_API_KEY');
-      }
-      async function fetchAlpha(functionName, extra = {}) {
-        const url = new URL('https://www.alphavantage.co/query');
-        url.searchParams.set('function', functionName);
-        url.searchParams.set('symbol', symbol);
-        url.searchParams.set('apikey', ALPHA_VANTAGE_API_KEY);
-        Object.entries(extra).forEach(([k, v]) => url.searchParams.set(k, String(v)));
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`行情接口异常: ${res.status}`);
-        return res.json();
-      }
+    function marketCacheKey(symbol) {
+      return `dashboard.market.${normalizeTicker(symbol)}`;
+    }
 
-      function parseCandlesFromSeries(seriesObj) {
-        const dates = Object.keys(seriesObj || {}).sort();
-        return dates.map(d => ({
-          date: d,
-          open: Number(seriesObj[d]?.['1. open']),
-          high: Number(seriesObj[d]?.['2. high']),
-          low: Number(seriesObj[d]?.['3. low']),
-          close: Number(seriesObj[d]?.['4. close']),
-          volume: Number(seriesObj[d]?.['5. volume']),
-        })).filter(c =>
-          Number.isFinite(c.open) &&
-          Number.isFinite(c.high) &&
-          Number.isFinite(c.low) &&
-          Number.isFinite(c.close) &&
-          Number.isFinite(c.volume)
-        );
+    function readMarketCache(symbol, allowStale = false) {
+      try {
+        const raw = localStorage.getItem(marketCacheKey(symbol));
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed?.market || !parsed?.ts) return null;
+        if (!allowStale && (Date.now() - Number(parsed.ts) > MARKET_CACHE_TTL_MS)) return null;
+        return parsed;
+      } catch (_) {
+        return null;
       }
+    }
 
-      const dailyData = await fetchAlpha('TIME_SERIES_DAILY', { outputsize: 'compact' });
-      let apiMsg = dailyData?.['Error Message'] || dailyData?.Note || dailyData?.Information;
-      if (apiMsg) {
-        throw new Error(String(apiMsg).slice(0, 160));
-      }
+    function writeMarketCache(symbol, source, market) {
+      try {
+        localStorage.setItem(marketCacheKey(symbol), JSON.stringify({
+          ts: Date.now(),
+          source,
+          market,
+        }));
+      } catch (_) {}
+    }
 
-      const dailySeries = dailyData?.['Time Series (Daily)'];
-      if (!dailySeries || typeof dailySeries !== 'object') {
-        throw new Error('日线行情数据格式异常');
-      }
-
-      const candles = parseCandlesFromSeries(dailySeries);
-
+    function buildMarketPayload(candles) {
       const closes = candles.map(c => c.close);
-      if (candles.length < 2) {
-        throw new Error('行情点位不足');
-      }
-
+      if (candles.length < 2) throw new Error('行情点位不足');
       return {
         latestDate: candles[candles.length - 1].date,
         last: closes[closes.length - 1],
@@ -641,10 +741,64 @@
       };
     }
 
+    function parseCandlesFromSeries(seriesObj) {
+      const dates = Object.keys(seriesObj || {}).sort();
+      return dates.map(d => ({
+        date: d,
+        open: Number(seriesObj[d]?.['1. open']),
+        high: Number(seriesObj[d]?.['2. high']),
+        low: Number(seriesObj[d]?.['3. low']),
+        close: Number(seriesObj[d]?.['4. close']),
+        volume: Number(seriesObj[d]?.['5. volume']),
+      })).filter(c =>
+        Number.isFinite(c.open) &&
+        Number.isFinite(c.high) &&
+        Number.isFinite(c.low) &&
+        Number.isFinite(c.close) &&
+        Number.isFinite(c.volume)
+      );
+    }
+
+    async function fetchAlphaVantageDaily(symbol = 'AMD') {
+      if (!ALPHA_VANTAGE_API_KEY) throw new Error('请在 config.js 配置 window.ALPHA_VANTAGE_API_KEY');
+      const url = new URL('https://www.alphavantage.co/query');
+      url.searchParams.set('function', 'TIME_SERIES_DAILY');
+      url.searchParams.set('symbol', symbol);
+      url.searchParams.set('apikey', ALPHA_VANTAGE_API_KEY);
+      url.searchParams.set('outputsize', 'compact');
+      const res = await trackedFetch(url.toString(), {}, `正在加载 ${symbol} 行情...`);
+      if (!res.ok) throw new Error(`行情接口异常: ${res.status}`);
+      const dailyData = await res.json();
+      const apiMsg = dailyData?.['Error Message'] || dailyData?.Note || dailyData?.Information;
+      if (apiMsg) throw new Error(String(apiMsg).slice(0, 180));
+      const dailySeries = dailyData?.['Time Series (Daily)'];
+      if (!dailySeries || typeof dailySeries !== 'object') throw new Error('日线行情数据格式异常');
+      return buildMarketPayload(parseCandlesFromSeries(dailySeries));
+    }
+
+    async function loadMarketData(symbol) {
+      const freshCache = readMarketCache(symbol);
+      if (freshCache) {
+        return { market: freshCache.market, source: freshCache.source || '缓存', isCache: true };
+      }
+      const staleCache = readMarketCache(symbol, true);
+      try {
+        const market = await fetchAlphaVantageDaily(symbol);
+        writeMarketCache(symbol, 'AlphaVantage', market);
+        return { market, source: 'AlphaVantage', isCache: false };
+      } catch (e) {
+        if (staleCache) {
+          return { market: staleCache.market, source: `${staleCache.source || '缓存'}(过期)`, isCache: true };
+        }
+        throw new Error(`行情源失败：${e?.message || '未知错误'}`);
+      }
+    }
+
     async function renderMarketSignal() {
       const el = document.getElementById('marketSignal');
       try {
-        const market = await fetchAlphaVantageDaily('AMD');
+        const marketResult = await loadMarketData(selectedTicker);
+        const market = marketResult.market;
         const closes = market.closes;
         const last = market.last;
         const prev = market.prev;
@@ -663,16 +817,16 @@
         updateKlineData(market.candles);
 
         el.innerHTML = `
-          <div class="card"><div class="muted">AMD 价格强弱</div><div><b>${trend}</b></div></div>
+          <div class="card"><div class="muted">${selectedTicker} 价格强弱</div><div><b>${trend}</b></div></div>
           <div class="card"><div class="muted">AI 信号（技术面）</div><div><b>${action}</b></div></div>
           <div class="card"><div class="muted">最新价 / 日涨跌</div><div><b>$${last.toFixed(2)} / ${dayChange >= 0 ? '+' : ''}${dayChange.toFixed(2)} (${dayChangePct === null ? '-' : (dayChangePct >= 0 ? '+' : '') + dayChangePct.toFixed(2) + '%'})</b></div></div>
-          <div class="card"><div class="muted">SMA20 / SMA60 / RSI(14)</div><div><b>$${s20?.toFixed(2) || '-'} / $${s60?.toFixed(2) || '-'} / ${rv?.toFixed(1) || '-'}</b></div><div class="muted">更新日: ${market.latestDate}</div></div>
+          <div class="card"><div class="muted">SMA20 / SMA60 / RSI(14)</div><div><b>$${s20?.toFixed(2) || '-'} / $${s60?.toFixed(2) || '-'} / ${rv?.toFixed(1) || '-'}</b></div><div class="muted">更新日: ${market.latestDate} ｜ 来源: ${marketResult.source}${marketResult.isCache ? '（缓存）' : ''}</div></div>
         `;
       } catch (e) {
         klineState.daily = [];
         klineState.weekly = [];
         setKlineStatus(`K 线不可用：${e?.message || '价格源获取失败，请稍后刷新'}`, true);
-        el.innerHTML = `<div class="card"><div class="muted">AMD 价格强弱</div><div><b>暂不可用</b></div><div class="muted">${e?.message || '价格源获取失败，请稍后刷新'}</div></div>`;
+        el.innerHTML = `<div class="card"><div class="muted">${selectedTicker} 价格强弱</div><div><b>暂不可用</b></div><div class="muted">${e?.message || '价格源获取失败，请稍后刷新'}</div></div>`;
       }
     }
 
@@ -682,6 +836,7 @@
         const rows = await sbFetch('v_transactions', {
           select: '*',
           and: `(transaction_date.gte.${year}-01-01,transaction_date.lte.${year}-12-31)`,
+          issuer_ticker: `eq.${selectedTicker}`,
           order: 'transaction_date.desc,filing_date.desc',
           limit: PAGE_SIZE,
           offset,
@@ -694,17 +849,25 @@
     }
 
     async function loadIndex() {
-      const years = await sbFetch('v_years', {
-        select: 'year,count,latest_transaction_date',
-        order: 'year.desc',
+      const allYears = await sbFetch('v_years', {
+        select: 'issuer_ticker,issuer_name,year,count,latest_transaction_date',
+        order: 'issuer_ticker.asc,year.desc',
       });
+      for (const row of allYears) {
+        const ticker = normalizeTicker(row.issuer_ticker);
+        if (!ticker) continue;
+        if (!companyNameByTicker[ticker]) companyNameByTicker[ticker] = row.issuer_name || ticker;
+      }
+      renderCompanyFilter();
+      const years = allYears.filter(y => normalizeTicker(y.issuer_ticker) === selectedTicker);
       indexData = {
         years,
-        default_year: 'all',
+        default_year: years.length ? String(years[0].year) : 'all',
       };
 
       const summaryRows = await sbFetch('v_summary', {
-        select: 'total_transactions,latest_transaction_date,buy_amount,sell_amount,net_amount,codes',
+        select: 'issuer_ticker,issuer_name,total_transactions,latest_transaction_date,buy_amount,sell_amount,net_amount,codes',
+        issuer_ticker: `eq.${selectedTicker}`,
         limit: 1,
       });
       globalSummary = summaryRows[0] || {};
@@ -715,7 +878,7 @@
       if (indexData.default_year) yearSel.value = String(indexData.default_year);
 
       document.getElementById('meta').textContent =
-        `数据源: Supabase | 总记录: ${globalSummary.total_transactions || 0} | 最近交易日: ${globalSummary.latest_transaction_date || '-'}`;
+        `数据源: Supabase | 公司: ${selectedTicker} (${currentCompanyName()}) | 总记录: ${globalSummary.total_transactions || 0} | 最近交易日: ${globalSummary.latest_transaction_date || '-'}`;
     }
 
     async function loadYear(year) {
@@ -747,9 +910,12 @@
       const input = document.getElementById('chartInsider');
       const list = document.getElementById('chartInsiderOptions');
       const prev = input.value;
-      await ensureAllYearsLoaded();
-      const allRows = Object.values(yearCache).flat();
-      const names = Array.from(new Set(allRows.map(r => (r.insider_name || '').trim()).filter(Boolean))).sort();
+      const granularity = document.getElementById('chartGranularity').value;
+      if (granularity === 'year') {
+        await ensureAllYearsLoaded();
+      }
+      const sourceRows = granularity === 'year' ? Object.values(yearCache).flat() : yearRows;
+      const names = Array.from(new Set(sourceRows.map(r => (r.insider_name || '').trim()).filter(Boolean))).sort();
       list.innerHTML = names.map(n => `<option value="${n}"></option>`).join('');
       input.value = prev;
     }
@@ -774,11 +940,12 @@
 
     async function ensureAllYearsLoaded() {
       const years = (indexData?.years || []).map(y => String(y.year));
-      for (const y of years) {
-        if (!yearCache[y]) {
-          yearCache[y] = await fetchTransactionsByYear(y);
-        }
-      }
+      const missing = years.filter(y => !yearCache[y]);
+      if (!missing.length) return;
+      const loaded = await Promise.all(missing.map(y => fetchTransactionsByYear(y)));
+      missing.forEach((y, idx) => {
+        yearCache[y] = loaded[idx];
+      });
     }
 
     function aggregate(rows, keyFn, insider, selectedCodes) {
@@ -927,13 +1094,13 @@
         const allRows = Object.values(yearCache).flat();
         const series = aggregate(allRows, (r) => (r.transaction_date || '').slice(0,4), insider, selectedCodes);
         const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
-        meta.textContent = `按年统计（单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}｜类型：${Array.from(selectedCodes).join('/')}`;
+        meta.textContent = `${selectedTicker}｜按年统计（单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}｜类型：${Array.from(selectedCodes).join('/')}`;
         renderChartRows(ordered);
         renderInsiderLeaderboard(allRows, insider, selectedCodes);
       } else {
         const series = aggregate(yearRows, (r) => (r.transaction_date || '').slice(0,7), insider, selectedCodes);
         const ordered = Object.fromEntries(Object.entries(series).sort((a,b) => a[0].localeCompare(b[0])));
-        meta.textContent = `按月统计（${currentYear}，单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}｜类型：${Array.from(selectedCodes).join('/')}`;
+        meta.textContent = `${selectedTicker}｜按月统计（${currentYear}，单位：股数）${insider ? `｜高管：${insider}` : '｜高管：全部'}｜类型：${Array.from(selectedCodes).join('/')}`;
         renderChartRows(ordered);
         renderInsiderLeaderboard(yearRows, insider, selectedCodes);
       }
@@ -946,8 +1113,6 @@
       await renderMarketSignal();
       const year = document.getElementById('yearFilter').value;
       await loadYear(year);
-      await updateChartInsiderOptions();
-      renderChart();
     }
 
     function syncNameFilterFromChartInsider() {
@@ -963,11 +1128,12 @@
 
     document.getElementById('yearFilter').addEventListener('change', async (e) => {
       await loadYear(e.target.value);
-      await updateChartInsiderOptions();
-      renderChart();
     });
 
-    document.getElementById('chartGranularity').addEventListener('change', renderChart);
+    document.getElementById('chartGranularity').addEventListener('change', async () => {
+      await updateChartInsiderOptions();
+      await renderChart();
+    });
     document.getElementById('chartInsider').addEventListener('input', () => {
       syncNameFilterFromChartInsider();
       renderChart();
@@ -996,6 +1162,12 @@
       klineState.mode = 'week';
       updateKlineButtons();
       renderKlineChart();
+    });
+    document.getElementById('companyFilter').addEventListener('change', async (e) => {
+      selectedTicker = normalizeTicker(e.target.value) || 'AMD';
+      localStorage.setItem(companyStorageKey(), selectedTicker);
+      updateCompanyHeaders();
+      await loadData();
     });
     document.getElementById('refreshBtn').addEventListener('click', loadData);
 

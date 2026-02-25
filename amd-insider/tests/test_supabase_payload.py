@@ -12,6 +12,9 @@ from amd_insider_monitor import Trade, trade_to_row
 class SupabasePayloadTests(unittest.TestCase):
     def test_trade_to_row_has_required_fields(self) -> None:
         trade = Trade(
+            issuer_ticker="AMD",
+            issuer_cik="0000002488",
+            issuer_name="Advanced Micro Devices",
             filing_date="2026-01-10",
             accepted_datetime="2026-01-10T12:00:00Z",
             accession_number="0000002488-26-000001",
@@ -34,6 +37,8 @@ class SupabasePayloadTests(unittest.TestCase):
         row = trade_to_row(trade)
 
         self.assertEqual(row["accession_number"], "0000002488-26-000001")
+        self.assertEqual(row["issuer_ticker"], "AMD")
+        self.assertEqual(row["issuer_cik"], "0000002488")
         self.assertEqual(row["transaction_date"], "2026-01-09")
         self.assertEqual(row["insider_name"], "Lisa Su")
         self.assertEqual(row["code"], "P")

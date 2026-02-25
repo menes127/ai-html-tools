@@ -14,12 +14,17 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional
 
-AMD_CIK = "0000002488"
-SUBMISSIONS_URL = f"https://data.sec.gov/submissions/CIK{AMD_CIK}.json"
+COMPANY_CONFIG: Dict[str, Dict[str, str]] = {
+    "AMD": {"ticker": "AMD", "cik": "0000002488", "name": "Advanced Micro Devices"},
+    "NVDA": {"ticker": "NVDA", "cik": "0001045810", "name": "NVIDIA"},
+}
 
 
 @dataclass
 class Trade:
+    issuer_ticker: str
+    issuer_cik: str
+    issuer_name: str
     filing_date: str
     accepted_datetime: Optional[str]
     accession_number: str
@@ -108,8 +113,9 @@ def load_json(url: str, ua: str) -> Dict[str, Any]:
     return json.loads(http_get(url, ua).decode("utf-8"))
 
 
-def iter_submission_blocks(ua: str) -> List[Dict[str, Any]]:
-    root = load_json(SUBMISSIONS_URL, ua)
+def iter_submission_blocks(ua: str, cik: str) -> List[Dict[str, Any]]:
+    submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    root = load_json(submissions_url, ua)
     blocks = [{"recent": root.get("filings", {}).get("recent", {})}]
     for f in root.get("filings", {}).get("files", []) or []:
         name = f.get("name")
@@ -123,7 +129,9 @@ def iter_submission_blocks(ua: str) -> List[Dict[str, Any]]:
     return blocks
 
 
-def collect_form4_filings(blocks: List[Dict[str, Any]], *, start: date, end: date) -> List[Dict[str, str]]:
+def collect_form4_filings(
+    blocks: List[Dict[str, Any]], *, start: date, end: date, cik: str, ticker: str, company_name: str
+) -> List[Dict[str, str]]:
     out: List[Dict[str, str]] = []
     seen = set()
     for blk in blocks:
@@ -155,7 +163,10 @@ def collect_form4_filings(blocks: List[Dict[str, Any]], *, start: date, end: dat
                     "accession": acc,
                     "filing_date": fdates[i],
                     "accepted_datetime": accepts[i] if i < len(accepts) else None,
-                    "filing_url": f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{nodash}/{docs[i]}",
+                    "filing_url": f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{nodash}/{docs[i]}",
+                    "issuer_ticker": ticker,
+                    "issuer_cik": cik,
+                    "issuer_name": company_name,
                 }
             )
     out.sort(key=lambda x: x["filing_date"], reverse=True)
@@ -231,6 +242,9 @@ def parse_form4_xml(xml_bytes: bytes, filing_meta: Dict[str, str]) -> List[Trade
 
         trades.append(
             Trade(
+                issuer_ticker=filing_meta["issuer_ticker"],
+                issuer_cik=filing_meta["issuer_cik"],
+                issuer_name=filing_meta["issuer_name"],
                 filing_date=filing_meta["filing_date"],
                 accepted_datetime=filing_meta.get("accepted_datetime"),
                 accession_number=filing_meta["accession"],
@@ -253,7 +267,7 @@ def parse_form4_xml(xml_bytes: bytes, filing_meta: Dict[str, str]) -> List[Trade
     return trades
 
 
-def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str) -> List[Trade]:
+def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str, cik: str) -> List[Trade]:
     primary_url = filing_meta["filing_url"]
     try:
         raw = http_get(primary_url, ua)
@@ -265,7 +279,7 @@ def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str) -> List[Trade]:
         return trades
 
     nodash = filing_meta["accession"].replace("-", "")
-    dir_url = f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{nodash}/index.json"
+    dir_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{nodash}/index.json"
     try:
         listing = load_json(dir_url, ua)
     except Exception:
@@ -276,7 +290,7 @@ def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str) -> List[Trade]:
         if not name.lower().endswith(".xml"):
             continue
         try:
-            xml_raw = http_get(f"https://www.sec.gov/Archives/edgar/data/{int(AMD_CIK)}/{nodash}/{name}", ua)
+            xml_raw = http_get(f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{nodash}/{name}", ua)
             trades = parse_form4_xml(xml_raw, filing_meta)
             if trades:
                 return trades
@@ -288,6 +302,9 @@ def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str) -> List[Trade]:
 def filing_to_row(filing_meta: Dict[str, str]) -> Dict[str, Any]:
     return {
         "accession_number": filing_meta["accession"],
+        "issuer_ticker": filing_meta["issuer_ticker"],
+        "issuer_cik": filing_meta["issuer_cik"],
+        "issuer_name": filing_meta["issuer_name"],
         "filing_date": filing_meta["filing_date"],
         "accepted_datetime": filing_meta.get("accepted_datetime"),
         "filing_url": filing_meta["filing_url"],
@@ -297,6 +314,9 @@ def filing_to_row(filing_meta: Dict[str, str]) -> Dict[str, Any]:
 def trade_to_row(t: Trade) -> Dict[str, Any]:
     return {
         "accession_number": t.accession_number,
+        "issuer_ticker": t.issuer_ticker,
+        "issuer_cik": t.issuer_cik,
+        "issuer_name": t.issuer_name,
         "transaction_date": t.transaction_date,
         "filing_date": t.filing_date,
         "filing_url": t.filing_url,
@@ -320,6 +340,17 @@ def chunks(rows: List[Dict[str, Any]], size: int) -> Iterable[List[Dict[str, Any
         yield rows[i : i + size]
 
 
+def dedupe_rows_by_conflict(rows: List[Dict[str, Any]], on_conflict: str) -> List[Dict[str, Any]]:
+    cols = [c.strip() for c in on_conflict.split(",") if c.strip()]
+    if not cols:
+        return rows
+    deduped: Dict[tuple, Dict[str, Any]] = {}
+    for row in rows:
+        key = tuple(row.get(c) for c in cols)
+        deduped[key] = row
+    return list(deduped.values())
+
+
 def upsert_rows(
     *,
     supabase_url: str,
@@ -332,6 +363,7 @@ def upsert_rows(
     if not rows:
         return 0
 
+    rows = dedupe_rows_by_conflict(rows, on_conflict)
     encoded_conflict = urllib.parse.quote(on_conflict, safe=",")
     url = f"{supabase_url.rstrip('/')}/rest/v1/{table}?on_conflict={encoded_conflict}"
     headers = {
@@ -370,14 +402,36 @@ def upsert_to_supabase(
         api_key=api_key,
         table="transactions",
         rows=tx_rows,
-        on_conflict="accession_number,transaction_date,insider_name,code,shares,price",
+        on_conflict="issuer_cik,accession_number,transaction_date,insider_name,code,shares,price",
         batch_size=batch_size,
     )
     return {"filings_upserted": filed, "transactions_upserted": transacted}
 
 
+def resolve_companies(requested: List[str]) -> List[Dict[str, str]]:
+    picked: List[Dict[str, str]] = []
+    seen = set()
+    for raw in requested:
+        key = raw.strip().upper()
+        if key in seen:
+            continue
+        cfg = COMPANY_CONFIG.get(key)
+        if not cfg:
+            supported = ",".join(sorted(COMPANY_CONFIG.keys()))
+            raise SystemExit(f"Unsupported --company '{raw}'. Supported: {supported}")
+        seen.add(key)
+        picked.append(cfg)
+    return picked
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="AMD Form 4 insider monitor")
+    parser = argparse.ArgumentParser(description="Form 4 insider monitor (multi-company)")
+    parser.add_argument(
+        "--company",
+        action="append",
+        default=[],
+        help="Ticker to sync (repeatable), e.g. --company AMD --company NVDA",
+    )
     parser.add_argument("--days", type=int, default=3650, help="Lookback days (default 10 years)")
     parser.add_argument("--year", type=int, default=None, help="Only update one specific year, e.g. 2021")
     parser.add_argument("--supabase-url", default=os.getenv("SUPABASE_URL"), help="Supabase project URL")
@@ -401,14 +455,25 @@ def main() -> int:
     if "@" not in ua and "contact" not in ua.lower():
         print("[WARN] SEC_USER_AGENT should include contact email.", file=sys.stderr)
 
-    blocks = iter_submission_blocks(ua)
-    filings = collect_form4_filings(blocks, start=start, end=end)
-
+    requested_companies = args.company if args.company else ["AMD"]
+    companies = resolve_companies(requested_companies)
+    filings: List[Dict[str, str]] = []
     trades: List[Trade] = []
-    for f in filings:
-        trades.extend(fetch_and_parse_filing(f, ua))
-        if args.sleep > 0:
-            time.sleep(args.sleep)
+    for c in companies:
+        blocks = iter_submission_blocks(ua, c["cik"])
+        company_filings = collect_form4_filings(
+            blocks,
+            start=start,
+            end=end,
+            cik=c["cik"],
+            ticker=c["ticker"],
+            company_name=c["name"],
+        )
+        filings.extend(company_filings)
+        for f in company_filings:
+            trades.extend(fetch_and_parse_filing(f, ua, c["cik"]))
+            if args.sleep > 0:
+                time.sleep(args.sleep)
 
     trades.sort(key=lambda t: (t.transaction_date, t.filing_date), reverse=True)
     result = upsert_to_supabase(
@@ -420,6 +485,7 @@ def main() -> int:
     )
     print(
         "Upserted to Supabase: "
+        f"companies={','.join(c['ticker'] for c in companies)} "
         f"filings={result['filings_upserted']} transactions={result['transactions_upserted']}"
     )
 
