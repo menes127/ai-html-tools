@@ -472,13 +472,17 @@
         height: container.clientHeight || 340,
         layout: { background: { color: '#ffffff' }, textColor: '#334155' },
         grid: { vertLines: { color: '#eef2f7' }, horzLines: { color: '#eef2f7' } },
-        rightPriceScale: { borderColor: '#d7e1ea' },
+        rightPriceScale: {
+          borderColor: '#d7e1ea',
+          scaleMargins: { top: 0.06, bottom: 0.28 },
+        },
         timeScale: { borderColor: '#d7e1ea', timeVisible: true, secondsVisible: false },
         handleScale: true,
         handleScroll: true,
         crosshair: { mode: window.LightweightCharts.CrosshairMode.Normal },
       });
       const candleSeries = chart.addCandlestickSeries({
+        priceScaleId: 'right',
         upColor: '#10b981',
         downColor: '#ef4444',
         borderVisible: false,
@@ -487,8 +491,11 @@
       });
       const volumeSeries = chart.addHistogramSeries({
         priceFormat: { type: 'volume' },
-        priceScaleId: '',
-        scaleMargins: { top: 0.75, bottom: 0 },
+        priceScaleId: 'volume',
+      });
+      volumeSeries.priceScale().applyOptions({
+        scaleMargins: { top: 0.76, bottom: 0.02 },
+        visible: false,
       });
 
       const tooltip = document.getElementById('klineTooltip');
