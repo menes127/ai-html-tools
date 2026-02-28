@@ -1,4 +1,4 @@
-name: Update Insider Data (AMD/NVDA)
+name: Update Insider Data (AMD/NVDA/TSM/TSLA)
 
 on:
   schedule:
@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Update insider data to Supabase (AMD/NVDA)
+      - name: Update insider data to Supabase (AMD/NVDA/TSM/TSLA)
         env:
           SEC_USER_AGENT: "${{ secrets.SEC_USER_AGENT }}"
           SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
@@ -38,5 +38,5 @@ jobs:
           fi
 
           DAYS="30"
-          echo "Updating Supabase for days=$DAYS, companies=AMD,NVDA"
-          python amd-insider/amd_insider_monitor.py --days "$DAYS" --company AMD --company NVDA
+          echo "Updating Supabase for days=$DAYS, companies=AMD,NVDA,TSM,TSLA"
+          python amd-insider/amd_insider_monitor.py --days "$DAYS" --company AMD --company NVDA --company TSM --company TSLA

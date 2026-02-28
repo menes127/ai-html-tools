@@ -17,6 +17,8 @@ from typing import Any, Dict, Iterable, List, Optional
 COMPANY_CONFIG: Dict[str, Dict[str, str]] = {
     "AMD": {"ticker": "AMD", "cik": "0000002488", "name": "Advanced Micro Devices"},
     "NVDA": {"ticker": "NVDA", "cik": "0001045810", "name": "NVIDIA"},
+    "TSM": {"ticker": "TSM", "cik": "0001046179", "name": "Taiwan Semiconductor Manufacturing Co Ltd"},
+    "TSLA": {"ticker": "TSLA", "cik": "0001318605", "name": "Tesla, Inc."},
 }
 
 

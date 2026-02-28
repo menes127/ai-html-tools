@@ -42,10 +42,25 @@ python3 amd_insider_monitor.py --days 365
 python3 amd_insider_monitor.py --year 2025
 
 # 同步多个公司（可重复 --company）
-python3 amd_insider_monitor.py --days 365 --company AMD --company NVDA
+python3 amd_insider_monitor.py --days 365 --company AMD --company NVDA --company TSM --company TSLA
 ```
 
-当前内置支持：`AMD`、`NVDA`。如传入不支持的 ticker，脚本会直接报错并退出。
+## 历史回填（单公司 × 单年份）
+
+按你的稳定性要求（每次仅跑一个公司一年的数据），可使用：
+
+```bash
+cd amd-insider
+# 默认从 2012 到当前年，仅回填 TSM + TSLA
+./backfill_company_year.sh
+
+# 可自定义范围/公司
+START_YEAR=2012 END_YEAR=2026 COMPANIES="TSM TSLA" SLEEP_SECONDS=2 ./backfill_company_year.sh
+```
+
+脚本会把每轮状态写入 `backfill.log`，失败年份不会阻断后续年份。
+
+当前内置支持：`AMD`、`NVDA`、`TSM`、`TSLA`。如传入不支持的 ticker，脚本会直接报错并退出。
 
 ## 前端本地预览
 
@@ -103,5 +118,5 @@ python3 -m http.server 8000
 
 - 定时任务：每天运行一次
 - 默认增量范围：最近 `30` 天
-- 默认公司：`AMD` + `NVDA`
-- 手动触发：与定时任务一致，仍同步最近 `30` 天（AMD + NVDA）
+- 默认公司：`AMD` + `NVDA` + `TSM` + `TSLA`
+- 手动触发：与定时任务一致，仍同步最近 `30` 天（AMD + NVDA + TSM + TSLA）
