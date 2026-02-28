@@ -44,6 +44,9 @@ class Trade:
     ownership_nature: Optional[str]
     is_10b5_1: bool
     footnote_hint: Optional[str]
+    source_form: Optional[str]
+    source_system: str
+    extra_json: Optional[Dict[str, Any]]
 
 
 def http_get(url: str, user_agent: str, timeout: int = 25, retries: int = 4) -> bytes:
@@ -175,6 +178,52 @@ def collect_form4_filings(
     return out
 
 
+def collect_disclosure_filings(
+    blocks: List[Dict[str, Any]], *, start: date, end: date, cik: str, ticker: str, company_name: str
+) -> List[Dict[str, str]]:
+    out: List[Dict[str, str]] = []
+    seen = set()
+    accepted_forms = {"6-K", "6-K/A", "20-F", "SC 13G", "SC 13G/A", "SCHEDULE 13G/A", "SC 13D", "SC 13D/A"}
+    for blk in blocks:
+        recent = blk.get("recent", {})
+        forms = recent.get("form", [])
+        accs = recent.get("accessionNumber", [])
+        fdates = recent.get("filingDate", [])
+        accepts = recent.get("acceptanceDateTime", [])
+        docs = recent.get("primaryDocument", [])
+
+        for i, form in enumerate(forms):
+            if form not in accepted_forms:
+                continue
+            if i >= len(fdates) or i >= len(accs) or i >= len(docs):
+                continue
+            try:
+                d = datetime.strptime(fdates[i], "%Y-%m-%d").date()
+            except Exception:
+                continue
+            if d < start or d > end:
+                continue
+            acc = accs[i]
+            if acc in seen:
+                continue
+            seen.add(acc)
+            nodash = acc.replace("-", "")
+            out.append(
+                {
+                    "accession": acc,
+                    "filing_date": fdates[i],
+                    "accepted_datetime": accepts[i] if i < len(accepts) else None,
+                    "filing_url": f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{nodash}/{docs[i]}",
+                    "issuer_ticker": ticker,
+                    "issuer_cik": cik,
+                    "issuer_name": company_name,
+                    "source_form": form,
+                }
+            )
+    out.sort(key=lambda x: x["filing_date"], reverse=True)
+    return out
+
+
 def text_of(node: Optional[ET.Element]) -> Optional[str]:
     return node.text.strip() if node is not None and node.text else None
 
@@ -264,9 +313,42 @@ def parse_form4_xml(xml_bytes: bytes, filing_meta: Dict[str, str]) -> List[Trade
                 ownership_nature=text_of(tx.find("ownershipNature/directOrIndirectOwnership/value")),
                 is_10b5_1=("10b5-1" in hint_lower or "10b5" in hint_lower),
                 footnote_hint=hint,
+                source_form="4",
+                source_system="sec-edgar",
+                extra_json=None,
             )
         )
     return trades
+
+
+def build_disclosure_trades(filing_meta: Dict[str, str]) -> List[Trade]:
+    return [
+        Trade(
+            issuer_ticker=filing_meta["issuer_ticker"],
+            issuer_cik=filing_meta["issuer_cik"],
+            issuer_name=filing_meta["issuer_name"],
+            filing_date=filing_meta["filing_date"],
+            accepted_datetime=filing_meta.get("accepted_datetime"),
+            accession_number=filing_meta["accession"],
+            filing_url=filing_meta["filing_url"],
+            insider_name=filing_meta["issuer_name"],
+            insider_title=None,
+            relationship=["Issuer Disclosure"],
+            transaction_date=filing_meta["filing_date"],
+            security_title="N/A",
+            code="DISC",
+            shares=None,
+            price=None,
+            acquired_disposed=None,
+            shares_owned_after=None,
+            ownership_nature=None,
+            is_10b5_1=False,
+            footnote_hint=f"{filing_meta.get('source_form', 'DISC')} disclosure event (non-Form4)",
+            source_form=filing_meta.get("source_form"),
+            source_system="sec-edgar",
+            extra_json={"mode": "disclosure_only"},
+        )
+    ]
 
 
 def fetch_and_parse_filing(filing_meta: Dict[str, str], ua: str, cik: str) -> List[Trade]:
@@ -310,6 +392,9 @@ def filing_to_row(filing_meta: Dict[str, str]) -> Dict[str, Any]:
         "filing_date": filing_meta["filing_date"],
         "accepted_datetime": filing_meta.get("accepted_datetime"),
         "filing_url": filing_meta["filing_url"],
+        "source_form": filing_meta.get("source_form", "4"),
+        "source_system": "sec-edgar",
+        "extra_json": {"loader": "amd_insider_monitor"},
     }
 
 
@@ -334,6 +419,9 @@ def trade_to_row(t: Trade) -> Dict[str, Any]:
         "ownership_nature": t.ownership_nature,
         "is_10b5_1": t.is_10b5_1,
         "footnote_hint": t.footnote_hint,
+        "source_form": t.source_form,
+        "source_system": t.source_system,
+        "extra_json": t.extra_json,
     }
 
 
@@ -471,9 +559,28 @@ def main() -> int:
             ticker=c["ticker"],
             company_name=c["name"],
         )
+        use_disclosure_fallback = False
+        if not company_filings and c["ticker"] == "TSM":
+            company_filings = collect_disclosure_filings(
+                blocks,
+                start=start,
+                end=end,
+                cik=c["cik"],
+                ticker=c["ticker"],
+                company_name=c["name"],
+            )
+            use_disclosure_fallback = True
+
         filings.extend(company_filings)
         for f in company_filings:
-            trades.extend(fetch_and_parse_filing(f, ua, c["cik"]))
+            if use_disclosure_fallback:
+                trades.extend(build_disclosure_trades(f))
+            else:
+                parsed = fetch_and_parse_filing(f, ua, c["cik"])
+                if parsed:
+                    trades.extend(parsed)
+                elif c["ticker"] == "TSM":
+                    trades.extend(build_disclosure_trades(f))
             if args.sleep > 0:
                 time.sleep(args.sleep)
 

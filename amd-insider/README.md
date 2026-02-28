@@ -120,3 +120,19 @@ python3 -m http.server 8000
 - 默认增量范围：最近 `30` 天
 - 默认公司：`AMD` + `NVDA` + `TSM` + `TSLA`
 - 手动触发：与定时任务一致，仍同步最近 `30` 天（AMD + NVDA + TSM + TSLA）
+
+
+## 多口径统一入库（同一数据库结构）
+
+为满足“加载逻辑不同、入库结构一致”的要求：
+
+- AMD/NVDA/TSLA 继续以 **Form 4** 解析为交易明细；
+- TSM 在无 Form 4 时自动回退到 **6-K/20-F/13G/13D 披露事件**；
+- 最终都写入同一套 `filings` / `transactions` 表。
+
+新增统一字段：
+- `source_form`：来源表单（如 `4`、`6-K`、`20-F`）
+- `source_system`：来源系统（当前为 `sec-edgar`）
+- `extra_json`：补充上下文
+
+说明：TSM 回退模式下，交易数量字段可能为空（`shares/price = null`），但可用于时间轴与披露密度监控。

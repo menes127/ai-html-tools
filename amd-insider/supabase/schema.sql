@@ -8,6 +8,9 @@ create table if not exists public.filings (
   filing_date date not null,
   accepted_datetime timestamptz,
   filing_url text not null,
+  source_form text,
+  source_system text not null default 'sec-edgar',
+  extra_json jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -33,6 +36,9 @@ create table if not exists public.transactions (
   is_10b5_1 boolean not null default false,
   footnote_hint text,
   filing_url text not null,
+  source_form text,
+  source_system text not null default 'sec-edgar',
+  extra_json jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (issuer_cik, accession_number, transaction_date, insider_name, code, shares, price)
@@ -41,9 +47,15 @@ create table if not exists public.transactions (
 alter table public.filings add column if not exists issuer_ticker text not null default 'AMD';
 alter table public.filings add column if not exists issuer_cik text not null default '0000002488';
 alter table public.filings add column if not exists issuer_name text;
+alter table public.filings add column if not exists source_form text;
+alter table public.filings add column if not exists source_system text not null default 'sec-edgar';
+alter table public.filings add column if not exists extra_json jsonb;
 alter table public.transactions add column if not exists issuer_ticker text not null default 'AMD';
 alter table public.transactions add column if not exists issuer_cik text not null default '0000002488';
 alter table public.transactions add column if not exists issuer_name text;
+alter table public.transactions add column if not exists source_form text;
+alter table public.transactions add column if not exists source_system text not null default 'sec-edgar';
+alter table public.transactions add column if not exists extra_json jsonb;
 
 do $$
 declare
@@ -148,7 +160,10 @@ select
   is_10b5_1,
   footnote_hint,
   accession_number,
-  filing_url
+  filing_url,
+  source_form,
+  source_system,
+  extra_json
 from public.transactions;
 
 alter table public.filings enable row level security;

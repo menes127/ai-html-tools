@@ -246,6 +246,7 @@
                     <th>方向</th>
                     <th>交易后持仓</th>
                     <th>10b5-1</th>
+                    <th>来源</th>
                     <th>备注</th>
                     <th>SEC</th>
                   </tr>
@@ -691,6 +692,7 @@
             <td>${signalText(r.code)}</td>
             <td>${fmtNum(r.shares_owned_after)}</td>
             <td>${r.is_10b5_1 ? '是' : '否'}</td>
+            <td>${r.source_form || '4'}</td>
             <td class="${r.is_10b5_1 ? 'warn' : ''}">${footnote || '-'}</td>
             <td><a href="${r.filing_url}" target="_blank" rel="noopener">查看</a></td>
           </tr>
