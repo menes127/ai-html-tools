@@ -163,7 +163,8 @@
               <button type="button" class="type-toggle active" data-code="G" title="G：赠与 (Gift)">G</button>
               <button type="button" class="type-toggle active" data-code="M" title="M：期权行权 (Option exercise)">M</button>
               <button type="button" class="type-toggle active" data-code="F" title="F：税务预扣相关处置 (Tax withholding disposition)">F</button>
-              <button type="button" class="type-toggle active" data-code="OTHER" title="其他：不在 P/S/A/G/M/F 集合内的交易代码">其他</button>
+              <button type="button" class="type-toggle active" data-code="J" title="J：其他获得/处置（见对应 Form 4 脚注）">J</button>
+              <button type="button" class="type-toggle active" data-code="OTHER" title="其他：不在 P/S/A/G/M/F/J 集合内的交易代码">其他</button>
             </div>
           </label>
         </div>
@@ -179,7 +180,7 @@
         <details style="margin-top:10px;">
           <summary style="cursor:pointer;font-weight:600;">交易代码说明（Form 4）</summary>
           <div class="muted" style="margin-top:8px;line-height:1.7;">
-            <b>P</b> 公开市场买入；<b>S</b> 公开市场卖出；<b>M</b> 期权行权；<b>A</b> 获得/授予；<b>G</b> 赠与；<b>F</b> 税务预扣相关处置。<br/>
+            <b>P</b> 公开市场买入；<b>S</b> 公开市场卖出；<b>M</b> 期权行权；<b>A</b> 获得/授予；<b>G</b> 赠与；<b>F</b> 税务预扣相关处置；<b>J</b> 其他获得/处置。<br/>
             说明：S 不一定看空，需结合 10b5-1 与 footnote 判断。
           </div>
         </details>
@@ -212,6 +213,10 @@
                 <option value="P">P（公开市场买入）</option>
                 <option value="S">S（公开市场卖出）</option>
                 <option value="M">M（期权行权）</option>
+                <option value="A">A（获得/授予）</option>
+                <option value="G">G（赠与）</option>
+                <option value="F">F（税务预扣相关处置）</option>
+                <option value="J">J（其他获得/处置）</option>
               </select>
             </label>
             <label class="inline-check"><input type="checkbox" id="onlySignal" /> 仅显示强/中信号（P/S）</label>
@@ -934,7 +939,7 @@
     }
 
     function normalizeTxnCode(code) {
-      return ['P', 'S', 'A', 'G', 'M', 'F'].includes(code) ? code : 'OTHER';
+      return ['P', 'S', 'A', 'G', 'M', 'F', 'J'].includes(code) ? code : 'OTHER';
     }
 
     function getSelectedChartCodes() {
@@ -960,10 +965,18 @@
       const insiderKeyword = (insider || '').trim().toLowerCase();
       for (const r of rows) {
         if (insiderKeyword && !(r.insider_name || '').toLowerCase().includes(insiderKeyword)) continue;
-        const normalizedCode = normalizeTxnCode(r.code);
-        if (selectedCodes && !selectedCodes.has(normalizedCode)) continue;
         const k = keyFn(r);
         if (!map[k]) map[k] = { buy: 0, sell: 0, grant: 0, other: 0, buyAmount: 0, sellAmount: 0, latestDate: '', endHolding: null };
+
+        // 期末持仓基于该时间桶内“所有交易代码”的最后一条记录，避免被当前代码筛选影响
+        const d = r.transaction_date || '';
+        if (d && d >= map[k].latestDate) {
+          map[k].latestDate = d;
+          map[k].endHolding = r.shares_owned_after ?? map[k].endHolding;
+        }
+
+        const normalizedCode = normalizeTxnCode(r.code);
+        if (selectedCodes && !selectedCodes.has(normalizedCode)) continue;
         const v = Number(r.shares || 0);
 
         if (r.code === 'P') {
@@ -976,12 +989,6 @@
         }
         else if (['A','G','M'].includes(r.code)) map[k].grant += v;
         else map[k].other += v;
-
-        const d = r.transaction_date || '';
-        if (d && d >= map[k].latestDate) {
-          map[k].latestDate = d;
-          map[k].endHolding = r.shares_owned_after ?? map[k].endHolding;
-        }
       }
       return map;
     }
