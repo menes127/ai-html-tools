@@ -217,6 +217,7 @@
                 <option value="G">G（赠与）</option>
                 <option value="F">F（税务预扣相关处置）</option>
                 <option value="J">J（其他获得/处置）</option>
+                <option value="DISC">DISC（披露事件）</option>
               </select>
             </label>
             <label class="inline-check"><input type="checkbox" id="onlySignal" /> 仅显示强/中信号（P/S）</label>
@@ -615,6 +616,7 @@
     function signalText(code) {
       if (code === 'P') return '买入';
       if (code === 'S') return '卖出';
+      if (code === 'DISC') return '披露事件';
       return '其他';
     }
 
@@ -646,7 +648,8 @@
 
     function renderSummary(summary, rows, allTimeNet) {
       const el = document.getElementById('summary');
-      const codes = Object.entries(summary.codes || {}).map(([k,v]) => `${k}: ${v}`).join(' / ') || '-';
+      const codeName = (k) => (k === 'DISC' ? 'DISC(披露)' : k);
+      const codes = Object.entries(summary.codes || {}).map(([k,v]) => `${codeName(k)}: ${v}`).join(' / ') || '-';
       const amt = calcAmounts(rows);
       el.innerHTML = `
         <div class="card"><div class="muted">总交易条数（当前年份）</div><div><b>${summary.total_transactions ?? 0}</b></div></div>
@@ -674,7 +677,16 @@
       });
     }
 
-    function renderTable() {
+    
+    function sourceFormLabel(form) {
+      if (!form) return '-';
+      if (form === '4' || form === '4/A') return form;
+      if (form === '6-K') return '6-K（披露）';
+      if (form === '20-F') return '20-F（披露）';
+      return form;
+    }
+
+function renderTable() {
       const body = document.getElementById('tbody');
       const filtered = applyFilters();
       body.innerHTML = filtered.map(r => {
@@ -692,7 +704,7 @@
             <td>${signalText(r.code)}</td>
             <td>${fmtNum(r.shares_owned_after)}</td>
             <td>${r.is_10b5_1 ? '是' : '否'}</td>
-            <td>${r.source_form || '4'}</td>
+            <td>${sourceFormLabel(r.source_form || '4')}</td>
             <td class="${r.is_10b5_1 ? 'warn' : ''}">${footnote || '-'}</td>
             <td><a href="${r.filing_url}" target="_blank" rel="noopener">查看</a></td>
           </tr>
