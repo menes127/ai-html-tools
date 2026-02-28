@@ -99,6 +99,7 @@
     </label>
   </div>
   <div class="muted" id="meta">加载中...</div>
+  <div class="muted" id="dataScopeHint" style="margin-top:6px;color:#6b7280;"></div>
   <div id="globalLoadingMask" aria-live="polite" aria-busy="true">
     <div class="loading-box" id="globalLoadingText">正在请求数据...</div>
   </div>
@@ -315,7 +316,17 @@
       return companyNameByTicker[selectedTicker] || selectedTicker;
     }
 
-    function updateCompanyHeaders() {
+    function renderDataScopeHint() {
+      const el = document.getElementById('dataScopeHint');
+      if (!el) return;
+      if (selectedTicker === 'TSM') {
+        el.textContent = '提示：TSM 当前为披露事件口径（6-K/20-F），非 Form 4 逐笔交易口径。';
+      } else {
+        el.textContent = '提示：当前公司以 SEC Form 4 为主的高管交易口径。';
+      }
+    }
+
+function updateCompanyHeaders() {
       document.getElementById('pageTitle').textContent = `${selectedTicker} 高管买卖监控（SEC Form 4）`;
       document.getElementById('stockSubtitle').textContent = `${selectedTicker} 实时价格状态、技术面信号与 K 线走势`;
       document.getElementById('klineTitle').textContent = `${selectedTicker} K 线图`;
@@ -907,6 +918,7 @@ function renderTable() {
 
       document.getElementById('meta').textContent =
         `数据源: Supabase | 公司: ${selectedTicker} (${currentCompanyName()}) | 总记录: ${globalSummary.total_transactions || 0} | 最近交易日: ${globalSummary.latest_transaction_date || '-'}`;
+      renderDataScopeHint();
     }
 
     async function loadYear(year) {
