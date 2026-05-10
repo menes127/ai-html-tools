@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "my@my-local": true
+  },
+  "extraKnownMarketplaces": {
+    "my-local": {
+      "source": {
+        "source": "directory",
+        "path": "./claude-plugin"
+      }
+    }
+  }
+}
