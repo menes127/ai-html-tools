@@ -1,0 +1,19 @@
+{
+  "ticker": "AMD",
+  "reportDate": "2026-05-10",
+  "marketDataDate": "2026-05-08",
+  "provider": "stockanalysis",
+  "outputHtml": "D:\\github\\ai-html-tools\\AMD\\report\\amd_daily_stock_report_2026-05-10.html",
+  "headlineSignal": "持有 / 不追高",
+  "positionSize": "2 / 4",
+  "keyLevels": {
+    "breakout": 468.23,
+    "firstSupport": 430.23,
+    "invalidation": 405.26,
+    "target": 506.23
+  },
+  "runDir": "D:\\github\\ai-html-tools\\tools\\daily-stock-report\\cache\\AMD_2026-05-10",
+  "dataWarnings": [
+    "Report date 2026-05-10 is not a trading date in provider data; using latest market data date 2026-05-08."
+  ]
+}

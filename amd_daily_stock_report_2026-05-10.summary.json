@@ -1,0 +1,19 @@
+{
+  "ticker": "AMD",
+  "reportDate": "2026-05-10",
+  "marketDataDate": "2026-05-10",
+  "outputHtml": "D:\\github\\ai-html-tools\\amd_daily_stock_report_2026-05-10.html",
+  "headlineSignal": "持有 / 不追高",
+  "positionSize": "2 / 4",
+  "keyLevels": {
+    "breakout": 465.72,
+    "firstSupport": 422.44,
+    "invalidation": 395,
+    "target": 474.62
+  },
+  "runDir": "D:\\github\\ai-html-tools\\tools\\daily-stock-report\\cache\\AMD_2026-05-10",
+  "dataWarnings": [
+    "Using deterministic fallback data. Provide --input-json or add a market data provider for production daily reports.",
+    "Loaded raw data from cache: D:\\github\\ai-html-tools\\tools\\daily-stock-report\\cache\\AMD_2026-05-10_raw_data.json"
+  ]
+}

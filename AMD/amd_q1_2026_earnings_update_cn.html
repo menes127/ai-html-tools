@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD 2026 年第一季度财报更新</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --navy: #17365d;
+      --blue: #175cd3;
+      --blue-soft: #e8f1ff;
+      --line: #d9e2f3;
+      --green: #067647;
+      --amber: #b54708;
+      --red: #b42318;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 360px);
+    }
+
+    .wrap {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 44px;
+      color: #fff;
+      background: radial-gradient(circle at 92% 10%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, #102a43, #175cd3);
+      box-shadow: var(--shadow);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      bottom: -125px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #c7ddff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 940px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 18px 0 0;
+      max-width: 900px;
+      color: #e4ecff;
+      font-size: 18px;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      color: #f5f8ff;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      border-color: #9ec5fe;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #243b53;
+      font-size: 20px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .metric {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1.15;
+      margin: 4px 0 6px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+    }
+
+    .formula {
+      display: block;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: #0b1f36;
+      color: #f8fbff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #d9e1f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    .number { text-align: right; white-space: nowrap; }
+
+    .positive { color: var(--green); font-weight: 800; }
+    .negative { color: var(--red); font-weight: 800; }
+    .neutral { color: var(--amber); font-weight: 800; }
+
+    ul, ol { margin-top: 8px; }
+    li { margin: 6px 0; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      padding-left: 18px;
+    }
+
+    a { color: var(--blue); }
+
+    footer {
+      margin-top: 34px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .wrap { width: min(100% - 24px, 1200px); padding-top: 18px; }
+      header, section { padding: 22px; border-radius: 20px; }
+      nav, .grid, .three, .source-list { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Earnings Update</p>
+      <h1>AMD 2026 年第一季度财报更新</h1>
+      <p class="subtitle">AMD 2026 年第一季度业绩强劲，收入和非 GAAP EPS 均超出市场预期，数据中心业务与第二季度指引进一步强化 AI / Data Center 投资主线。</p>
+      <div class="meta">
+        <span class="pill">股票代码：AMD</span>
+        <span class="pill">季度截止日：2026-03-28</span>
+        <span class="pill">财报发布日期：2026-05-05</span>
+        <span class="pill">10-Q 提交日：2026-05-06</span>
+        <span class="pill">投资逻辑影响：正面</span>
+      </div>
+    </header>
+
+    <nav aria-label="页面导航">
+      <a href="#summary">业绩摘要</a>
+      <a href="#segments">分部表现</a>
+      <a href="#guidance">指引与利润率</a>
+      <a href="#thesis">投资逻辑</a>
+      <a href="#valuation">估值影响</a>
+    </nav>
+
+    <section id="summary">
+      <h2>1. 业绩摘要</h2>
+      <div class="grid three">
+        <div class="card">
+          <div class="label">2026 年第一季度收入</div>
+          <div class="metric">$10.253B</div>
+          <p>较公开一致预期高出约 $340M–$350M。</p>
+        </div>
+        <div class="card">
+          <div class="label">非 GAAP EPS</div>
+          <div class="metric">$1.37</div>
+          <p>较市场预期高出 $0.08。</p>
+        </div>
+        <div class="card">
+          <div class="label">数据中心收入</div>
+          <div class="metric">$5.775B</div>
+          <p>同比增长 57%，主要由 EPYC 服务器 CPU 与 Instinct GPU 放量驱动。</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>一句话结论：</strong>AMD 这一季度属于较清晰的“业绩超预期 + 指引上调”类型。收入超预期、EPS 超预期、数据中心继续加速，且第二季度收入指引高于公开市场预期。
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>指标</th><th class="number">2026 年第一季度实际值</th><th class="number">市场预期 / 估计</th><th class="number">超预期 / 低于预期</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>收入</td><td class="number">$10.253B</td><td class="number">约 $9.90B–$9.91B</td><td class="number positive">超出约 $340M–$350M</td></tr>
+          <tr><td>非 GAAP EPS</td><td class="number">$1.37</td><td class="number">$1.29</td><td class="number positive">超出 $0.08</td></tr>
+          <tr><td>GAAP EPS</td><td class="number">$0.84</td><td class="number">N/A</td><td class="number positive">同比增长 91%</td></tr>
+          <tr><td>GAAP 毛利率</td><td class="number">53%</td><td class="number">N/A</td><td class="number positive">同比提升 2 个百分点</td></tr>
+          <tr><td>非 GAAP 毛利率</td><td class="number">55%</td><td class="number">N/A</td><td class="number positive">同比提升 1 个百分点</td></tr>
+          <tr><td>GAAP 净利润</td><td class="number">$1.383B</td><td class="number">N/A</td><td class="number positive">同比增长 95%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="segments">
+      <h2>2. 分部表现</h2>
+      <table>
+        <thead>
+          <tr><th>业务分部</th><th class="number">2026 年第一季度收入</th><th class="number">同比增长</th><th>解读</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>数据中心</td><td class="number">$5.775B</td><td class="number positive">+57%</td><td>由 EPYC CPU 和 AMD Instinct GPU 持续放量驱动，是本季度最重要的增长来源。</td></tr>
+          <tr><td>客户端与游戏</td><td class="number">$3.605B</td><td class="number positive">+23%</td><td>客户端需求较强，但游戏业务周期性仍然存在。</td></tr>
+          <tr><td>客户端</td><td class="number">$2.885B</td><td class="number">N/A</td><td>受益于 PC 复苏和 Ryzen 产品需求。</td></tr>
+          <tr><td>游戏</td><td class="number">$720M</td><td class="number positive">+11%</td><td>管理层预计下半年游戏收入将较上半年下降超过 20%。</td></tr>
+          <tr><td>嵌入式</td><td class="number">$873M</td><td class="number positive">+6%</td><td>在此前疲软后开始企稳。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>分部层面核心结论：</strong>数据中心已经成为 AMD 投资逻辑的核心。单季度 $5.8B 收入、57% 同比增长，意味着市场会越来越少关注传统 PC / Gaming 周期，更多关注 EPYC、Instinct GPU、MI450 / Helios 和 hyperscaler AI 基础设施需求。
+      </div>
+    </section>
+
+    <section id="guidance">
+      <h2>3. 指引与利润率分析</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>2026 年第二季度指引</h3>
+          <table>
+            <thead><tr><th>指标</th><th class="number">公司指引</th></tr></thead>
+            <tbody>
+              <tr><td>收入</td><td class="number">约 $11.2B ± $300M</td></tr>
+              <tr><td>收入区间</td><td class="number">$10.9B–$11.5B</td></tr>
+              <tr><td>隐含同比增长</td><td class="number">约 46%</td></tr>
+              <tr><td>隐含环比增长</td><td class="number">约 9%</td></tr>
+              <tr><td>非 GAAP 毛利率</td><td class="number">约 56%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>利润率含义</h3>
+          <p>第一季度非 GAAP 毛利率为 55%，第二季度指引约 56%。这支持 DCF 中一个关键假设：随着数据中心业务占比提升，AMD 的公司层面毛利率可以从 FY2025 的约 50% 向低至中 50% 区间迁移。</p>
+          <span class="formula">投资逻辑影响：正面
+第一季度毛利率强劲 + 第二季度毛利率指引继续提升
+= 数据中心 mix 和经营杠杆假设获得更多支持</span>
+        </div>
+      </div>
+
+      <div class="callout warning">
+        <strong>需要注意：</strong>毛利率提升只是第一步。真正决定估值的是毛利率提升能否进一步转化为 EBIT margin 扩张，而不是被更高的研发投入完全抵消。</div>
+    </section>
+
+    <section id="beat-miss">
+      <h2>4. 为什么超预期？</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>收入超预期的原因</h3>
+          <ol>
+            <li>数据中心需求强于预期。</li>
+            <li>EPYC 服务器 CPU 表现持续良好。</li>
+            <li>Instinct GPU 出货继续放量。</li>
+            <li>客户端业务维持健康。</li>
+            <li>嵌入式业务开始企稳。</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>EPS 超预期的原因</h3>
+          <span class="formula">收入超预期
++ 产品组合改善
++ 毛利率扩张
++ 经营杠杆
+= EPS 超预期</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai">
+      <h2>5. AI GPU 与数据中心解读</h2>
+      <p>AMD 在本季度强调了 MI350、MI450 Series、Helios rack-scale AI systems 和 AMD Instinct GPU 出货的需求增强。</p>
+      <div class="callout warning">
+        <strong>为什么重要：</strong>AMD 的牛市情景需要证明自己能成为 NVIDIA 之外的可持续第二 AI 平台。本季度还不能完全证明这一点，但确实强化了 AMD 在大规模 AI 基础设施中获得更高相关性的判断。
+      </div>
+      <span class="formula">EPYC 服务器 CPU 份额提升
++ Instinct GPU 放量
++ MI450 / Helios 客户采用
++ Hyperscaler AI 基础设施需求
+= AMD 数据中心投资主线</span>
+    </section>
+
+    <section id="thesis">
+      <h2>6. 投资逻辑更新</h2>
+      <table>
+        <thead>
+          <tr><th>投资逻辑支柱</th><th>本季度更新</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>数据中心增长</td><td class="positive">强正面</td></tr>
+          <tr><td>AI GPU 放量</td><td class="positive">正面</td></tr>
+          <tr><td>毛利率扩张</td><td class="positive">正面</td></tr>
+          <tr><td>客户端复苏</td><td class="positive">正面，但重要性低于数据中心</td></tr>
+          <tr><td>游戏业务</td><td class="neutral">中性偏负，下半年可能走弱</td></tr>
+          <tr><td>嵌入式业务</td><td class="positive">企稳</td></tr>
+          <tr><td>估值</td><td class="neutral">仍然要求较高</td></tr>
+        </tbody>
+      </table>
+      <p><strong>更新后观点：</strong>本季度对 AMD 投资逻辑是正面的，但还不足以单独构成估值重估。AMD 仍需要连续多个季度证明数据中心增长和利润率扩张的持续性，才能缩小“当前盈利能力”和“估值隐含盈利能力”之间的差距。</p>
+    </section>
+
+    <section id="valuation">
+      <h2>7. 估值影响</h2>
+      <table>
+        <thead><tr><th>估值指标</th><th class="number">AMD</th><th class="number">Peer Median</th></tr></thead>
+        <tbody>
+          <tr><td>EV / Sales</td><td class="number">约 14.0x</td><td class="number">约 14.7x</td></tr>
+          <tr><td>EV / EBITDA</td><td class="number">约 72.1x</td><td class="number">约 39.5x</td></tr>
+        </tbody>
+      </table>
+      <p>第一季度结果有助于支撑 AMD 的收入倍数，但 EBITDA 倍数仍然较高。换句话说，市场不是在按 AMD 当前 EBITDA 定价，而是在提前定价未来数据中心和 AI GPU 规模化后的盈利能力。</p>
+
+      <h3>DCF 假设的方向性变化</h3>
+      <table>
+        <thead><tr><th>DCF 输入项</th><th>方向性更新</th></tr></thead>
+        <tbody>
+          <tr><td>近端收入增长</td><td class="positive">上调</td></tr>
+          <tr><td>数据中心增长</td><td class="positive">上调</td></tr>
+          <tr><td>毛利率</td><td class="positive">上调 / 风险降低</td></tr>
+          <tr><td>Terminal EBIT Margin</td><td class="positive">信心略有提升</td></tr>
+          <tr><td>WACC</td><td>不变</td></tr>
+          <tr><td>Terminal Growth</td><td>不变</td></tr>
+          <tr><td>Bear Case 概率</td><td class="positive">降低，但未消失</td></tr>
+        </tbody>
+      </table>
+      <span class="formula">最重要的敏感性分析：
+收入 CAGR vs Terminal EBIT Margin</span>
+    </section>
+
+    <section id="watch">
+      <h2>8. 下一季度重点观察</h2>
+      <div class="grid">
+        <div class="card"><h3>财务指标</h3><ul><li>数据中心收入增长</li><li>毛利率指引</li><li>R&D / Revenue 趋势</li><li>经营利润率扩张</li></ul></div>
+        <div class="card"><h3>AI 执行</h3><ul><li>AI GPU 出货表述</li><li>MI450 / Helios 客户进展</li><li>Meta 合作执行进度</li><li>Hyperscaler capex 表述</li></ul></div>
+        <div class="card"><h3>其他业务</h3><ul><li>客户端需求持续性</li><li>游戏业务下滑幅度</li><li>嵌入式业务是否继续企稳</li></ul></div>
+        <div class="card"><h3>竞争环境</h3><ul><li>NVIDIA 生态领先优势</li><li>Intel 服务器路线图</li><li>AMD 作为第二 AI 平台的定位</li></ul></div>
+      </div>
+    </section>
+
+    <section id="verdict">
+      <h2>9. 财报结论</h2>
+      <div class="callout">
+        <strong>AMD 2026 年第一季度财报对投资逻辑是正面的。</strong> 业绩强化了 AMD 正在向更大的数据中心与 AI 基础设施公司转型的观点。本季度体现了强劲收入增长、数据中心动能、EPS 超预期和更高的毛利率指引。
+      </div>
+      <table>
+        <tbody>
+          <tr><th>投资逻辑影响</th><td class="positive">正面</td></tr>
+          <tr><th>估值影响</th><td class="positive">中度正面</td></tr>
+          <tr><th>风险收益</th><td class="neutral">仍高度依赖 AI / 数据中心执行</td></tr>
+          <tr><th>下一季度最重要指标</th><td>数据中心收入与毛利率指引</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sources">
+      <h2>资料来源</h2>
+      <ul class="source-list">
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000072/q12026991.htm">AMD 2026 年第一季度业绩 / 8-K</a></li>
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000072/amdq126earningsslidesfin.htm">AMD 2026 年第一季度财报演示材料</a></li>
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000076/amd-20260328.htm">AMD 2026 年第一季度 Form 10-Q</a></li>
+        <li><a href="https://www.fool.com/earnings/call-transcripts/2026/05/06/amd-amd-q1-2026-earnings-call-transcript/">AMD 2026 年第一季度电话会文字稿 — Motley Fool</a></li>
+        <li><a href="https://ir.amd.com/financial-information/financial-results">AMD 投资者关系：财务结果</a></li>
+        <li><a href="https://www.marketbeat.com/stocks/NASDAQ/AMD/earnings/">MarketBeat AMD 财报摘要</a></li>
+        <li><a href="https://www.tomshardware.com/pc-components/cpus/amd-posts-record-first-quarter-results-driven-by-skyrocketing-data-center-cpu-demand-company-expects-consumer-and-gaming-revenue-to-decline-in-q2-over-rising-memory-and-component-costs">Tom’s Hardware AMD Q1 2026 复盘</a></li>
+        <li><a href="https://ir.amd.com/news-events/press-releases/detail/1279/amd-and-meta-announce-expanded-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus">AMD 与 Meta 战略合作公告</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      AMD 2026 年第一季度财报更新。本页面为研究框架，不构成投资建议。
+    </footer>
+  </main>
+</body>
+</html>

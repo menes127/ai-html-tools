@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD 股票日报模板</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --navy: #17365d;
+      --blue: #175cd3;
+      --blue-soft: #e8f1ff;
+      --line: #d9e2f3;
+      --green: #067647;
+      --green-soft: #ecfdf3;
+      --amber: #b54708;
+      --amber-soft: #fff7ed;
+      --red: #b42318;
+      --red-soft: #fef3f2;
+      --purple: #6941c6;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 360px);
+    }
+
+    .wrap {
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 44px;
+      color: #fff;
+      background: radial-gradient(circle at 92% 10%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, #101828, #175cd3 72%, #6941c6);
+      box-shadow: var(--shadow);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -110px;
+      bottom: -130px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #c7ddff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 18px 0 0;
+      max-width: 920px;
+      color: #e4ecff;
+      font-size: 18px;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      color: #f5f8ff;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      border-color: #9ec5fe;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #243b53;
+      font-size: 20px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .metric {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1.15;
+      margin: 4px 0 6px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .signal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .buy { background: var(--green); }
+    .hold { background: var(--blue); }
+    .watch { background: var(--amber); }
+    .reduce { background: var(--red); }
+    .neutral-bg { background: #eef2f6; color: #344054; }
+
+    .callout {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .bullish-box {
+      border-left-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .danger {
+      border-left-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .formula {
+      display: block;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: #0b1f36;
+      color: #f8fbff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #d9e1f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    .number { text-align: right; white-space: nowrap; }
+    .positive { color: var(--green); font-weight: 800; }
+    .negative { color: var(--red); font-weight: 800; }
+    .neutral { color: var(--amber); font-weight: 800; }
+    .muted { color: var(--muted); }
+
+    ul, ol { margin-top: 8px; }
+    li { margin: 6px 0; }
+
+    .scorebar {
+      height: 10px;
+      border-radius: 999px;
+      background: #eef2f6;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .scorebar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .chart-card {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .chart-title {
+      font-weight: 900;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .chart-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .kline-placeholder {
+      height: 260px;
+      border-radius: 14px;
+      border: 1px dashed #98a2b3;
+      background:
+        linear-gradient(#ffffffcc, #ffffffcc),
+        repeating-linear-gradient(0deg, transparent 0 42px, rgba(23, 54, 93, 0.08) 43px),
+        repeating-linear-gradient(90deg, transparent 0 62px, rgba(23, 54, 93, 0.08) 63px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kline-placeholder::before {
+      content: "K线图区：蜡烛图 + 5/20/50日均线";
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .kline-placeholder::after {
+      content: "成交量图区：Volume + 20日均量";
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .price-line {
+      position: absolute;
+      left: 12%;
+      right: 10%;
+      top: 42%;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--amber));
+      transform: rotate(-5deg);
+      opacity: .75;
+    }
+
+    .volume-bars {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 52px;
+      height: 62px;
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .volume-bars span {
+      flex: 1;
+      min-width: 6px;
+      border-radius: 4px 4px 0 0;
+      background: #98a2b3;
+      opacity: .65;
+    }
+
+    .volume-bars span.up { background: var(--green); }
+    .volume-bars span.down { background: var(--red); }
+
+    .chart-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-tag {
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    footer {
+      margin-top: 34px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .wrap { width: min(100% - 24px, 1240px); padding-top: 18px; }
+      header, section { padding: 22px; border-radius: 20px; }
+      nav, .grid, .three, .four, .chart-grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">AMD Daily Stock Report Template</p>
+      <h1>AMD 股票日报：信号驱动版</h1>
+      <p class="subtitle">用于每天判断 AMD 是更适合加仓、持有、观望还是减仓。重点结合 AMD 个股量价、标普500、纳斯达克100、半导体板块、相对强弱、消息催化剂与风险控制。</p>
+      <div class="meta">
+        <span class="pill">股票：AMD</span>
+        <span class="pill">日期：YYYY-MM-DD</span>
+        <span class="pill">核心问题：加仓 / 持有 / 减仓？</span>
+        <span class="pill">方法：量价 + 相对强弱 + 基本面催化剂</span>
+      </div>
+    </header>
+
+    <nav aria-label="页面导航">
+      <a href="#decision">今日结论</a>
+      <a href="#market">大环境</a>
+      <a href="#charts">K线图</a>
+      <a href="#price-volume">AMD 量价</a>
+      <a href="#signals">交易信号</a>
+      <a href="#risk">风控</a>
+    </nav>
+
+    <section id="decision">
+      <h2>1. 今日结论</h2>
+      <div class="grid three">
+        <div class="card">
+          <div class="label">今日信号</div>
+          <div class="metric"><span class="signal hold">持有 / 观望偏多</span></div>
+          <p>示例：AMD 趋势仍偏强，但需要成交量继续确认，暂不盲目追高。</p>
+        </div>
+        <div class="card">
+          <div class="label">信号强度</div>
+          <div class="metric">中</div>
+          <p>示例：股价结构改善，但大环境和半导体板块尚未形成强共振。</p>
+        </div>
+        <div class="card">
+          <div class="label">建议仓位</div>
+          <div class="metric">2 / 4</div>
+          <p>标准仓。若放量突破关键压力位，可考虑提升至 3 / 4。</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>今日核心判断：</strong>AMD 的操作信号应由三层共同决定：第一，AMD 自身是否放量突破或跌破关键均线；第二，标普500、纳斯达克100和半导体板块是否提供顺风；第三，AI / Data Center 消息面是否支持继续持仓。
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>项目</th><th>今日判断</th><th>操作含义</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AMD 个股趋势</td><td>短期偏强 / 等待放量确认</td><td>持有，不追高</td></tr>
+          <tr><td>大盘环境</td><td>中性偏正面</td><td>允许维持风险敞口</td></tr>
+          <tr><td>半导体板块</td><td>观察是否放量突破</td><td>若板块共振，可提高 AMD 加仓信号权重</td></tr>
+          <tr><td>消息催化剂</td><td>AI / Data Center 仍是核心主线</td><td>正面消息配合放量突破可加仓</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="market">
+      <h2>2. 大环境简略分析：标普500 / 纳斯达克100 / 半导体板块</h2>
+      <p>这部分用于判断 AMD 的交易环境是否顺风。即使 AMD 自身技术形态好，如果大盘和半导体板块走弱，也应降低加仓信号权重。</p>
+
+      <div class="grid three">
+        <div class="card">
+          <h3>标普500：SPY / S&P 500</h3>
+          <table>
+            <tbody>
+              <tr><th>趋势</th><td>站上 / 跌破 20 日线、50 日线</td></tr>
+              <tr><th>成交量</th><td>今日量 / 20 日均量</td></tr>
+              <tr><th>风险偏好</th><td>上涨是否放量、下跌是否缩量</td></tr>
+              <tr><th>日报解读</th><td>决定市场整体 risk-on / risk-off 背景</td></tr>
+            </tbody>
+          </table>
+          <div class="scorebar"><span style="width: 60%"></span></div>
+          <p class="muted">示例评分：60 / 100，中性偏正面。</p>
+        </div>
+
+        <div class="card">
+          <h3>纳斯达克100：QQQ / NDX</h3>
+          <table>
+            <tbody>
+              <tr><th>趋势</th><td>科技成长股是否维持上升趋势</td></tr>
+              <tr><th>成交量</th><td>上涨是否有量，下跌是否放量</td></tr>
+              <tr><th>广度</th><td>大型科技股是否同步走强</td></tr>
+              <tr><th>日报解读</th><td>决定 AMD 这类成长股估值环境</td></tr>
+            </tbody>
+          </table>
+          <div class="scorebar"><span style="width: 65%"></span></div>
+          <p class="muted">示例评分：65 / 100，对 AMD 略偏顺风。</p>
+        </div>
+
+        <div class="card">
+          <h3>半导体板块：SOXX / SMH</h3>
+          <table>
+            <tbody>
+              <tr><th>趋势</th><td>是否突破前高或站稳关键均线</td></tr>
+              <tr><th>成交量</th><td>板块上涨是否放量确认</td></tr>
+              <tr><th>龙头</th><td>NVDA、AVGO、MRVL、AMD 是否共振</td></tr>
+              <tr><th>日报解读</th><td>决定 AMD 个股信号是否有板块确认</td></tr>
+            </tbody>
+          </table>
+          <div class="scorebar"><span style="width: 58%"></span></div>
+          <p class="muted">示例评分：58 / 100，等待板块量能确认。</p>
+        </div>
+      </div>
+
+      <h3>大环境信号解释</h3>
+      <table>
+        <thead>
+          <tr><th>环境组合</th><th>含义</th><th>AMD 操作影响</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SPY 强 + QQQ 强 + SOXX/SMH 强</td><td class="positive">风险偏好和板块共振</td><td>AMD 放量突破时，加仓信号可信度最高</td></tr>
+          <tr><td>SPY 中性 + QQQ 强 + SOXX/SMH 强</td><td class="positive">科技和半导体主导行情</td><td>适合持有或逢突破加仓 AMD</td></tr>
+          <tr><td>SPY 弱 + QQQ 弱 + SOXX/SMH 弱</td><td class="negative">系统性风险升高</td><td>即使 AMD 相对强，也应控制仓位</td></tr>
+          <tr><td>大盘强但半导体弱</td><td class="neutral">板块资金不在半导体</td><td>AMD 加仓需要更强个股催化剂确认</td></tr>
+          <tr><td>半导体强但 AMD 弱</td><td class="negative">AMD 个股相对弱</td><td>避免加仓，检查是否有个股负面因素</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warning">
+        <strong>大环境模块的作用：</strong>不是替代 AMD 个股分析，而是决定“同一个 AMD 信号应该给多大权重”。顺风环境下可以更积极；逆风环境下即使出现突破，也要降低仓位和提高确认标准。
+      </div>
+    </section>
+
+    <section id="charts">
+      <h2>3. K线图与量价标识</h2>
+      <p>日报需要同时展示 AMD、标普500 / SPY、纳斯达克100 / QQQ、半导体板块 / SOXX 或 SMH 的 K 线图。每张图都应包含蜡烛图、5/20/50 日均线、成交量柱和 20 日均量线。</p>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <div class="chart-title">AMD 个股 K线</div>
+              <div class="chart-note">用于判断个股趋势、突破、跌破、放量或缩量。</div>
+            </div>
+            <span class="signal hold">核心图</span>
+          </div>
+          <div class="kline-placeholder">
+            <div class="price-line"></div>
+            <div class="volume-bars"><span class="up" style="height:35%"></span><span style="height:48%"></span><span class="up" style="height:70%"></span><span class="down" style="height:44%"></span><span class="up" style="height:88%"></span><span style="height:58%"></span><span class="up" style="height:76%"></span><span class="down" style="height:40%"></span><span class="up" style="height:64%"></span><span style="height:52%"></span></div>
+          </div>
+          <div class="chart-tags"><span class="mini-tag">5日线</span><span class="mini-tag">20日线</span><span class="mini-tag">50日线</span><span class="mini-tag">成交量 / 20日均量</span></div>
+          <table>
+            <tbody>
+              <tr><th>量价标识</th><td>标注放量突破、放量跌破、缩量回踩、高位放量滞涨。</td></tr>
+              <tr><th>操作含义</th><td>AMD 图决定直接加仓 / 减仓触发。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <div class="chart-title">标普500 / SPY K线</div>
+              <div class="chart-note">用于判断市场整体 risk-on / risk-off 背景。</div>
+            </div>
+            <span class="signal neutral-bg">大盘</span>
+          </div>
+          <div class="kline-placeholder">
+            <div class="price-line"></div>
+            <div class="volume-bars"><span style="height:40%"></span><span class="up" style="height:54%"></span><span class="up" style="height:46%"></span><span style="height:62%"></span><span class="down" style="height:80%"></span><span class="up" style="height:50%"></span><span style="height:44%"></span><span class="up" style="height:66%"></span><span style="height:38%"></span><span class="up" style="height:58%"></span></div>
+          </div>
+          <div class="chart-tags"><span class="mini-tag">20日线方向</span><span class="mini-tag">50日线位置</span><span class="mini-tag">风险偏好</span></div>
+          <table>
+            <tbody>
+              <tr><th>量价标识</th><td>标注指数上涨是否放量、下跌是否放量、是否跌破 20/50 日线。</td></tr>
+              <tr><th>操作含义</th><td>SPY 图决定整体仓位上限，逆风时降低 AMD 信号权重。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <div class="chart-title">纳斯达克100 / QQQ K线</div>
+              <div class="chart-note">用于判断科技成长股和高估值资产环境。</div>
+            </div>
+            <span class="signal neutral-bg">科技</span>
+          </div>
+          <div class="kline-placeholder">
+            <div class="price-line"></div>
+            <div class="volume-bars"><span class="up" style="height:42%"></span><span class="up" style="height:56%"></span><span style="height:45%"></span><span class="up" style="height:74%"></span><span class="down" style="height:60%"></span><span class="up" style="height:82%"></span><span style="height:52%"></span><span class="up" style="height:70%"></span><span class="down" style="height:46%"></span><span class="up" style="height:64%"></span></div>
+          </div>
+          <div class="chart-tags"><span class="mini-tag">成长股风格</span><span class="mini-tag">放量上涨</span><span class="mini-tag">回撤承接</span></div>
+          <table>
+            <tbody>
+              <tr><th>量价标识</th><td>标注 QQQ 是否站稳 20/50 日线、科技股上涨是否有成交量确认。</td></tr>
+              <tr><th>操作含义</th><td>QQQ 图决定 AMD 估值环境是否顺风。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <div class="chart-title">半导体板块 / SOXX / SMH K线</div>
+              <div class="chart-note">用于判断 AMD 的板块 beta 是否共振。</div>
+            </div>
+            <span class="signal neutral-bg">板块</span>
+          </div>
+          <div class="kline-placeholder">
+            <div class="price-line"></div>
+            <div class="volume-bars"><span style="height:38%"></span><span class="up" style="height:60%"></span><span class="up" style="height:78%"></span><span class="down" style="height:50%"></span><span class="up" style="height:92%"></span><span class="up" style="height:72%"></span><span style="height:55%"></span><span class="down" style="height:48%"></span><span class="up" style="height:80%"></span><span style="height:58%"></span></div>
+          </div>
+          <div class="chart-tags"><span class="mini-tag">板块突破</span><span class="mini-tag">龙头共振</span><span class="mini-tag">量能确认</span></div>
+          <table>
+            <tbody>
+              <tr><th>量价标识</th><td>标注 SOXX/SMH 是否放量突破或放量跌破，以及 NVDA/AVGO/MRVL 是否同步。</td></tr>
+              <tr><th>操作含义</th><td>半导体图决定 AMD 个股信号是否有板块确认。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3>K线图标注规范</h3>
+      <table>
+        <thead>
+          <tr><th>标注项</th><th>图上如何标识</th><th>解读</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>放量突破</td><td>在突破 K 线处标注“Breakout + Vol > 1.5x”</td><td class="positive">加仓信号，需要收盘确认。</td></tr>
+          <tr><td>放量跌破</td><td>在跌破 20/50 日线处标注“Breakdown + High Vol”</td><td class="negative">减仓信号，尤其是 AMD 与 SOXX 同步跌破。</td></tr>
+          <tr><td>缩量回踩</td><td>在回踩均线处标注“Low-volume pullback”</td><td class="neutral">若支撑有效，可观察低吸机会。</td></tr>
+          <tr><td>高位放量滞涨</td><td>在高位长上影 / 小实体处标注“High-volume stall”</td><td class="negative">潜在派发信号，谨慎加仓。</td></tr>
+          <tr><td>板块共振</td><td>在 SOXX/SMH 与 AMD 同向突破处标注“Sector confirmation”</td><td class="positive">提高 AMD 信号可信度。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="price-volume">
+      <h2>4. AMD 个股量价分析</h2>
+      <div class="grid four">
+        <div class="card"><div class="label">收盘价</div><div class="metric">$XXX.XX</div><p>填写当日收盘价。</p></div>
+        <div class="card"><div class="label">日涨跌幅</div><div class="metric">+X.X%</div><p>与前一交易日收盘价比较。</p></div>
+        <div class="card"><div class="label">相对成交量</div><div class="metric">1.3x</div><p>今日成交量 / 20 日均量。</p></div>
+        <div class="card"><div class="label">收盘位置</div><div class="metric">高位</div><p>收盘价位于日内区间上半部还是下半部。</p></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>指标</th><th>今日数据</th><th>信号解释</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>成交量 vs 20 日均量</td><td>__x</td><td>大于 1.5x 代表资金参与度明显提高；小于 0.8x 代表趋势缺乏确认。</td></tr>
+          <tr><td>收盘价 vs 20 日线</td><td>上方 / 下方</td><td>站上 20 日线偏多；放量跌破 20 日线偏空。</td></tr>
+          <tr><td>收盘价 vs 50 日线</td><td>上方 / 下方</td><td>50 日线是波段趋势的重要分界。</td></tr>
+          <tr><td>日内振幅</td><td>__%</td><td>高振幅 + 高成交量通常说明分歧加大。</td></tr>
+          <tr><td>收盘位置</td><td>高 / 中 / 低</td><td>收盘接近日内高点说明买盘较强；接近低点说明卖压较强。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>AMD 量价结论模板</h3>
+      <span class="formula">如果：AMD 上涨 + 成交量 > 20 日均量 1.5x + 收盘接近日内高点
+结论：上涨有资金确认，可视为加仓候选信号。
+
+如果：AMD 下跌 + 成交量放大 + 跌破 20 日线或 50 日线
+结论：卖压增强，应降低仓位或停止加仓。
+
+如果：AMD 横盘 + 成交量低于均量
+结论：市场等待新催化剂，维持观察。</span>
+    </section>
+
+    <section id="relative-strength">
+      <h2>5. 相对强弱分析</h2>
+      <p>AMD 需要同时和大盘、科技股、半导体板块以及 AI 半导体 peers 比较。</p>
+      <table>
+        <thead>
+          <tr><th>对比</th><th>今日表现</th><th>5 日表现</th><th>20 日表现</th><th>解读</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AMD vs SPY</td><td>跑赢 / 跑输</td><td>__</td><td>__</td><td>判断 AMD 是否相对大盘有 alpha。</td></tr>
+          <tr><td>AMD vs QQQ</td><td>跑赢 / 跑输</td><td>__</td><td>__</td><td>判断 AMD 是否强于大型科技成长股。</td></tr>
+          <tr><td>AMD vs SOXX / SMH</td><td>跑赢 / 跑输</td><td>__</td><td>__</td><td>判断 AMD 是否强于半导体板块。</td></tr>
+          <tr><td>AMD vs NVDA</td><td>跑赢 / 跑输</td><td>__</td><td>__</td><td>判断 AMD AI GPU 叙事是否相对增强。</td></tr>
+          <tr><td>AMD vs AVGO / MRVL</td><td>跑赢 / 跑输</td><td>__</td><td>__</td><td>判断 AI infrastructure peer group 中的资金偏好。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout bullish-box">
+        <strong>加仓确认：</strong>如果 AMD 同时跑赢 QQQ、SOXX/SMH 和 NVDA，且自身放量上涨，说明个股 alpha 和板块 beta 同时成立，加仓信号质量较高。
+      </div>
+    </section>
+
+    <section id="signals">
+      <h2>6. 加仓 / 减仓信号系统</h2>
+      <div class="grid">
+        <div class="card">
+          <h3 class="positive">加仓信号</h3>
+          <ul>
+            <li>AMD 放量突破前高或关键压力位。</li>
+            <li>成交量大于 20 日均量 1.5x。</li>
+            <li>AMD 收盘站上 20 日线和 50 日线。</li>
+            <li>AMD 跑赢 SOXX / SMH / QQQ / NVDA。</li>
+            <li>AI GPU、Data Center、客户订单或分析师上调等基本面催化剂配合。</li>
+            <li>SPY、QQQ、SOXX/SMH 均处于风险偏好改善状态。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="negative">减仓信号</h3>
+          <ul>
+            <li>AMD 放量跌破 20 日线。</li>
+            <li>AMD 放量跌破 50 日线。</li>
+            <li>高位放量滞涨或高开低走。</li>
+            <li>AMD 跑输 SOXX / SMH，说明个股相对弱。</li>
+            <li>半导体板块放量下跌。</li>
+            <li>大盘 risk-off，QQQ 和 SOXX/SMH 同时跌破关键均线。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>操作动作矩阵</h3>
+      <table>
+        <thead>
+          <tr><th>AMD 个股信号</th><th>大环境信号</th><th>建议动作</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>放量突破</td><td>SPY / QQQ / SOXX 同步走强</td><td><span class="signal buy">加仓</span></td></tr>
+          <tr><td>放量突破</td><td>大盘中性，半导体强</td><td><span class="signal buy">小幅加仓</span></td></tr>
+          <tr><td>缩量上涨</td><td>大盘中性</td><td><span class="signal hold">持有</span></td></tr>
+          <tr><td>横盘缩量</td><td>大盘中性</td><td><span class="signal watch">观望</span></td></tr>
+          <tr><td>放量跌破 20 日线</td><td>半导体走弱</td><td><span class="signal reduce">减仓</span></td></tr>
+          <tr><td>放量跌破 50 日线</td><td>QQQ / SOXX 同步走弱</td><td><span class="signal reduce">明显减仓</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="news">
+      <h2>7. 消息面与催化剂</h2>
+      <table>
+        <thead>
+          <tr><th>类别</th><th>今日内容</th><th>对 AMD 的影响</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>公司新闻</td><td>产品、客户、管理层发言、投资者会议</td><td>判断是否改变收入或利润率预期</td></tr>
+          <tr><td>AI GPU / Data Center</td><td>MI350、MI450、Helios、Meta / OpenAI 合作进展</td><td>决定 AMD AI 估值叙事强弱</td></tr>
+          <tr><td>半导体 peers</td><td>NVDA、AVGO、MRVL、INTC、QCOM 相关新闻</td><td>提供板块 read-through</td></tr>
+          <tr><td>宏观</td><td>CPI、FOMC、10Y yield、美元、风险偏好</td><td>影响成长股估值和 WACC</td></tr>
+          <tr><td>分析师调整</td><td>上调 / 下调评级或目标价</td><td>影响短线情绪和估值锚</td></tr>
+          <tr><td>期权</td><td>IV、Put/Call、大单、expected move</td><td>判断事件交易和短线拥挤度</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="risk">
+      <h2>8. 今日操作建议与风控</h2>
+      <div class="grid three">
+        <div class="card">
+          <h3>当前动作</h3>
+          <p><span class="signal hold">持有 / 等待确认</span></p>
+          <p>示例：保持标准仓位，不在无量上涨中追高。</p>
+        </div>
+        <div class="card">
+          <h3>加仓条件</h3>
+          <ul>
+            <li>AMD 收盘突破 $XXX。</li>
+            <li>成交量 > 20 日均量 1.5x。</li>
+            <li>AMD 跑赢 SOXX / SMH 和 NVDA。</li>
+            <li>QQQ 和 SOXX / SMH 同步走强。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>减仓条件</h3>
+          <ul>
+            <li>AMD 收盘跌破 $XXX。</li>
+            <li>成交量明显放大。</li>
+            <li>半导体板块同步走弱。</li>
+            <li>AMD 跑输 SOXX / SMH。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>固定风险提示</h3>
+      <div class="callout danger">
+        <ul>
+          <li>AI GPU 订单低于预期。</li>
+          <li>NVIDIA 竞争压力加大。</li>
+          <li>毛利率扩张不及预期。</li>
+          <li>半导体板块估值压缩。</li>
+          <li>宏观利率上行压制成长股。</li>
+          <li>大盘风险偏好下降，QQQ 和 SOXX / SMH 同步走弱。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="daily-template">
+      <h2>9. 每日填写模板</h2>
+      <span class="formula">AMD Daily Stock Report
+Date: YYYY-MM-DD
+
+1. 今日结论
+- 信号：加仓 / 持有 / 减仓 / 观望
+- 信号强度：高 / 中 / 低
+- 建议仓位：X / 4
+- 核心原因：
+
+2. 大环境量价分析
+- 标普500 / SPY：趋势、成交量、风险偏好
+- 纳斯达克100 / QQQ：趋势、成交量、科技股广度
+- 半导体板块 / SOXX / SMH：趋势、成交量、龙头共振
+- 大环境结论：顺风 / 中性 / 逆风
+
+3. K线图与量价标识
+- AMD K线：趋势、均线、成交量、关键突破/跌破标注
+- SPY K线：大盘趋势、风险偏好、成交量确认
+- QQQ K线：科技成长股环境、放量/缩量
+- SOXX/SMH K线：半导体板块趋势、龙头共振
+- 图上标识：放量突破、放量跌破、缩量回踩、高位放量滞涨
+
+4. AMD 个股量价
+- 收盘价：
+- 日涨跌幅：
+- 成交量：
+- 相对成交量：
+- 收盘位置：
+- 20 日线 / 50 日线状态：
+
+5. 相对强弱
+- AMD vs SPY：
+- AMD vs QQQ：
+- AMD vs SOXX / SMH：
+- AMD vs NVDA：
+
+6. 消息与催化剂
+- 公司新闻：
+- 行业新闻：
+- AI GPU / Data Center：
+- 分析师调整：
+- 宏观因素：
+
+7. 操作建议
+- 当前动作：
+- 加仓条件：
+- 减仓条件：
+- 止损 / 风控：
+- 明日重点：</span>
+    </section>
+
+    <footer>
+      AMD 股票日报模板。本页面为研究和交易框架，不构成投资建议。
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "source": "settings",
+  "name": "my-local",
+  "plugins": [
+    {
+      "name": "my",
+      "source": "./"
+    }
+  ]
+}

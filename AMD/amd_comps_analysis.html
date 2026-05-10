@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD 可比公司分析</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --navy: #17365d;
+      --blue: #175cd3;
+      --blue-soft: #e8f1ff;
+      --line: #d9e2f3;
+      --grey: #f2f4f7;
+      --green: #067647;
+      --amber: #b54708;
+      --red: #b42318;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+      line-height: 1.65;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 360px);
+    }
+
+    .wrap {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 44px;
+      color: white;
+      background: radial-gradient(circle at 88% 12%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, #102a43, #175cd3);
+      box-shadow: var(--shadow);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -95px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #c7ddff;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 18px 0 0;
+      max-width: 860px;
+      color: #e4ecff;
+      font-size: 18px;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      color: #f5f8ff;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      border-color: #9ec5fe;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #243b53;
+      font-size: 20px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      padding: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .callout {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+    }
+
+    .formula {
+      display: block;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: #0b1f36;
+      color: #f8fbff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #d9e1f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    .number { text-align: right; white-space: nowrap; }
+
+    .chip {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .positive { color: var(--green); font-weight: 800; }
+    .negative { color: var(--red); font-weight: 800; }
+    .neutral { color: var(--amber); font-weight: 800; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      padding-left: 18px;
+    }
+
+    a { color: var(--blue); }
+
+    footer {
+      margin-top: 34px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .wrap { width: min(100% - 24px, 1200px); padding-top: 18px; }
+      header, section { padding: 22px; border-radius: 20px; }
+      nav, .grid, .source-list { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Comparable Company Analysis</p>
+      <h1>AMD 可比公司分析</h1>
+      <p class="subtitle">基于公开数据快照的半导体 peer group、估值倍数、统计区间与 DCF 交叉检查框架。</p>
+      <div class="meta">
+        <span class="pill">Target: AMD</span>
+        <span class="pill">Peer Set: NVDA / AVGO / INTC / QCOM / MRVL / TXN</span>
+        <span class="pill">口径：TTM / LTM Public Market Data</span>
+        <span class="pill">用途：方向性估值参考</span>
+      </div>
+    </header>
+
+    <nav aria-label="页面导航">
+      <a href="#peers">Peer Group</a>
+      <a href="#snapshot">Comps Snapshot</a>
+      <a href="#stats">统计区间</a>
+      <a href="#dcf">DCF 输入</a>
+    </nav>
+
+    <section id="overview">
+      <h2>分析口径</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>数据来源</h3>
+          <p>由于没有 FactSet 账号，本页面使用公开来源快照，包括公司 10-K、SEC EDGAR、StockAnalysis 统计页和 Trefis peer comparison。</p>
+        </div>
+        <div class="card">
+          <h3>使用限制</h3>
+          <p>公开页面的市值、EV、LTM Revenue、EBITDA 和倍数可能存在更新时间差异；本页面适合方向性分析，不替代机构数据库或一致预期模型。</p>
+        </div>
+      </div>
+      <div class="callout warning">
+        <strong>重要提示：</strong>AMD 当前 EV/EBITDA 显著高于 peer median，主要反映市场对 AI / Data Center 规模化和利润率扩张的预期，而非当前 EBITDA 已经达到成熟水平。
+      </div>
+    </section>
+
+    <section id="peers">
+      <h2>1. AMD Peer Group</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>公司</th>
+            <th>Ticker</th>
+            <th>选择理由</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NVIDIA</td>
+            <td>NVDA</td>
+            <td>AI GPU 领导者，AMD AI accelerator 的最直接高端参照。</td>
+          </tr>
+          <tr>
+            <td>Broadcom</td>
+            <td>AVGO</td>
+            <td>高利润率半导体 + 基础设施软件，成熟 FCF 质量参考。</td>
+          </tr>
+          <tr>
+            <td>Intel</td>
+            <td>INTC</td>
+            <td>CPU 竞争对手，但 IDM 模式资本强度和利润结构不同。</td>
+          </tr>
+          <tr>
+            <td>Qualcomm</td>
+            <td>QCOM</td>
+            <td>Fabless 半导体，成熟高现金流业务，可作为低端估值参考。</td>
+          </tr>
+          <tr>
+            <td>Marvell</td>
+            <td>MRVL</td>
+            <td>AI / networking 半导体成长型参考，但规模小于 AMD。</td>
+          </tr>
+          <tr>
+            <td>Texas Instruments</td>
+            <td>TXN</td>
+            <td>成熟半导体、周期性和现金流质量参考。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="snapshot">
+      <h2>2. Public Comps Snapshot</h2>
+      <p>口径：StockAnalysis 公开统计页 / 搜索结果快照，主要为 TTM / LTM 市场数据。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Ticker</th>
+            <th class="number">Market Cap</th>
+            <th class="number">Enterprise Value</th>
+            <th class="number">Revenue TTM</th>
+            <th class="number">EBITDA</th>
+            <th class="number">EV / Sales</th>
+            <th class="number">EV / EBITDA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AMD</td><td>AMD</td><td class="number">$497.84B</td><td class="number">$486.31B</td><td class="number">$34.64B</td><td class="number">$6.75B</td><td class="number">14.04x</td><td class="number">72.10x</td>
+          </tr>
+          <tr>
+            <td>NVIDIA</td><td>NVDA</td><td class="number">$5.16T</td><td class="number">$5.12T</td><td class="number">$215.94B</td><td class="number">$133.23B</td><td class="number">23.69x</td><td class="number">38.40x</td>
+          </tr>
+          <tr>
+            <td>Broadcom</td><td>AVGO</td><td class="number">$1.99T</td><td class="number">$2.04T</td><td class="number">$68.28B</td><td class="number">$37.22B</td><td class="number">29.95x</td><td class="number">54.95x</td>
+          </tr>
+          <tr>
+            <td>Intel</td><td>INTC</td><td class="number">$550.95B</td><td class="number">$576.45B</td><td class="number">$53.76B</td><td class="number">$14.17B</td><td class="number">10.72x</td><td class="number">40.67x</td>
+          </tr>
+          <tr>
+            <td>Texas Instruments</td><td>TXN</td><td class="number">$259.59B</td><td class="number">$268.54B</td><td class="number">$18.44B</td><td class="number">$8.67B</td><td class="number">14.56x</td><td class="number">30.99x</td>
+          </tr>
+          <tr>
+            <td>Qualcomm</td><td>QCOM</td><td class="number">N/A</td><td class="number">$144.74B</td><td class="number">$44.87B</td><td class="number">$13.76B</td><td class="number">3.23x</td><td class="number">10.52x</td>
+          </tr>
+          <tr>
+            <td>Marvell</td><td>MRVL</td><td class="number">$116.22B</td><td class="number">$121.13B</td><td class="number">$8.19B</td><td class="number">$2.63B</td><td class="number">14.78x</td><td class="number">46.07x</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="stats">
+      <h2>3. Peer Statistics，excluding AMD</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th class="number">Min</th>
+            <th class="number">25th %ile</th>
+            <th class="number">Median</th>
+            <th class="number">75th %ile</th>
+            <th class="number">Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EV / Sales</td>
+            <td class="number">3.23x</td>
+            <td class="number">11.68x</td>
+            <td class="number"><strong>14.67x</strong></td>
+            <td class="number">21.46x</td>
+            <td class="number">29.95x</td>
+          </tr>
+          <tr>
+            <td>EV / EBITDA</td>
+            <td class="number">10.52x</td>
+            <td class="number">32.84x</td>
+            <td class="number"><strong>39.54x</strong></td>
+            <td class="number">44.72x</td>
+            <td class="number">54.95x</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>AMD vs Peer Median</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th class="number">AMD</th>
+            <th class="number">Peer Median</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EV / Sales</td>
+            <td class="number">14.04x</td>
+            <td class="number">14.67x</td>
+            <td><span class="positive">接近 peer median</span>，说明收入倍数层面 AMD 不明显贵。</td>
+          </tr>
+          <tr>
+            <td>EV / EBITDA</td>
+            <td class="number">72.10x</td>
+            <td class="number">39.54x</td>
+            <td><span class="negative">显著高于 peer median</span>，说明市场隐含明显利润率扩张。</td>
+          </tr>
+          <tr>
+            <td>EBITDA Margin</td>
+            <td class="number">~19.5%</td>
+            <td class="number">varies</td>
+            <td><span class="neutral">当前 EBITDA base 偏低</span>，DCF 应重点测试终局 EBIT / EBITDA margin。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="takeaways">
+      <h2>4. Key Takeaways</h2>
+      <div class="grid">
+        <div class="card">
+          <h3><span class="chip">1</span> EV/Sales 不明显贵</h3>
+          <p>AMD 的 EV/Sales 约 14.04x，接近 peer median 的 14.67x。</p>
+        </div>
+        <div class="card">
+          <h3><span class="chip">2</span> EV/EBITDA 很贵</h3>
+          <p>AMD 的 EV/EBITDA 约 72.10x，显著高于 peer median，反映市场期待 AI / Data Center 带来利润率跃升。</p>
+        </div>
+        <div class="card">
+          <h3><span class="chip">3</span> NVDA / AVGO 不宜简单平均</h3>
+          <p>NVIDIA 和 Broadcom 的当前盈利能力、AI/软件暴露和 FCF 质量更强，应作为高端参照而非简单等权平均。</p>
+        </div>
+        <div class="card">
+          <h3><span class="chip">4</span> DCF 应聚焦 margin bridge</h3>
+          <p>最关键的问题不是 AMD 当前 EBITDA 倍数，而是未来能否达到 mid/high-20s EBIT margin 或更高。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="dcf">
+      <h2>5. DCF 输入建议</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>DCF Input</th>
+            <th>Comps-Informed Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Terminal EV / Revenue cross-check</td><td>11.5x–21.5x</td></tr>
+          <tr><td>Base terminal EV / Revenue check</td><td>~14.5x–15.0x</td></tr>
+          <tr><td>Terminal EV / EBITDA cross-check</td><td>33.0x–45.0x</td></tr>
+          <tr><td>Base terminal EV / EBITDA check</td><td>~39.5x</td></tr>
+          <tr><td>Bull terminal EV / EBITDA check</td><td>Up to ~55.0x, only if AI margin profile improves materially</td></tr>
+          <tr><td>Bear terminal EV / EBITDA check</td><td>20.0x–30.0x, below peer median</td></tr>
+        </tbody>
+      </table>
+      <span class="formula">Recommended DCF cross-checks:
+Implied EV / Terminal Revenue
+Implied EV / Terminal EBITDA
+Implied P/E
+Terminal Value / Enterprise Value</span>
+    </section>
+
+    <section id="excel">
+      <h2>6. 推荐 Excel Comps 结构</h2>
+      <p>如果后续要生成 Excel，可用以下字段和公式。</p>
+      <span class="formula">Columns:
+Company
+Ticker
+Market Cap
+Enterprise Value
+Revenue TTM
+Revenue Growth
+Gross Margin
+EBITDA
+EBITDA Margin
+EV / Revenue
+EV / EBITDA
+P/E
+FCF Yield</span>
+      <span class="formula">Formula examples:
+EBITDA Margin = EBITDA / Revenue
+EV / Revenue = Enterprise Value / Revenue
+EV / EBITDA = Enterprise Value / EBITDA
+
+Statistics rows:
+Maximum
+75th Percentile
+Median
+25th Percentile
+Minimum</span>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <ul class="source-list">
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000018/amd-20251227.htm">AMD FY2025 Form 10-K</a></li>
+        <li><a href="https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/0000002488-26-000018-index.htm">SEC EDGAR AMD 2025 10-K Filing Index</a></li>
+        <li><a href="https://stockanalysis.com/stocks/amd/statistics/">AMD Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/nvda/statistics/">NVIDIA Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/avgo/statistics/">Broadcom Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/intc/statistics/">Intel Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/txn/statistics/">Texas Instruments Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/qcom/statistics/">Qualcomm Statistics — StockAnalysis</a></li>
+        <li><a href="https://stockanalysis.com/stocks/mrvl/statistics/">Marvell Statistics — StockAnalysis</a></li>
+        <li><a href="https://www.trefis.com/data/companies/AMD">Trefis AMD Peer Comparisons</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      AMD public comps analysis page. This page is a valuation framework, not investment advice.
+    </footer>
+  </main>
+</body>
+</html>

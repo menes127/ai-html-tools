@@ -1,0 +1,15 @@
+{
+  "name": "my",
+  "version": "0.1.0",
+  "description": "Slash commands for my report generators",
+  "components": {
+    "commands": {
+      "enabled": true,
+      "path": "../commands"
+    },
+    "skills": {
+      "enabled": true,
+      "path": "../skills"
+    }
+  }
+}

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD Q1 2026 Earnings Update</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --navy: #17365d;
+      --blue: #175cd3;
+      --blue-soft: #e8f1ff;
+      --line: #d9e2f3;
+      --green: #067647;
+      --amber: #b54708;
+      --red: #b42318;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 360px);
+    }
+
+    .wrap {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 44px;
+      color: #fff;
+      background: radial-gradient(circle at 92% 10%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, #102a43, #175cd3);
+      box-shadow: var(--shadow);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      bottom: -125px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #c7ddff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 940px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 18px 0 0;
+      max-width: 900px;
+      color: #e4ecff;
+      font-size: 18px;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      color: #f5f8ff;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      border-color: #9ec5fe;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #243b53;
+      font-size: 20px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .metric {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1.15;
+      margin: 4px 0 6px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+    }
+
+    .formula {
+      display: block;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: #0b1f36;
+      color: #f8fbff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #d9e1f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    .number { text-align: right; white-space: nowrap; }
+
+    .positive { color: var(--green); font-weight: 800; }
+    .negative { color: var(--red); font-weight: 800; }
+    .neutral { color: var(--amber); font-weight: 800; }
+
+    ul, ol { margin-top: 8px; }
+    li { margin: 6px 0; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      padding-left: 18px;
+    }
+
+    a { color: var(--blue); }
+
+    footer {
+      margin-top: 34px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .wrap { width: min(100% - 24px, 1200px); padding-top: 18px; }
+      header, section { padding: 22px; border-radius: 20px; }
+      nav, .grid, .three, .source-list { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Earnings Update</p>
+      <h1>AMD Q1 2026 Earnings Update</h1>
+      <p class="subtitle">AMD Q1 2026 业绩强劲，收入和 EPS 均超预期，Data Center 增长和 Q2 指引强化 AI / Data Center thesis。</p>
+      <div class="meta">
+        <span class="pill">Ticker: AMD</span>
+        <span class="pill">Quarter Ended: 2026-03-28</span>
+        <span class="pill">Release Date: 2026-05-05</span>
+        <span class="pill">10-Q Filed: 2026-05-06</span>
+        <span class="pill">Thesis Impact: Positive</span>
+      </div>
+    </header>
+
+    <nav aria-label="页面导航">
+      <a href="#summary">Summary</a>
+      <a href="#segments">Segments</a>
+      <a href="#guidance">Guidance</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#valuation">Valuation</a>
+    </nav>
+
+    <section id="summary">
+      <h2>1. Earnings Summary</h2>
+      <div class="grid three">
+        <div class="card">
+          <div class="label">Q1 2026 Revenue</div>
+          <div class="metric">$10.253B</div>
+          <p>Beat consensus by approximately $340M–$350M.</p>
+        </div>
+        <div class="card">
+          <div class="label">Non-GAAP EPS</div>
+          <div class="metric">$1.37</div>
+          <p>Beat consensus by $0.08.</p>
+        </div>
+        <div class="card">
+          <div class="label">Data Center Revenue</div>
+          <div class="metric">$5.775B</div>
+          <p>Up 57% YoY, driven by EPYC CPUs and Instinct GPU ramp.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Bottom line:</strong> This was a clean beat-and-raise style quarter. Revenue beat, EPS beat, Data Center accelerated, and Q2 revenue guidance came in above public consensus estimates.
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Metric</th><th class="number">Q1 2026 Actual</th><th class="number">Consensus / Estimate</th><th class="number">Beat / Miss</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="number">$10.253B</td><td class="number">~$9.90B–$9.91B</td><td class="number positive">+$340M–$350M</td></tr>
+          <tr><td>Non-GAAP EPS</td><td class="number">$1.37</td><td class="number">$1.29</td><td class="number positive">+$0.08</td></tr>
+          <tr><td>GAAP EPS</td><td class="number">$0.84</td><td class="number">N/A</td><td class="number positive">+91% YoY</td></tr>
+          <tr><td>GAAP Gross Margin</td><td class="number">53%</td><td class="number">N/A</td><td class="number positive">+2 pts YoY</td></tr>
+          <tr><td>Non-GAAP Gross Margin</td><td class="number">55%</td><td class="number">N/A</td><td class="number positive">+1 pt YoY</td></tr>
+          <tr><td>GAAP Net Income</td><td class="number">$1.383B</td><td class="number">N/A</td><td class="number positive">+95% YoY</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="segments">
+      <h2>2. Segment Results</h2>
+      <table>
+        <thead>
+          <tr><th>Segment</th><th class="number">Q1 2026 Revenue</th><th class="number">YoY Growth</th><th>Commentary</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Data Center</td><td class="number">$5.775B</td><td class="number positive">+57%</td><td>Driven by EPYC CPUs and continued AMD Instinct GPU ramp.</td></tr>
+          <tr><td>Client &amp; Gaming</td><td class="number">$3.605B</td><td class="number positive">+23%</td><td>Client strength partly offset by gaming cyclicality.</td></tr>
+          <tr><td>Client</td><td class="number">$2.885B</td><td class="number">N/A</td><td>PC recovery and Ryzen demand.</td></tr>
+          <tr><td>Gaming</td><td class="number">$720M</td><td class="number positive">+11%</td><td>Management expects 2H gaming revenue to decline more than 20% vs 1H.</td></tr>
+          <tr><td>Embedded</td><td class="number">$873M</td><td class="number positive">+6%</td><td>Stabilizing after prior weakness.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Key segment takeaway:</strong> Data Center is now the thesis. At $5.8B in quarterly revenue and 57% YoY growth, it is increasingly the majority driver of AMD’s equity story.
+      </div>
+    </section>
+
+    <section id="guidance">
+      <h2>3. Guidance and Margin Analysis</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Q2 2026 Guidance</h3>
+          <table>
+            <thead><tr><th>Metric</th><th class="number">Guidance</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue</td><td class="number">~$11.2B ± $300M</td></tr>
+              <tr><td>Revenue Range</td><td class="number">$10.9B–$11.5B</td></tr>
+              <tr><td>Implied YoY Growth</td><td class="number">~46%</td></tr>
+              <tr><td>Implied Sequential Growth</td><td class="number">~9%</td></tr>
+              <tr><td>Non-GAAP Gross Margin</td><td class="number">~56%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Margin Read-Through</h3>
+          <p>Q1 non-GAAP gross margin of 55% and Q2 guidance of ~56% support the core DCF assumption that AMD can move from roughly 50% FY2025 gross margin toward the low-to-mid 50s as Data Center mix rises.</p>
+          <span class="formula">Thesis Impact: Positive
+Q1 GM strength + Q2 GM guide
+= More confidence in Data Center mix and operating leverage</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="beat-miss">
+      <h2>4. Beat / Miss Explanation</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Why Revenue Beat</h3>
+          <ol>
+            <li>Data Center demand was stronger than expected.</li>
+            <li>EPYC server CPUs continued to perform well.</li>
+            <li>Instinct GPU shipments ramped.</li>
+            <li>Client remained healthy.</li>
+            <li>Embedded stabilized.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Why EPS Beat</h3>
+          <span class="formula">Revenue upside
++ favorable mix
++ gross margin expansion
++ operating leverage
+= EPS beat</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai">
+      <h2>5. AI GPU / Data Center Commentary</h2>
+      <p>AMD highlighted strengthening demand for MI350, MI450 Series, Helios rack-scale AI systems, and AMD Instinct GPU shipments.</p>
+      <div class="callout warning">
+        <strong>Why this matters:</strong> The bull case for AMD requires AMD to become a durable second-source AI platform alongside NVIDIA. This quarter does not prove that fully, but it strengthens the argument that AMD is gaining relevance in large-scale AI infrastructure.
+      </div>
+      <span class="formula">EPYC server CPU share gains
++ Instinct GPU ramp
++ MI450 / Helios adoption
++ hyperscaler AI infrastructure demand</span>
+    </section>
+
+    <section id="thesis">
+      <h2>6. Thesis Update</h2>
+      <table>
+        <thead>
+          <tr><th>Thesis Pillar</th><th>Update</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Data Center growth</td><td class="positive">Strongly positive</td></tr>
+          <tr><td>AI GPU ramp</td><td class="positive">Positive</td></tr>
+          <tr><td>Gross margin expansion</td><td class="positive">Positive</td></tr>
+          <tr><td>Client recovery</td><td class="positive">Positive but secondary</td></tr>
+          <tr><td>Gaming</td><td class="neutral">Mixed / negative into 2H</td></tr>
+          <tr><td>Embedded</td><td class="positive">Stabilizing</td></tr>
+          <tr><td>Valuation</td><td class="neutral">Still demanding</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Updated view:</strong> Positive thesis update, but not a valuation reset by itself. AMD needs several more quarters of Data Center growth and margin expansion to close the gap between current profitability and the profitability implied by its valuation.</p>
+    </section>
+
+    <section id="valuation">
+      <h2>7. Valuation Implications</h2>
+      <table>
+        <thead><tr><th>Metric</th><th class="number">AMD</th><th class="number">Peer Median</th></tr></thead>
+        <tbody>
+          <tr><td>EV / Sales</td><td class="number">~14.0x</td><td class="number">~14.7x</td></tr>
+          <tr><td>EV / EBITDA</td><td class="number">~72.1x</td><td class="number">~39.5x</td></tr>
+        </tbody>
+      </table>
+      <p>The Q1 2026 result helps justify AMD’s revenue multiple, but the EBITDA multiple remains demanding. The market is pricing AMD on future scale, not current EBITDA.</p>
+
+      <h3>DCF Directional Update</h3>
+      <table>
+        <thead><tr><th>DCF Input</th><th>Directional Update</th></tr></thead>
+        <tbody>
+          <tr><td>Near-term revenue growth</td><td class="positive">Increase</td></tr>
+          <tr><td>Data Center growth</td><td class="positive">Increase</td></tr>
+          <tr><td>Gross margin</td><td class="positive">Increase / de-risk</td></tr>
+          <tr><td>Terminal EBIT margin</td><td class="positive">Slightly more confidence</td></tr>
+          <tr><td>WACC</td><td>No change</td></tr>
+          <tr><td>Terminal growth</td><td>No change</td></tr>
+          <tr><td>Bear case probability</td><td class="positive">Lower, but not eliminated</td></tr>
+        </tbody>
+      </table>
+      <span class="formula">Most important sensitivity:
+Revenue CAGR vs Terminal EBIT Margin</span>
+    </section>
+
+    <section id="watch">
+      <h2>8. What to Watch Next</h2>
+      <div class="grid">
+        <div class="card"><h3>Financial Metrics</h3><ul><li>Data Center revenue growth</li><li>Gross margin guidance</li><li>R&D / revenue trend</li><li>Operating margin expansion</li></ul></div>
+        <div class="card"><h3>AI Execution</h3><ul><li>AI GPU shipment commentary</li><li>MI450 / Helios customer traction</li><li>Meta partnership execution</li><li>Hyperscaler capex commentary</li></ul></div>
+        <div class="card"><h3>Other Segments</h3><ul><li>Client demand sustainability</li><li>Gaming decline magnitude</li><li>Embedded stabilization</li></ul></div>
+        <div class="card"><h3>Competitive Context</h3><ul><li>NVIDIA ecosystem lead</li><li>Intel server roadmap</li><li>AMD second-source positioning</li></ul></div>
+      </div>
+    </section>
+
+    <section id="verdict">
+      <h2>9. Earnings Verdict</h2>
+      <div class="callout">
+        <strong>Q1 2026 was positive for AMD’s thesis.</strong> The results reinforce the view that AMD is transitioning into a larger Data Center and AI infrastructure company. The quarter showed strong revenue growth, Data Center momentum, EPS upside, and higher margin guidance.
+      </div>
+      <table>
+        <tbody>
+          <tr><th>Thesis impact</th><td class="positive">Positive</td></tr>
+          <tr><th>Valuation impact</th><td class="positive">Moderately positive</td></tr>
+          <tr><th>Risk / reward</th><td class="neutral">Still highly dependent on AI / Data Center execution</td></tr>
+          <tr><th>Most important metric next quarter</th><td>Data Center revenue and gross margin guidance</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <ul class="source-list">
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000072/q12026991.htm">AMD Q1 2026 Results / 8-K</a></li>
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000072/amdq126earningsslidesfin.htm">AMD Q1 2026 Earnings Slides</a></li>
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000076/amd-20260328.htm">AMD Q1 2026 Form 10-Q</a></li>
+        <li><a href="https://www.fool.com/earnings/call-transcripts/2026/05/06/amd-amd-q1-2026-earnings-call-transcript/">AMD Q1 2026 Earnings Call Transcript — Motley Fool</a></li>
+        <li><a href="https://ir.amd.com/financial-information/financial-results">AMD Financial Results — Investor Relations</a></li>
+        <li><a href="https://www.marketbeat.com/stocks/NASDAQ/AMD/earnings/">MarketBeat AMD Earnings Summary</a></li>
+        <li><a href="https://www.tomshardware.com/pc-components/cpus/amd-posts-record-first-quarter-results-driven-by-skyrocketing-data-center-cpu-demand-company-expects-consumer-and-gaming-revenue-to-decline-in-q2-over-rising-memory-and-component-costs">Tom’s Hardware AMD Q1 2026 Recap</a></li>
+        <li><a href="https://ir.amd.com/news-events/press-releases/detail/1279/amd-and-meta-announce-expanded-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus">AMD and Meta Strategic Partnership</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      AMD Q1 2026 earnings update. This page is a research framework, not investment advice.
+    </footer>
+  </main>
+</body>
+</html>

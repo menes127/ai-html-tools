@@ -1,0 +1,19 @@
+{
+  "ticker": "NVDA",
+  "reportDate": "2026-05-10",
+  "marketDataDate": "2026-05-08",
+  "provider": "stockanalysis",
+  "outputHtml": "D:\\github\\ai-html-tools\\NVDA\\nvda_daily_stock_report_2026-05-10.html",
+  "headlineSignal": "持有 / 观望",
+  "positionSize": "2 / 4",
+  "keyLevels": {
+    "breakout": 217.8,
+    "firstSupport": 212.8,
+    "invalidation": 193.68,
+    "target": 222.8
+  },
+  "runDir": "D:\\github\\ai-html-tools\\tools\\daily-stock-report\\cache\\NVDA_2026-05-10",
+  "dataWarnings": [
+    "Report date 2026-05-10 is not a trading date in provider data; using latest market data date 2026-05-08."
+  ]
+}

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMD Investment Thesis</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --navy: #17365d;
+      --blue: #175cd3;
+      --blue-soft: #e8f1ff;
+      --line: #d9e2f3;
+      --green: #067647;
+      --amber: #b54708;
+      --red: #b42318;
+      --purple: #6941c6;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 360px);
+    }
+
+    .wrap {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 44px;
+      color: #fff;
+      background: radial-gradient(circle at 90% 10%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, #101828, #175cd3 72%, #6941c6);
+      box-shadow: var(--shadow);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      bottom: -125px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #c7ddff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 880px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 18px 0 0;
+      max-width: 880px;
+      color: #e4ecff;
+      font-size: 18px;
+    }
+
+    .meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      color: #f5f8ff;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      border-color: #9ec5fe;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      color: #243b53;
+      font-size: 20px;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: #fbfdff;
+      border: 1px solid var(--line);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .callout {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+    }
+
+    .formula {
+      display: block;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: #0b1f36;
+      color: #f8fbff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #d9e1f2;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 900;
+    }
+
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    .number { text-align: right; white-space: nowrap; }
+
+    .case {
+      border-top: 6px solid var(--blue);
+    }
+
+    .case.bull { border-top-color: var(--green); }
+    .case.base { border-top-color: var(--blue); }
+    .case.bear { border-top-color: var(--red); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .bull .badge { background: var(--green); }
+    .base .badge { background: var(--blue); }
+    .bear .badge { background: var(--red); }
+
+    .positive { color: var(--green); font-weight: 800; }
+    .negative { color: var(--red); font-weight: 800; }
+    .neutral { color: var(--amber); font-weight: 800; }
+
+    ul, ol { margin-top: 8px; }
+
+    li { margin: 6px 0; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      padding-left: 18px;
+    }
+
+    a { color: var(--blue); }
+
+    footer {
+      margin-top: 34px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .wrap { width: min(100% - 24px, 1200px); padding-top: 18px; }
+      header, section { padding: 22px; border-radius: 20px; }
+      nav, .grid, .three, .source-list { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Equity Research Thesis</p>
+      <h1>AMD Investment Thesis</h1>
+      <p class="subtitle">AMD 的投资逻辑正在从 CPU share gainer + PC cycle recovery，转向 AI accelerator + Data Center platform company。</p>
+      <div class="meta">
+        <span class="pill">Ticker: AMD</span>
+        <span class="pill">View: Constructive but valuation-sensitive</span>
+        <span class="pill">Key Driver: AI GPU + Data Center</span>
+        <span class="pill">核心敏感性：Revenue CAGR vs Terminal EBIT Margin</span>
+      </div>
+    </header>
+
+    <nav aria-label="页面导航">
+      <a href="#summary">Thesis</a>
+      <a href="#financials">Financials</a>
+      <a href="#cases">Cases</a>
+      <a href="#valuation">Valuation</a>
+      <a href="#catalysts">Catalysts</a>
+    </nav>
+
+    <section id="summary">
+      <h2>1. Thesis Summary</h2>
+      <div class="callout">
+        <strong>核心观点：</strong>AMD 是一个高上行、高预期的 AI infrastructure equity。股票能否继续表现，取决于 AI GPU / Data Center 收入能否足够快地放大，并把毛利率和 EBIT margin 拉到足以支撑当前估值的水平。
+      </div>
+      <div class="grid three">
+        <div class="card">
+          <h3>Data Center 成为主引擎</h3>
+          <p>FY2025 Data Center revenue 达到 $16.6B，同比增长 32%；Q1 2026 Data Center revenue 达到 $5.8B，同比增长 57%。</p>
+        </div>
+        <div class="card">
+          <h3>AI GPU 变成实质贡献</h3>
+          <p>MI350 / MI450 / Helios rack-scale systems 和 Meta 6GW 合作提升了 AI 需求可见度。</p>
+        </div>
+        <div class="card">
+          <h3>利润率仍有上行空间</h3>
+          <p>FY2025 gross margin 为 50%，Q2 2026 non-GAAP gross margin guidance 约 56%。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="financials">
+      <h2>2. Key Financial Context</h2>
+      <table>
+        <thead>
+          <tr><th>Metric</th><th class="number">Data Point</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>FY2025 Revenue</td><td class="number">$34.639B</td></tr>
+          <tr><td>FY2025 Revenue Growth</td><td class="number">+34%</td></tr>
+          <tr><td>FY2025 Data Center Revenue</td><td class="number">$16.635B</td></tr>
+          <tr><td>FY2025 Data Center Growth</td><td class="number">+32%</td></tr>
+          <tr><td>FY2025 Client + Gaming Revenue</td><td class="number">$14.550B</td></tr>
+          <tr><td>FY2025 Client + Gaming Growth</td><td class="number">+51%</td></tr>
+          <tr><td>FY2025 Embedded Revenue</td><td class="number">$3.454B</td></tr>
+          <tr><td>FY2025 Embedded Growth</td><td class="number">-3%</td></tr>
+          <tr><td>FY2025 Gross Margin</td><td class="number">50%</td></tr>
+          <tr><td>Q1 2026 Revenue</td><td class="number">$10.253B</td></tr>
+          <tr><td>Q1 2026 Revenue Growth</td><td class="number">+38% YoY</td></tr>
+          <tr><td>Q1 2026 Data Center Revenue</td><td class="number">$5.8B</td></tr>
+          <tr><td>Q1 2026 Data Center Growth</td><td class="number">+57% YoY</td></tr>
+          <tr><td>Q2 2026 Revenue Guidance</td><td class="number">~$11.2B ± $300M</td></tr>
+          <tr><td>Q2 2026 Non-GAAP Gross Margin Guidance</td><td class="number">~56%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="cases">
+      <h2>3. Bull / Base / Bear Cases</h2>
+      <div class="grid three">
+        <div class="card case bull">
+          <span class="badge">Bull Case</span>
+          <h3>AI GPU + EPYC 重新定价 AMD</h3>
+          <p>MI350 / MI450 / Helios ramp 超预期，Meta 6GW 合作带来长期订单可见度，hyperscalers 把 AMD 作为 NVIDIA 之外的第二供应商。</p>
+          <ul>
+            <li>Revenue CAGR: 15%–20%</li>
+            <li>Gross Margin: 55%–58%</li>
+            <li>Terminal EBIT Margin: 30%–34%</li>
+            <li>WACC: 8.0%–9.0%</li>
+            <li>Terminal Growth: 3.0%–3.5%</li>
+          </ul>
+        </div>
+
+        <div class="card case base">
+          <span class="badge">Base Case</span>
+          <h3>增长明确，但估值依赖利润率扩张</h3>
+          <p>AMD 在 AI GPU 和 Data Center 中取得可观份额，但仍明显落后于 NVIDIA；估值是否成立取决于 gross margin 和 operating leverage。</p>
+          <ul>
+            <li>Revenue CAGR: 10%–14%</li>
+            <li>Gross Margin: 52%–55%</li>
+            <li>R&D / Revenue: 21%–23%</li>
+            <li>SG&A / Revenue: 8%–9%</li>
+            <li>Terminal EBIT Margin: 24%–28%</li>
+            <li>WACC: 9.0%–10.0%</li>
+            <li>Terminal Growth: 2.5%–3.0%</li>
+          </ul>
+        </div>
+
+        <div class="card case bear">
+          <span class="badge">Bear Case</span>
+          <h3>AI 叙事兑现慢于市场预期</h3>
+          <p>客户仍高度依赖 NVIDIA，AMD software ecosystem 成为 adoption bottleneck，MI450 / Helios ramp 推迟或毛利率低于预期。</p>
+          <ul>
+            <li>Revenue CAGR: 6%–9%</li>
+            <li>Gross Margin: 49%–51%</li>
+            <li>Terminal EBIT Margin: 18%–22%</li>
+            <li>WACC: 10.5%–11.5%</li>
+            <li>Terminal Growth: 2.0%</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="valuation">
+      <h2>4. Valuation Debate</h2>
+      <table>
+        <thead>
+          <tr><th>Metric</th><th class="number">AMD</th><th class="number">Peer Median</th><th>Interpretation</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EV / Sales</td>
+            <td class="number">~14.0x</td>
+            <td class="number">~14.7x</td>
+            <td><span class="positive">接近 peer median</span>，收入倍数层面 AMD 不明显贵。</td>
+          </tr>
+          <tr>
+            <td>EV / EBITDA</td>
+            <td class="number">~72.1x</td>
+            <td class="number">~39.5x</td>
+            <td><span class="negative">显著高于 peers</span>，市场提前定价未来 AI / Data Center 利润率扩张。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warning">
+        <strong>估值争论的核心：</strong>市场并不是按当前 EBITDA 给 AMD 定价，而是在提前定价未来 AI GPU 和 Data Center 的规模化利润率。
+      </div>
+
+      <span class="formula">Key valuation questions:
+1. 未来 3–5 年 Data Center revenue 是否能持续超预期？
+2. AI GPU gross margin 是否足够高？
+3. Terminal EBIT margin 能否达到 mid/high-20s 或更高？
+4. 当前股价隐含的 Revenue CAGR 和 EBIT margin 是否过高？</span>
+    </section>
+
+    <section id="catalysts">
+      <h2>5. Key Catalysts</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Quarterly Earnings</h3>
+          <ul>
+            <li>Data Center revenue</li>
+            <li>AI GPU commentary</li>
+            <li>Gross margin guidance</li>
+            <li>FY guidance revisions</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>MI350 / MI450 / Helios Updates</h3>
+          <ul>
+            <li>Customer adoption</li>
+            <li>Shipment timing</li>
+            <li>Rack-scale system traction</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Meta Partnership Execution</h3>
+          <ul>
+            <li>First 1GW shipment timing</li>
+            <li>Custom MI450-based GPU progress</li>
+            <li>Follow-on demand signals</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>External Read-Throughs</h3>
+          <ul>
+            <li>Hyperscaler capex commentary</li>
+            <li>Intel server roadmap</li>
+            <li>NVIDIA product cycle and supply constraints</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="risks">
+      <h2>6. Key Risks</h2>
+      <table>
+        <thead>
+          <tr><th>Risk</th><th>Impact</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AI GPU adoption slower than expected</td><td>Revenue and multiple compression</td></tr>
+          <tr><td>NVIDIA ecosystem advantage persists</td><td>Limits AMD pricing power</td></tr>
+          <tr><td>Gross margin fails to expand</td><td>DCF downside via terminal EBIT margin</td></tr>
+          <tr><td>R&D intensity stays elevated</td><td>Operating leverage delayed</td></tr>
+          <tr><td>Customer concentration</td><td>Large AI deals may be lumpy</td></tr>
+          <tr><td>Export controls</td><td>Product restrictions and inventory charges</td></tr>
+          <tr><td>Gaming / Client normalization</td><td>Non-Data Center growth decelerates</td></tr>
+          <tr><td>Valuation sensitivity to rates</td><td>Higher WACC hurts long-duration growth stocks</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="view-change">
+      <h2>7. What Would Change the View</h2>
+      <div class="grid">
+        <div class="card">
+          <h3 class="positive">More Positive</h3>
+          <ul>
+            <li>Data Center revenue accelerates beyond expectations.</li>
+            <li>MI450 / Helios wins multiple hyperscaler customers beyond Meta.</li>
+            <li>Gross margin sustains mid-50s or higher.</li>
+            <li>Management raises long-term AI GPU revenue outlook.</li>
+            <li>Evidence AMD is becoming a durable second-source AI platform.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="negative">More Negative</h3>
+          <ul>
+            <li>AI GPU ramp is delayed.</li>
+            <li>Gross margin guidance weakens despite Data Center growth.</li>
+            <li>Meta partnership appears low-margin or back-end loaded.</li>
+            <li>NVIDIA widens performance/software ecosystem lead.</li>
+            <li>Data Center CPU share gains slow materially.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="bottom-line">
+      <h2>8. Bottom Line</h2>
+      <div class="callout">
+        <strong>AMD works if:</strong>
+        <span class="formula">AI GPU revenue scales
++ Data Center mix rises
++ gross margin moves into mid-50s
++ EBIT margin moves toward high-20s / low-30s</span>
+        <strong>AMD struggles if:</strong>
+        <span class="formula">AI revenue is slower
+or margin expansion disappoints
+or market stops paying premium multiples for AI semiconductor growth</span>
+      </div>
+      <p>For modeling, the most important sensitivity table is <strong>Revenue CAGR vs Terminal EBIT Margin</strong> because that is where the AMD thesis will ultimately be proven or disproven.</p>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <ul class="source-list">
+        <li><a href="https://www.amd.com/en/newsroom/press-releases/2026-5-5-amd-reports-first-quarter-2026-financial-results.html">AMD Reports First Quarter 2026 Financial Results</a></li>
+        <li><a href="https://ir.amd.com/news-events/press-releases/detail/1284/amd-reports-first-quarter-2026-financial-results">AMD Q1 2026 Earnings Release — Investor Relations</a></li>
+        <li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000021/amd-20251227.htm">AMD FY2025 Form 10-K/A</a></li>
+        <li><a href="https://ir.amd.com/news-events/press-releases/detail/1266/amd-unveils-strategy-to-lead-the-1-trillion-compute-market-and-accelerate-next-phase-of-growth">AMD Strategy Update — $1 Trillion Compute Market</a></li>
+        <li><a href="https://ir.amd.com/news-events/press-releases/detail/1279/amd-and-meta-announce-expanded-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus">AMD and Meta Expanded Strategic Partnership</a></li>
+        <li><a href="https://www.spglobal.com/market-intelligence/en/news-insights/research/2026/03/amd-s-next-generation-ai-chips-set-to-power-2026-data-center-growth">S&amp;P Global: AMD AI Chips and 2026 Data Center Growth</a></li>
+        <li><a href="https://www.amd.com/en/newsroom/press-releases/2024-6-2-amd-accelerates-pace-of-data-center-ai-innovation-.html">AMD Instinct Roadmap — AMD Newsroom</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      AMD investment thesis page. This page is a research framework, not investment advice.
+    </footer>
+  </main>
+</body>
+</html>

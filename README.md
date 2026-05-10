@@ -22,6 +22,36 @@ GitHub Pages: https://menes127.github.io/ai-html-tools/
 - Daily update workflow: `.github/workflows/update-amd-insider.yml`
 - Schedule: every day 01:00 UTC (09:00 Asia/Shanghai)
 
+## Daily Stock Report Generator
+
+- Generator: `tools/daily-stock-report/`
+- Purpose: fetch/cache market data, compute technical signals, and render single-stock daily HTML reports with compact summary JSON output.
+- Safe sample output:
+
+```bash
+node tools/daily-stock-report/scripts/generate_daily_report.js \
+  --input-json tools/daily-stock-report/examples/amd_daily_report.sample.json \
+  --output tools/daily-stock-report/out
+```
+
+- Generate into the AMD report folder:
+
+```bash
+node tools/daily-stock-report/scripts/generate_daily_report.js \
+  --input-json tools/daily-stock-report/examples/amd_daily_report.sample.json \
+  --output AMD
+```
+
+- Script-pipeline form:
+
+```bash
+node tools/daily-stock-report/scripts/generate_daily_report.js \
+  --ticker AMD \
+  --date 2026-05-10 \
+  --output AMD \
+  --benchmarks SPY,QQQ,SOXX,SMH
+```
+
 ## Plane Shooter Controls
 
 - Type the enemy letter key to destroy that plane

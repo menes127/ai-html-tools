@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DailyStockReport",
+  "type": "object",
+  "required": ["metadata", "price", "technicals", "levels", "benchmarks", "signals", "sources"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["ticker", "companyName", "reportDate", "marketDataDate"],
+      "properties": {
+        "ticker": { "type": "string" },
+        "companyName": { "type": "string" },
+        "reportDate": { "type": "string" },
+        "marketDataDate": { "type": "string" },
+        "sessionType": { "type": "string" },
+        "language": { "type": "string" }
+      }
+    },
+    "price": {
+      "type": "object",
+      "required": ["open", "high", "low", "close", "volume"],
+      "properties": {
+        "open": { "type": "number" },
+        "high": { "type": "number" },
+        "low": { "type": "number" },
+        "close": { "type": "number" },
+        "previousClose": { "type": "number" },
+        "volume": { "type": "number" },
+        "afterHours": { "type": ["number", "null"] },
+        "fiftyTwoWeekHigh": { "type": ["number", "null"] },
+        "fiftyTwoWeekLow": { "type": ["number", "null"] }
+      }
+    },
+    "technicals": {
+      "type": "object",
+      "properties": {
+        "dailyReturn": { "type": ["number", "null"] },
+        "rsi14": { "type": ["number", "null"] },
+        "ma20": { "type": ["number", "null"] },
+        "ma50": { "type": ["number", "null"] },
+        "ma200": { "type": ["number", "null"] },
+        "avgVolume20d": { "type": ["number", "null"] },
+        "relativeVolume": { "type": ["number", "null"] }
+      }
+    },
+    "levels": {
+      "type": "object",
+      "properties": {
+        "resistance": { "type": "array", "items": { "type": "number" } },
+        "support": { "type": "array", "items": { "type": "number" } },
+        "pivot": { "type": ["number", "null"] },
+        "breakout": { "type": ["number", "null"] },
+        "target": { "type": ["number", "null"] },
+        "invalidation": { "type": ["number", "null"] }
+      }
+    },
+    "benchmarks": { "type": "object" },
+    "signals": {
+      "type": "object",
+      "required": ["headline", "positionSize", "addConditions", "reduceConditions"],
+      "properties": {
+        "headline": { "type": "string" },
+        "strength": { "type": "string" },
+        "positionSize": { "type": "string" },
+        "summary": { "type": "string" },
+        "addConditions": { "type": "array", "items": { "type": "string" } },
+        "reduceConditions": { "type": "array", "items": { "type": "string" } },
+        "holdConditions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "news": { "type": "array", "items": { "type": "object" } },
+    "sources": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  }
+}

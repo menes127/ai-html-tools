@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "ticker": "AMD",
+    "companyName": "Advanced Micro Devices",
+    "reportDate": "2026-05-10",
+    "marketDataDate": "2026-05-08",
+    "sessionType": "weekend",
+    "language": "zh-CN"
+  },
+  "price": {
+    "open": 418.59,
+    "high": 456.29,
+    "low": 418.29,
+    "close": 455.19,
+    "previousClose": 408.46,
+    "volume": 56904732,
+    "afterHours": 461.2,
+    "fiftyTwoWeekHigh": 456.29,
+    "fiftyTwoWeekLow": 101.56
+  },
+  "technicals": {
+    "dailyReturn": 0.1144,
+    "rsi14": 80.8,
+    "ma20": null,
+    "ma50": 254.51,
+    "ma200": 217.35,
+    "avgVolume20d": 46680000,
+    "relativeVolume": 1.22
+  },
+  "levels": {
+    "resistance": [444.08, 451.3, 456.29, 465.72],
+    "support": [422.44, 408.02, 400.8],
+    "pivot": 429.66,
+    "breakout": 465.72,
+    "target": 474.62,
+    "invalidation": 395
+  },
+  "benchmarks": {
+    "SPY": { "close": 737.62, "dailyReturn": 0.0083, "volume": 47230000, "interpretation": "大盘风险偏好改善。" },
+    "QQQ": { "close": 711.23, "dailyReturn": 0.0234, "volume": 44320000, "interpretation": "科技成长股环境明显转强。" },
+    "SOXX": { "close": 520.3, "dailyReturn": 0.0567, "volume": 7520000, "interpretation": "半导体板块强共振。" },
+    "SMH": { "close": 566.54, "dailyReturn": 0.049, "volume": 8440000, "interpretation": "半导体 ETF 领涨，验证板块 beta。" }
+  },
+  "signals": {
+    "headline": "持有 / 不追高",
+    "strength": "中高",
+    "positionSize": "2 / 4",
+    "summary": "AMD 量价结构偏多，且大盘、纳斯达克100、半导体板块同步走强。但单日涨幅过大且 RSI 超买，新增仓位等待回踩或放量突破确认。",
+    "addConditions": [
+      "回踩 $422-$429 区间后不破，并出现缩量企稳。",
+      "收盘站上 $465.72，且成交量 > 20 日均量 1.5x，即约 70M+ 股。",
+      "AMD 继续跑赢 SOXX / SMH，且 QQQ 同步走强。"
+    ],
+    "reduceConditions": [
+      "接近 $456-$466 区间出现高位放量滞涨。",
+      "放量跌破 $422.44，或进一步跌破 $395 风控线。",
+      "半导体 ETF 同步转弱，AMD 跑输 SOXX / SMH。"
+    ],
+    "holdConditions": [
+      "已有仓位继续持有。",
+      "不在 RSI 超买且未强放量确认时追高。"
+    ]
+  },
+  "news": [
+    { "title": "Q1 财报后多家机构上调 AMD 目标价", "impact": "positive", "summary": "财报后情绪和 AI GPU 叙事支持持仓。" },
+    { "title": "5 月 13 日 AMD 股东大会", "impact": "neutral", "summary": "关注是否有 AI / Data Center 增量表述。" }
+  ],
+  "sources": [
+    { "title": "StockAnalysis — AMD quote", "url": "https://stockanalysis.com/stocks/amd/" },
+    { "title": "StockAnalysis — AMD statistics", "url": "https://stockanalysis.com/stocks/amd/statistics/" },
+    { "title": "WallStreetNumbers — AMD RSI", "url": "https://wallstreetnumbers.com/stocks/amd/rsi" },
+    { "title": "FX Leaders — AMD technical levels", "url": "https://www.fxleaders.com/live-rates/amd/" },
+    { "title": "TradingKey — AMD support and target zones", "url": "https://www.tradingkey.com/analysis/stocks/us-stocks/261863081-amd-earnings-beat-data-center-ai-gpu-guidance-technical-tradingkey" }
+  ],
+  "warnings": []
+}
