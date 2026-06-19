@@ -4,14 +4,14 @@ set -euo pipefail
 # Backfill Form 4 data by company x year (one company/year per run)
 # Example:
 #   ./backfill_company_year.sh
-#   START_YEAR=2012 END_YEAR=2026 COMPANIES="TSM TSLA" SLEEP_SECONDS=2 ./backfill_company_year.sh
+#   START_YEAR=2012 END_YEAR=2026 COMPANIES="TSM TSLA SOFI" SLEEP_SECONDS=2 ./backfill_company_year.sh
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 START_YEAR="${START_YEAR:-2012}"
 END_YEAR="${END_YEAR:-$(date +%Y)}"
-COMPANIES="${COMPANIES:-TSM TSLA}"
+COMPANIES="${COMPANIES:-TSM TSLA SOFI}"
 SLEEP_SECONDS="${SLEEP_SECONDS:-2}"
 LOG_FILE="${LOG_FILE:-$ROOT_DIR/backfill.log}"
 

@@ -8,6 +8,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from http.client import RemoteDisconnected
 from urllib.error import HTTPError, URLError
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -19,6 +20,7 @@ COMPANY_CONFIG: Dict[str, Dict[str, str]] = {
     "NVDA": {"ticker": "NVDA", "cik": "0001045810", "name": "NVIDIA"},
     "TSM": {"ticker": "TSM", "cik": "0001046179", "name": "Taiwan Semiconductor Manufacturing Co Ltd"},
     "TSLA": {"ticker": "TSLA", "cik": "0001318605", "name": "Tesla, Inc."},
+    "SOFI": {"ticker": "SOFI", "cik": "0001818874", "name": "SoFi Technologies, Inc."},
 }
 
 
@@ -78,6 +80,12 @@ def http_get(url: str, user_agent: str, timeout: int = 25, retries: int = 4) -> 
                 time.sleep(min(2**attempt, 12))
                 continue
             raise
+        except (TimeoutError, RemoteDisconnected) as e:
+            last_err = e
+            if attempt < retries:
+                time.sleep(min(2**attempt, 12))
+                continue
+            raise
     if last_err:
         raise last_err
     raise RuntimeError("http_get failed")
@@ -104,6 +112,12 @@ def http_post_json(url: str, payload: Any, headers: Dict[str, str], timeout: int
             detail = e.read().decode("utf-8", errors="ignore")[:600]
             raise RuntimeError(f"POST {url} failed ({e.code}): {detail}") from e
         except URLError as e:
+            last_err = e
+            if attempt < retries:
+                time.sleep(min(2**attempt, 12))
+                continue
+            raise
+        except (TimeoutError, RemoteDisconnected) as e:
             last_err = e
             if attempt < retries:
                 time.sleep(min(2**attempt, 12))

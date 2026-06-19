@@ -32,6 +32,9 @@ class SupabasePayloadTests(unittest.TestCase):
             ownership_nature="D",
             is_10b5_1=False,
             footnote_hint=None,
+            source_form="4",
+            source_system="sec-edgar",
+            extra_json=None,
         )
 
         row = trade_to_row(trade)

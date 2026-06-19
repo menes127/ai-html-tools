@@ -1,4 +1,4 @@
-# Insider Monitor (AMD / NVDA)
+# Insider Monitor (AMD / NVDA / TSM / TSLA / SOFI)
 
 该目录提供一个可在 GitHub Pages 展示的 Form 4 监控面板。当前版本使用 **Supabase 作为唯一数据源**，不再依赖本地 `data/YYYY.json` 作为运行时读取。
 
@@ -7,7 +7,7 @@
 - `amd_insider_monitor.py`：抓取并解析 SEC Form 4，并 upsert 到 Supabase
 - `supabase/schema.sql`：表结构、视图、RLS 与只读授权
 - `index.html`：前端 dashboard（读取 Supabase `v_summary` / `v_years` / `v_transactions`）
-- `../.github/workflows/update-amd-insider.yml`：每日自动同步到 Supabase（最近 30 天，AMD + NVDA）
+- `../.github/workflows/update-amd-insider.yml`：每日自动同步到 Supabase（最近 30 天，AMD + NVDA + TSM + TSLA + SOFI）
 
 ## Supabase 初始化
 
@@ -42,7 +42,7 @@ python3 amd_insider_monitor.py --days 365
 python3 amd_insider_monitor.py --year 2025
 
 # 同步多个公司（可重复 --company）
-python3 amd_insider_monitor.py --days 365 --company AMD --company NVDA --company TSM --company TSLA
+python3 amd_insider_monitor.py --days 365 --company AMD --company NVDA --company TSM --company TSLA --company SOFI
 ```
 
 ## 历史回填（单公司 × 单年份）
@@ -51,16 +51,16 @@ python3 amd_insider_monitor.py --days 365 --company AMD --company NVDA --company
 
 ```bash
 cd amd-insider
-# 默认从 2012 到当前年，仅回填 TSM + TSLA
+# 默认从 2012 到当前年，回填 TSM + TSLA + SOFI
 ./backfill_company_year.sh
 
 # 可自定义范围/公司
-START_YEAR=2012 END_YEAR=2026 COMPANIES="TSM TSLA" SLEEP_SECONDS=2 ./backfill_company_year.sh
+START_YEAR=2012 END_YEAR=2026 COMPANIES="TSM TSLA SOFI" SLEEP_SECONDS=2 ./backfill_company_year.sh
 ```
 
 脚本会把每轮状态写入 `backfill.log`，失败年份不会阻断后续年份。
 
-当前内置支持：`AMD`、`NVDA`、`TSM`、`TSLA`。如传入不支持的 ticker，脚本会直接报错并退出。
+当前内置支持：`AMD`、`NVDA`、`TSM`、`TSLA`、`SOFI`。如传入不支持的 ticker，脚本会直接报错并退出。
 
 ## 前端本地预览
 
@@ -118,15 +118,15 @@ python3 -m http.server 8000
 
 - 定时任务：每天运行一次
 - 默认增量范围：最近 `30` 天
-- 默认公司：`AMD` + `NVDA` + `TSM` + `TSLA`
-- 手动触发：与定时任务一致，仍同步最近 `30` 天（AMD + NVDA + TSM + TSLA）
+- 默认公司：`AMD` + `NVDA` + `TSM` + `TSLA` + `SOFI`
+- 手动触发：与定时任务一致，仍同步最近 `30` 天（AMD + NVDA + TSM + TSLA + SOFI）
 
 
 ## 多口径统一入库（同一数据库结构）
 
 为满足“加载逻辑不同、入库结构一致”的要求：
 
-- AMD/NVDA/TSLA 继续以 **Form 4** 解析为交易明细；
+- AMD/NVDA/TSLA/SOFI 继续以 **Form 4** 解析为交易明细；
 - TSM 在无 Form 4 时自动回退到 **6-K/20-F/13G/13D 披露事件**；
 - 最终都写入同一套 `filings` / `transactions` 表。
 

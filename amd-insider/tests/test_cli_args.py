@@ -3,6 +3,12 @@ import sys
 import unittest
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from amd_insider_monitor import resolve_companies
+
 
 class CliArgsTests(unittest.TestCase):
     def test_requires_supabase_credentials_by_default(self) -> None:
@@ -28,6 +34,13 @@ class CliArgsTests(unittest.TestCase):
         )
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("unrecognized arguments: --output legacy.json", proc.stderr)
+
+    def test_resolves_sofi_company_config(self) -> None:
+        companies = resolve_companies(["SOFI"])
+
+        self.assertEqual(companies[0]["ticker"], "SOFI")
+        self.assertEqual(companies[0]["cik"], "0001818874")
+        self.assertEqual(companies[0]["name"], "SoFi Technologies, Inc.")
 
 
 if __name__ == "__main__":
